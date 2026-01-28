@@ -6,7 +6,39 @@ import { ExerciseSelector } from '../components/ExerciseSelector';
 import { Layout } from '../components/ui/Layout';
 import { Button } from '../components/ui/Button';
 import { Icon, cn } from '../components/ui/Icon';
+import { formatTime, parseTime } from '../lib/timeUtils';
 import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise } from '../types';
+
+function TimeInput({ value, onChange, disabled, className }: { value: number | undefined, onChange: (val: number) => void, disabled?: boolean, className?: string }) {
+  const [localValue, setLocalValue] = useState(formatTime(value));
+
+  useEffect(() => {
+    setLocalValue(formatTime(value));
+  }, [value]);
+
+  const handleBlur = () => {
+    const seconds = parseTime(localValue);
+    onChange(seconds);
+    setLocalValue(formatTime(seconds));
+  };
+
+  return (
+    <input
+      className={className}
+      placeholder="-"
+      type="text"
+      disabled={disabled}
+      value={localValue}
+      onChange={(e) => setLocalValue(e.target.value)}
+      onBlur={handleBlur}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter') {
+            e.currentTarget.blur();
+        }
+      }}
+    />
+  );
+}
 
 export default function RoutineBuilderPage() {
   const { id } = useParams();
@@ -44,13 +76,16 @@ export default function RoutineBuilderPage() {
     setSeries(prev => prev.map(s => {
       if (s.id !== seriesId) return s;
       
+      const trackingType = exercise.defaultType === 'time' ? 'time' : 'reps';
+
       const newEx: RoutineExercise = {
         id: crypto.randomUUID(),
         exerciseId: exercise.id!,
+        trackingType,
         sets: [
-          { id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, completed: false },
-          { id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, completed: false },
-          { id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, completed: false }
+          { id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false },
+          { id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false },
+          { id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false }
         ]
       };
       
@@ -91,6 +126,7 @@ export default function RoutineBuilderPage() {
             type: 'working',
             weight: lastSet ? lastSet.weight : 0,
             reps: lastSet ? lastSet.reps : 0,
+            time: lastSet ? lastSet.time : 0,
             completed: false
           };
           return { ...ex, sets: [...ex.sets, newSet] };
@@ -123,6 +159,19 @@ export default function RoutineBuilderPage() {
     setSeries(prev => prev.map(s => {
       if (s.id !== seriesId) return s;
       return { ...s, type: s.type === 'standard' ? 'superset' : 'standard' };
+    }));
+  };
+
+  const toggleTrackingType = (seriesId: string, exId: string) => {
+    setSeries(prev => prev.map(s => {
+      if (s.id !== seriesId) return s;
+      return {
+        ...s,
+        exercises: s.exercises.map(ex => {
+          if (ex.id !== exId) return ex;
+          return { ...ex, trackingType: ex.trackingType === 'time' ? 'reps' : 'time' };
+        })
+      };
     }));
   };
 
@@ -205,16 +254,30 @@ export default function RoutineBuilderPage() {
                             <p className="text-xs text-gray-500 font-medium">{exerciseDef.muscleGroup}</p>
                           </div>
                         </div>
-                        <button onClick={() => removeExercise(s.id, ex.id)} className="text-gray-400 hover:text-red-500">
-                          <Icon name="close" />
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => toggleTrackingType(s.id, ex.id)}
+                                className={cn(
+                                    "p-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight transition-colors",
+                                    ex.trackingType === 'time' ? "text-primary" : "text-gray-400"
+                                )}
+                                title={ex.trackingType === 'time' ? "Switch to Reps" : "Switch to Time"}
+                            >
+                                <Icon name={ex.trackingType === 'time' ? "schedule" : "tag"} />
+                            </button>
+                            <button onClick={() => removeExercise(s.id, ex.id)} className="text-gray-400 hover:text-red-500">
+                                <Icon name="close" />
+                            </button>
+                        </div>
                      </div>
 
                      {/* Sets Header */}
                      <div className="grid grid-cols-12 gap-2 mb-2 px-1">
                         <div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">Set</div>
                         <div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">kg</div>
-                        <div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">Reps</div>
+                        <div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+                            {ex.trackingType === 'time' ? 'Duration' : 'Reps'}
+                        </div>
                         <div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">Fail</div>
                      </div>
 
@@ -243,13 +306,28 @@ export default function RoutineBuilderPage() {
                               />
                             </div>
                             <div className="col-span-4">
-                              <input 
-                                className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400" 
-                                placeholder="-" 
-                                type="number" 
-                                value={set.reps || ''}
-                                onChange={(e) => updateSet(s.id, ex.id, set.id, 'reps', Number(e.target.value))}
-                              />
+                              {set.type === 'failure' ? (
+                                <input
+                                    className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-400 h-9"
+                                    value="-"
+                                    placeholder="-"
+                                    disabled
+                                />
+                              ) : ex.trackingType === 'time' ? (
+                                <TimeInput
+                                    className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
+                                    value={set.time}
+                                    onChange={(val) => updateSet(s.id, ex.id, set.id, 'time', val)}
+                                />
+                              ) : (
+                                <input
+                                    className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
+                                    placeholder="-"
+                                    type="number"
+                                    value={set.reps || ''}
+                                    onChange={(e) => updateSet(s.id, ex.id, set.id, 'reps', Number(e.target.value))}
+                                />
+                              )}
                             </div>
                             <div className="col-span-2 flex justify-center">
                               <button 
