@@ -14,7 +14,8 @@ export default function ExerciseListPage() {
 
   const filteredExercises = exercises.filter(ex => 
     ex.title.toLowerCase().includes(search.toLowerCase()) ||
-    ex.muscleGroup.toLowerCase().includes(search.toLowerCase())
+    ex.muscleGroup?.toLowerCase().includes(search.toLowerCase()) ||
+    ex.tags?.some(tag => tag.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -55,9 +56,25 @@ export default function ExerciseListPage() {
                   </div>
                 )}
                 
-                <div>
-                  <h3 className="text-base font-semibold text-gray-900 dark:text-white">{ex.title}</h3>
-                  <p className="text-sm text-gray-500">{ex.muscleGroup}</p>
+                <div className="flex-1 min-w-0">
+                  <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{ex.title}</h3>
+                  <div className="flex flex-wrap gap-1 mt-1">
+                    {/* Show primary muscle group as a tag if available, else first tag */}
+                    {ex.muscleGroup && (
+                        <span className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded-md">
+                            {ex.muscleGroup}
+                        </span>
+                    )}
+                    {/* Show other tags count or next tag? Let's show up to 2 tags */}
+                    {ex.tags?.filter(t => t !== ex.muscleGroup).slice(0, 2).map(tag => (
+                        <span key={tag} className="text-xs text-gray-500 bg-gray-100 dark:bg-surface-highlight px-2 py-0.5 rounded-md">
+                            {tag}
+                        </span>
+                    ))}
+                    {ex.tags && ex.tags.length > (ex.muscleGroup ? 3 : 2) && (
+                        <span className="text-xs text-gray-400 px-1">...</span>
+                    )}
+                  </div>
                 </div>
               </div>
                <button 

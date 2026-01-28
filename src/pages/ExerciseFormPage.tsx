@@ -3,7 +3,6 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useExercises } from '../hooks/useExercises';
 import { useInventory } from '../hooks/useInventory';
 import { Layout } from '../components/ui/Layout';
-import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Icon, cn } from '../components/ui/Icon';
 import type { MediaItem, Exercise } from '../types';
@@ -15,19 +14,27 @@ export default function ExerciseFormPage() {
   const { items: inventoryItems } = useInventory();
   
   const [title, setTitle] = useState('');
+  const [description, setDescription] = useState('');
+  // We keep muscleGroup state but populate it from tags mainly
   const [muscleGroup, setMuscleGroup] = useState('');
+  const [tags, setTags] = useState<string[]>([]);
+  const [newTag, setNewTag] = useState('');
+  
   const [media, setMedia] = useState<MediaItem[]>([]);
   const [selectedEquipment, setSelectedEquipment] = useState<number[]>([]);
   const [defaultType, setDefaultType] = useState<Exercise['defaultType']>('weight_reps');
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (id && exercises.length > 0) {
       const ex = exercises.find(e => e.id === Number(id));
       if (ex) {
         setTitle(ex.title);
+        setDescription(ex.description || '');
         setMuscleGroup(ex.muscleGroup);
+        setTags(ex.tags || (ex.muscleGroup ? [ex.muscleGroup] : []));
         setMedia(ex.media);
         setSelectedEquipment(ex.primaryEquipmentIds);
         setDefaultType(ex.defaultType);
@@ -36,18 +43,41 @@ export default function ExerciseFormPage() {
   }, [id, exercises]);
 
   const handleSave = async () => {
-    const exerciseData = {
+    // Determine muscle group from tags if empty, or keep existing.
+    // Logic: If muscleGroup is empty, take first tag.
+    // If not empty, check if it is in tags. If not, add it to tags (implicit sync).
+    
+    let finalMuscleGroup = muscleGroup;
+    const finalTags = [...tags];
+
+    if (!finalMuscleGroup && finalTags.length > 0) {
+        finalMuscleGroup = finalTags[0];
+    }
+    
+    // Ensure we satisfy the requirement "Muscles is a Type of tags"
+    // So if muscleGroup is set, it should probably be in tags.
+    if (finalMuscleGroup && !finalTags.includes(finalMuscleGroup)) {
+        finalTags.unshift(finalMuscleGroup);
+    }
+
+    const exerciseData: Exercise = {
+      id: id ? Number(id) : undefined,
       title,
-      muscleGroup,
+      description,
+      muscleGroup: finalMuscleGroup,
+      tags: finalTags,
       media,
       primaryEquipmentIds: selectedEquipment,
       defaultType
     };
 
     if (id) {
-      await updateExercise({ ...exerciseData, id: Number(id) });
+      await updateExercise(exerciseData);
     } else {
-      await addExercise(exerciseData);
+      // Remove ID for creation
+      const newEx = { ...exerciseData };
+      delete newEx.id;
+      await addExercise(newEx);
     }
     navigate('/exercises');
   };
@@ -72,9 +102,6 @@ export default function ExerciseFormPage() {
       blob: file // For persistence
     };
     
-    // For blob persistence, in a real app we'd convert to Blob/ArrayBuffer before saving to IDB, 
-    // but the structured clone algorithm of IDB supports Blobs directly.
-    
     setMedia([...media, newMedia]);
   };
 
@@ -82,7 +109,6 @@ export default function ExerciseFormPage() {
     const url = prompt('Enter YouTube URL:');
     if (!url) return;
     
-    // Simple ID extraction
     const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
     const match = url.match(regExp);
     const videoId = (match && match[2].length === 11) ? match[2] : null;
@@ -111,126 +137,218 @@ export default function ExerciseFormPage() {
     }
   };
 
+  const addTag = () => {
+    if (newTag.trim() && !tags.includes(newTag.trim())) {
+      setTags([...tags, newTag.trim()]);
+      setNewTag('');
+      // If it's the first tag, set it as muscleGroup automatically if empty
+      if (!muscleGroup) {
+          setMuscleGroup(newTag.trim());
+      }
+    }
+  };
+  
+  const removeTag = (tagToRemove: string) => {
+      setTags(tags.filter(t => t !== tagToRemove));
+      if (muscleGroup === tagToRemove) {
+          setMuscleGroup('');
+      }
+  };
+
+  // Predefined tags/muscles for suggestion (optional, but good for UX)
+  const SUGGESTED_TAGS = ['Chest', 'Back', 'Legs', 'Shoulders', 'Arms', 'Abs', 'Cardio', 'Strength', 'Hypertrophy'];
+
   return (
     <Layout
       header={
-        <div className="flex items-center justify-between px-6 py-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md">
-          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight">
-            <Icon name="arrow_back" />
+        <div className="flex items-center justify-between px-6 py-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md z-50">
+          <button onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight text-gray-900 dark:text-white transition-colors">
+            <Icon name="close" />
           </button>
-          <h1 className="text-lg font-bold">{id ? 'Edit Exercise' : 'New Exercise'}</h1>
-          <Button size="sm" onClick={handleSave}>Save</Button>
+          <h1 className="text-lg font-bold text-gray-900 dark:text-white">{id ? 'Edit Exercise' : 'New Exercise'}</h1>
+          <Button size="sm" onClick={handleSave} className="bg-primary text-white rounded-full px-6">Save</Button>
         </div>
       }
     >
-      <div className="flex flex-col gap-6 mt-4">
-        {/* Basic Info */}
-        <section className="flex flex-col gap-4">
-          <Input label="Title" value={title} onChange={e => setTitle(e.target.value)} placeholder="e.g. Bench Press" />
-          <Input label="Muscle Group" value={muscleGroup} onChange={e => setMuscleGroup(e.target.value)} placeholder="e.g. Chest" />
-          
-          <div>
-             <label className="block text-xs font-medium text-gray-500 mb-1 ml-1">Default Type</label>
-             <div className="flex bg-surface-light dark:bg-surface-dark rounded-2xl p-1 border border-gray-200 dark:border-surface-highlight">
-               {(['weight_reps', 'time', 'bodyweight_reps'] as const).map((t) => (
-                 <button
-                   key={t}
-                   onClick={() => setDefaultType(t)}
-                   className={cn(
-                     "flex-1 py-2 text-xs font-medium rounded-xl transition-all",
-                     defaultType === t ? "bg-primary text-white shadow-md" : "text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                   )}
-                 >
-                   {t === 'weight_reps' ? 'Weight' : t === 'time' ? 'Time' : 'Bodyweight'}
-                 </button>
-               ))}
-             </div>
-          </div>
+      <div className="flex flex-col gap-8 mt-4">
+        {/* Exercise Title */}
+        <section className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Exercise Title</label>
+            <div className="bg-surface-input dark:bg-surface-input rounded-xl p-4">
+                <input 
+                    type="text"
+                    value={title} 
+                    onChange={e => setTitle(e.target.value)} 
+                    placeholder="e.g. Incline Bench Press"
+                    className="w-full bg-transparent text-lg font-bold text-gray-900 dark:text-white placeholder-gray-500 outline-none"
+                />
+            </div>
         </section>
 
-        {/* Media */}
-        <section>
-          <div className="flex items-center justify-between mb-2">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white">Media</h3>
-            <div className="flex gap-2">
-              <button onClick={() => fileInputRef.current?.click()} className="text-primary text-xs font-bold flex items-center gap-1">
-                <Icon name="upload" size={16} /> Upload
-              </button>
-              <button onClick={addYouTube} className="text-red-500 text-xs font-bold flex items-center gap-1">
-                <Icon name="play_circle" size={16} /> YouTube
-              </button>
-              <input 
-                type="file" 
-                ref={fileInputRef} 
-                className="hidden" 
-                accept="image/*,video/*" 
-                onChange={handleFileUpload} 
-              />
+        {/* Description */}
+        <section className="flex flex-col gap-2">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Description</label>
+            <div className="bg-surface-input dark:bg-surface-input rounded-xl p-4">
+                <textarea 
+                    value={description} 
+                    onChange={e => setDescription(e.target.value)} 
+                    placeholder="Add cues, form tips, or setup instructions..."
+                    className="w-full bg-transparent text-sm text-gray-900 dark:text-gray-300 placeholder-gray-500 outline-none resize-none min-h-[100px]"
+                />
             </div>
+        </section>
+
+        {/* Multimedia Gallery */}
+        <section className="flex flex-col gap-2">
+          <div className="flex items-center justify-between">
+             <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Multimedia Gallery</label>
+             <button onClick={() => fileInputRef.current?.click()} className="text-primary text-xs font-bold flex items-center gap-1 hover:text-primary-dark transition-colors">
+                <Icon name="add_circle" size={16} /> Add Media
+             </button>
           </div>
           
-          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
-            {media.length === 0 && (
-              <div className="flex-none w-32 h-32 rounded-2xl bg-gray-100 dark:bg-surface-highlight border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center text-gray-400">
-                <Icon name="image" size={32} />
-              </div>
-            )}
+          <input 
+            type="file" 
+            ref={fileInputRef} 
+            className="hidden" 
+            accept="image/*,video/*" 
+            onChange={handleFileUpload} 
+          />
+
+          <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2 snap-x">
+             {/* Upload Button Tile */}
+             <button 
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-none w-24 h-24 rounded-2xl border-2 border-dashed border-gray-600 dark:border-gray-700 flex flex-col items-center justify-center gap-1 text-gray-500 hover:bg-white/5 transition-colors snap-start"
+             >
+                <Icon name="add_a_photo" size={24} />
+                <span className="text-[10px] font-medium">Upload</span>
+             </button>
+
+             {/* Gallery Items */}
             {media.map(m => (
-              <div key={m.id} className="relative flex-none w-32 h-32 rounded-2xl overflow-hidden bg-black group">
+              <div key={m.id} className="relative flex-none w-24 h-24 rounded-2xl overflow-hidden bg-surface-highlight snap-start group">
                 {m.type === 'image' && <img src={m.url} className="w-full h-full object-cover" />}
                 {m.type === 'video' && <video src={m.url} className="w-full h-full object-cover" />}
                 {m.type === 'youtube' && (
                   <>
                     <img src={m.thumbnailUrl} className="w-full h-full object-cover opacity-80" />
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <Icon name="play_circle" className="text-white drop-shadow-lg" size={32} />
+                      <Icon name="play_circle" className="text-white drop-shadow-lg" size={24} />
                     </div>
                   </>
                 )}
                 <button 
                   onClick={() => removeMedia(m.id)}
-                  className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 opacity-100 md:opacity-0 group-hover:opacity-100 transition-opacity"
                 >
-                  <Icon name="close" size={16} />
+                  <Icon name="close" size={12} />
                 </button>
               </div>
             ))}
+            
+            {/* YouTube Button Tile */}
+             <button 
+                onClick={addYouTube}
+                className="flex-none w-24 h-24 rounded-2xl bg-red-900/20 border border-red-900/50 flex flex-col items-center justify-center gap-1 text-red-500 hover:bg-red-900/30 transition-colors snap-start"
+             >
+                <Icon name="smart_display" size={24} />
+                <span className="text-[10px] font-bold">YOUTUBE</span>
+             </button>
           </div>
         </section>
 
-        {/* Equipment */}
-        <section>
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-2">Equipment</h3>
-          <div className="flex flex-col gap-2">
-            {inventoryItems.map(item => (
-              <div 
-                key={item.id} 
-                className={cn(
-                  "flex items-center p-3 rounded-2xl border transition-all cursor-pointer",
-                  selectedEquipment.includes(item.id!) 
-                    ? "bg-primary/10 border-primary" 
-                    : "bg-surface-light dark:bg-surface-dark border-gray-100 dark:border-surface-highlight"
-                )}
-                onClick={() => toggleEquipment(item.id!)}
-              >
-                <div className={cn(
-                  "w-10 h-10 rounded-lg flex items-center justify-center mr-3 transition-colors",
-                  selectedEquipment.includes(item.id!) ? "bg-primary text-white" : "bg-gray-100 dark:bg-surface-highlight text-gray-500"
-                )}>
-                  <Icon name={item.icon} />
+        {/* Required Equipment */}
+        <section className="flex flex-col gap-2">
+           <div className="flex items-center justify-between">
+              <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Required Equipment</label>
+              <button onClick={() => navigate('/')} className="text-primary text-xs font-bold hover:text-primary-dark transition-colors">
+                 Manage Inventory
+              </button>
+           </div>
+           
+           <div className="grid grid-cols-2 gap-3">
+             {inventoryItems.map(item => {
+                 const isSelected = selectedEquipment.includes(item.id!);
+                 return (
+                  <div 
+                    key={item.id}
+                    onClick={() => toggleEquipment(item.id!)}
+                    className={cn(
+                        "flex items-center p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden",
+                        isSelected 
+                            ? "bg-primary/10 border-primary shadow-[0_0_0_1px_rgba(179,157,219,1)]" 
+                            : "bg-surface-input border-transparent hover:border-gray-600"
+                    )}
+                  >
+                     <div className={cn(
+                        "w-10 h-10 rounded-lg flex items-center justify-center mr-3 transition-colors shrink-0",
+                        isSelected ? "bg-primary text-white" : "bg-white/5 text-gray-500"
+                     )}>
+                        <Icon name={item.icon} />
+                     </div>
+                     <div className="flex-1 min-w-0">
+                        <p className={cn("text-sm font-bold truncate", isSelected ? "text-primary" : "text-gray-300")}>{item.name}</p>
+                        <p className="text-[10px] text-gray-500">Inventory</p>
+                     </div>
+                     {isSelected && (
+                         <div className="absolute top-2 right-2 text-primary">
+                             <Icon name="check_circle" size={16} filled />
+                         </div>
+                     )}
+                  </div>
+                 );
+             })}
+             
+             {/* Add Item Placeholder */}
+             <button onClick={() => navigate('/')} className="flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-gray-600 hover:bg-white/5 text-gray-400 transition-colors">
+                 <Icon name="add" />
+                 <span className="text-sm font-medium">Add Item</span>
+             </button>
+           </div>
+        </section>
+
+        {/* Muscles & Tags */}
+        <section className="flex flex-col gap-2 pb-8">
+            <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Muscles & Tags</label>
+            <div className="bg-surface-input rounded-2xl p-4">
+                <div className="flex flex-wrap gap-2 mb-4">
+                    {tags.map(tag => (
+                        <div key={tag} className="bg-primary/20 text-primary px-3 py-1.5 rounded-full text-xs font-bold flex items-center gap-1">
+                            {tag}
+                            <button onClick={() => removeTag(tag)} className="hover:text-white">
+                                <Icon name="close" size={14} />
+                            </button>
+                        </div>
+                    ))}
+                    
+                    {/* Suggested tags that aren't selected yet */}
+                    {SUGGESTED_TAGS.filter(t => !tags.includes(t)).slice(0, 3).map(t => (
+                        <button 
+                            key={t}
+                            onClick={() => { setTags([...tags, t]); if(!muscleGroup) setMuscleGroup(t); }} 
+                            className="bg-surface-highlight text-gray-400 px-3 py-1.5 rounded-full text-xs font-medium hover:bg-surface-highlight/80 hover:text-gray-200 transition-colors"
+                        >
+                            {t}
+                        </button>
+                    ))}
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm font-semibold">{item.name}</p>
+                
+                <div className="flex items-center gap-2 border-t border-gray-700 pt-3">
+                    <Icon name="label" className="text-gray-500" />
+                    <input 
+                        type="text"
+                        value={newTag}
+                        onChange={e => setNewTag(e.target.value)}
+                        onKeyDown={e => e.key === 'Enter' && addTag()}
+                        placeholder="Add custom tag or muscle..."
+                        className="flex-1 bg-transparent text-sm text-white placeholder-gray-500 outline-none"
+                    />
+                    <button onClick={addTag} className="text-gray-400 hover:text-white">
+                        <Icon name="add" />
+                    </button>
                 </div>
-                <div className={cn(
-                  "w-6 h-6 rounded-full border flex items-center justify-center transition-colors",
-                  selectedEquipment.includes(item.id!) ? "bg-primary border-primary" : "border-gray-300 dark:border-gray-600"
-                )}>
-                  {selectedEquipment.includes(item.id!) && <Icon name="check" size={16} className="text-white" />}
-                </div>
-              </div>
-            ))}
-          </div>
+            </div>
         </section>
       </div>
     </Layout>

@@ -24,7 +24,9 @@ export interface MediaItem {
 export interface Exercise {
   id?: number;
   title: string;
-  muscleGroup: string; // e.g., 'Chest', 'Legs'
+  description?: string;
+  muscleGroup: string; // e.g., 'Chest', 'Legs' - Maintained for compatibility, can be derived from tags
+  tags: string[];
   primaryEquipmentIds: number[]; // Refs to Inventory
   media: MediaItem[];
   defaultType: 'weight_reps' | 'time' | 'bodyweight_reps';

@@ -4,8 +4,9 @@ import { Icon, cn } from './Icon';
 export function BottomNav() {
   const navItems = [
     { name: 'Cellar', icon: 'inventory_2', path: '/' },
-    { name: 'Train', icon: 'fitness_center', path: '/train' },
+    { name: 'Exercises', icon: 'fitness_center', path: '/exercises' },
     { name: 'Builder', icon: 'edit_square', path: '/builder' }, // Changed Stats to Builder for this task scope
+    { name: 'Train', icon: 'timer', path: '/train' },
     { name: 'Settings', icon: 'settings', path: '/settings' },
   ];
 

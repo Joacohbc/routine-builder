@@ -18,7 +18,7 @@ interface StitchDB extends DBSchema {
 }
 
 const DB_NAME = 'stitch-db';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 const INITIAL_INVENTORY: InventoryItem[] = [
   { name: 'Hex Dumbbells', icon: 'fitness_center', tags: ['Upper Body', 'Heavy', 'Favorite'], status: 'available', condition: 'good', quantity: 2 },
