@@ -45,6 +45,7 @@ export interface WorkoutSet {
 export interface RoutineExercise {
   id: string;
   exerciseId: number; // Ref to Exercise
+  trackingType?: 'reps' | 'time';
   sets: WorkoutSet[];
   restAfter?: number; // seconds
   notes?: string;
