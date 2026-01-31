@@ -3,6 +3,9 @@ name: PR Validation
 on:
   pull_request:
     branches: ["master"]
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
 
 jobs:
   lint:
