@@ -1,5 +1,5 @@
-import { cn } from './Icon';
 import { Icon } from './Icon';
+import { cn } from '../../lib/utils';
 
 interface TagProps {
   label: string;

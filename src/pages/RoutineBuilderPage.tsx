@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useRoutines } from '../hooks/useRoutines';
 import { useExercises } from '../hooks/useExercises';
 import { ExerciseSelector } from '../components/ExerciseSelector';
 import { Layout } from '../components/ui/Layout';
 import { Button } from '../components/ui/Button';
-import { Icon, cn } from '../components/ui/Icon';
+import { Icon } from '../components/ui/Icon';
+import { cn } from '../lib/utils';
 import { formatTime, parseTime } from '../lib/timeUtils';
 import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise } from '../types';
 
@@ -50,27 +51,29 @@ export default function RoutineBuilderPage() {
   const [series, setSeries] = useState<RoutineSeries[]>([]);
   const [showSelector, setShowSelector] = useState<{ seriesId: string } | null>(null);
 
-  useEffect(() => {
-    if (id && routines.length > 0) {
-      const r = routines.find(r => r.id === Number(id));
-      if (r) {
-        setName(r.name);
-        setSeries(r.series);
-      }
-    } else if (!id) {
-       // Init with one empty series
-       addSeries();
-    }
-  }, [id, routines]);
-
-  const addSeries = () => {
+  const addSeries = useCallback(() => {
     const newSeries: RoutineSeries = {
       id: crypto.randomUUID(),
       type: 'standard',
       exercises: []
     };
     setSeries(prev => [...prev, newSeries]);
-  };
+  }, []);
+
+  useEffect(() => {
+    if (id && routines.length > 0) {
+      const r = routines.find(r => r.id === Number(id));
+      if (r) {
+        // eslint-disable-next-line react-hooks/set-state-in-effect
+        setName(r.name);
+         
+        setSeries(r.series);
+      }
+    } else if (!id) {
+       // Init with one empty series
+       addSeries();
+    }
+  }, [id, routines, addSeries]);
 
   const addExerciseToSeries = (seriesId: string, exercise: Exercise) => {
     setSeries(prev => prev.map(s => {
@@ -94,7 +97,7 @@ export default function RoutineBuilderPage() {
     setShowSelector(null);
   };
 
-  const updateSet = (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, value: any) => {
+  const updateSet = (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, value: string | number | boolean) => {
     setSeries(prev => prev.map(s => {
       if (s.id !== seriesId) return s;
       return {
@@ -176,7 +179,7 @@ export default function RoutineBuilderPage() {
   };
 
   const handleSave = async () => {
-    const routineData: any = {
+    const routineData: { name: string; series: RoutineSeries[]; updatedAt: Date; id?: number; createdAt?: Date } = {
       name,
       series,
       updatedAt: new Date()

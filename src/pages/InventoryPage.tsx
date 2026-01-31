@@ -5,7 +5,8 @@ import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
 import { Tag } from '../components/ui/Tag';
 import { Card } from '../components/ui/Card';
-import { Icon, cn } from '../components/ui/Icon';
+import { Icon } from '../components/ui/Icon';
+import { cn } from '../lib/utils';
 import type { InventoryItem, InventoryCondition, InventoryStatus } from '../types';
 
 export default function InventoryPage() {
@@ -186,7 +187,7 @@ export default function InventoryPage() {
   );
 }
 
-function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, onClose: () => void, onSave: (item: any) => Promise<void> }) {
+function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, onClose: () => void, onSave: (item: Omit<InventoryItem, 'id'> & { id?: number }) => Promise<void> }) {
   const [name, setName] = useState(item?.name || '');
   const [icon, setIcon] = useState(item?.icon || 'fitness_center');
   const [status, setStatus] = useState<InventoryStatus>(item?.status || 'available');
@@ -220,7 +221,7 @@ function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, 
             <label className="block text-xs font-medium text-gray-500 mb-1 ml-1">Condition</label>
             <select 
               value={condition} 
-              onChange={e => setCondition(e.target.value as any)}
+              onChange={e => setCondition(e.target.value as InventoryCondition)}
               className="w-full h-12 rounded-2xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-surface-highlight px-4"
             >
               <option value="new">New</option>
@@ -233,7 +234,7 @@ function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, 
             <label className="block text-xs font-medium text-gray-500 mb-1 ml-1">Status</label>
             <select 
               value={status} 
-              onChange={e => setStatus(e.target.value as any)}
+              onChange={e => setStatus(e.target.value as InventoryStatus)}
               className="w-full h-12 rounded-2xl bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-surface-highlight px-4"
             >
               <option value="available">Available</option>

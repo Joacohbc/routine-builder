@@ -6,7 +6,8 @@ import { Layout } from '../components/ui/Layout';
 import { Button } from '../components/ui/Button';
 import { TimerInput } from '../components/ui/TimerInput';
 import { Stepper } from '../components/ui/Stepper';
-import { Icon, cn } from '../components/ui/Icon';
+import { Icon } from '../components/ui/Icon';
+import { cn } from '../lib/utils';
 import type { Routine, WorkoutSet } from '../types';
 
 interface WorkoutStep {
@@ -107,7 +108,7 @@ export default function ActiveWorkoutPage() {
 
   // Rest Timer
   useEffect(() => {
-    let interval: any;
+    let interval: ReturnType<typeof setInterval> | undefined;
     if (isResting) {
       interval = setInterval(() => {
         setRestTimer(t => t + 1);
