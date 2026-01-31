@@ -4,13 +4,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
 
-permissions:
-  contents: write
-  pull-requests: write
-
-concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+concurrency: preview-${{ github.ref }}
 
 jobs:
   deploy-preview:
@@ -36,11 +30,11 @@ jobs:
 
       - name: Build
         if: github.event.action != 'closed'
-        run: pnpm build --base /${{ github.event.repository.name }}/pr-${{ github.event.number }}/
+        run: pnpm build --base /${{ github.event.repository.name }}/pr-preview/pr-${{ github.event.number }}/
 
       - name: Deploy Preview
         uses: rossjrw/pr-preview-action@v1
         with:
-          source-dir: ./dist
+          source-dir: ./dist/
           preview-branch: master
           qr-code: false
