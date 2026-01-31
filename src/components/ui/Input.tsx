@@ -1,5 +1,5 @@
 import { type InputHTMLAttributes, forwardRef } from 'react';
-import { Icon } from './Icon';
+import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
 
 interface InputProps extends InputHTMLAttributes<HTMLInputElement> {

@@ -1,4 +1,4 @@
-import { Icon } from './Icon';
+import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
 
 interface TagProps {

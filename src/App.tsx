@@ -1,12 +1,12 @@
 import { HashRouter, Routes, Route } from 'react-router-dom';
-import InventoryPage from './pages/InventoryPage';
-import ExerciseListPage from './pages/ExerciseListPage';
-import ExerciseFormPage from './pages/ExerciseFormPage';
-import RoutineListPage from './pages/RoutineListPage';
-import RoutineBuilderPage from './pages/RoutineBuilderPage';
-import ActiveWorkoutPage from './pages/ActiveWorkoutPage';
-import WorkInProgressPage from './pages/WorkInProgressPage';
-import { MobileExperienceWarning } from './components/MobileExperienceWarning';
+import InventoryPage from '@/pages/InventoryPage';
+import ExerciseListPage from '@/pages/ExerciseListPage';
+import ExerciseFormPage from '@/pages/ExerciseFormPage';
+import RoutineListPage from '@/pages/RoutineListPage';
+import RoutineBuilderPage from '@/pages/RoutineBuilderPage';
+import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
+import WorkInProgressPage from '@/pages/WorkInProgressPage';
+import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
 
 function App() {
   return (
