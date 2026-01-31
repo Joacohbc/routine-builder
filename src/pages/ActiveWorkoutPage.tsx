@@ -15,6 +15,8 @@ interface WorkoutStep {
   totalSets: number;
   targetWeight: number;
   targetReps: number;
+  targetTime: number;
+  trackingType: 'reps' | 'time';
   type: WorkoutSet['type'];
   isSuperset: boolean;
 }
@@ -36,6 +38,9 @@ export default function ActiveWorkoutPage() {
   // Inputs for the current set
   const [actualWeight, setActualWeight] = useState<number>(0);
   const [actualReps, setActualReps] = useState<number>(0);
+  const [actualTime, setActualTime] = useState<number>(0);
+  const [isTimerRunning, setIsTimerRunning] = useState(false);
+
 
   useEffect(() => {
     if (id && routines.length > 0) {
@@ -56,6 +61,8 @@ export default function ActiveWorkoutPage() {
                    totalSets: ex.sets.length,
                    targetWeight: set.weight || 0,
                    targetReps: set.reps || 0,
+                   targetTime: set.time || 0,
+                   trackingType: ex.trackingType || 'reps',
                    type: set.type,
                    isSuperset: false
                  });
@@ -74,6 +81,8 @@ export default function ActiveWorkoutPage() {
                      totalSets: ex.sets.length,
                      targetWeight: ex.sets[i].weight || 0,
                      targetReps: ex.sets[i].reps || 0,
+                     targetTime: ex.sets[i].time || 0,
+                     trackingType: ex.trackingType || 'reps',
                      type: ex.sets[i].type,
                      isSuperset: true
                    });
@@ -106,10 +115,24 @@ export default function ActiveWorkoutPage() {
     return () => clearInterval(interval);
   }, [isResting]);
 
+  // Active Exercise Timer
+  useEffect(() => {
+    let interval: any;
+    if (isTimerRunning && !isResting) {
+      interval = setInterval(() => {
+        setActualTime(t => t + 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isTimerRunning, isResting]);
+
+
   useEffect(() => {
     if (steps[currentStepIndex]) {
       setActualWeight(steps[currentStepIndex].targetWeight);
       setActualReps(steps[currentStepIndex].targetReps);
+      setActualTime(0);
+      setIsTimerRunning(false);
     }
   }, [currentStepIndex, steps]);
 
@@ -224,18 +247,41 @@ export default function ActiveWorkoutPage() {
                       <div className="text-xs text-center text-gray-400 mt-1">Target: {currentStep.targetWeight}</div>
                     </div>
                  </div>
-                 <div className="flex flex-col gap-2">
-                    <label className="text-center text-xs font-bold text-gray-400 uppercase">Reps</label>
-                     <div className="relative">
-                      <input 
-                        type="number" 
-                        value={actualReps}
-                        onChange={e => setActualReps(Number(e.target.value))}
-                        className="w-full text-center text-4xl font-bold bg-transparent border-b-2 border-gray-200 dark:border-gray-700 focus:border-primary focus:outline-none py-2"
-                      />
-                       <div className="text-xs text-center text-gray-400 mt-1">Target: {currentStep.targetReps}</div>
-                    </div>
-                 </div>
+                 {currentStep.trackingType === 'time' ? (
+                   <div className="flex flex-col gap-2">
+                      <label className="text-center text-xs font-bold text-gray-400 uppercase">Time</label>
+                      <div className="flex flex-col items-center">
+                        <div 
+                          className="text-4xl font-bold font-mono py-2 cursor-pointer" 
+                          onClick={() => setIsTimerRunning(!isTimerRunning)}
+                        >
+                          {formatTime(actualTime)}
+                        </div>
+                        <div className="text-xs text-center text-gray-400 mt-1">Target: {formatTime(currentStep.targetTime)}</div>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="mt-2"
+                          onClick={() => setIsTimerRunning(!isTimerRunning)}
+                        >
+                          <Icon name={isTimerRunning ? "pause" : "play_arrow"} />
+                        </Button>
+                      </div>
+                   </div>
+                 ) : (
+                   <div className="flex flex-col gap-2">
+                      <label className="text-center text-xs font-bold text-gray-400 uppercase">Reps</label>
+                       <div className="relative">
+                        <input 
+                          type="number" 
+                          value={actualReps}
+                          onChange={e => setActualReps(Number(e.target.value))}
+                          className="w-full text-center text-4xl font-bold bg-transparent border-b-2 border-gray-200 dark:border-gray-700 focus:border-primary focus:outline-none py-2"
+                        />
+                         <div className="text-xs text-center text-gray-400 mt-1">Target: {currentStep.targetReps}</div>
+                      </div>
+                   </div>
+                 )}
               </div>
             </div>
          )}
