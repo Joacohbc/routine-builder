@@ -172,7 +172,6 @@ export default function ActiveWorkoutPage() {
 
   const currentStep = steps[currentStepIndex];
   const currentExercise = exercises.find(e => e.id === currentStep.exerciseId);
-  const progress = ((currentStepIndex + 1) / steps.length) * 100;
 
   return (
     <div className="flex flex-col h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-white">
