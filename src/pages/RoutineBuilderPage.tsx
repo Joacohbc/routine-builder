@@ -97,7 +97,7 @@ export default function RoutineBuilderPage() {
     setShowSelector(null);
   };
 
-  const updateSet = (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, value: number | boolean) => {
+  const updateSet = (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, value: string | number | boolean) => {
     setSeries(prev => prev.map(s => {
       if (s.id !== seriesId) return s;
       return {
