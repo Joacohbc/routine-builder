@@ -20,7 +20,7 @@ export function TimerInput({
   const [isRunning, setIsRunning] = useState(false);
 
   useEffect(() => {
-    let interval: NodeJS.Timeout;
+    let interval: ReturnType<typeof setInterval>;
     if (isRunning) {
       interval = setInterval(() => {
         onChange(value + 1);

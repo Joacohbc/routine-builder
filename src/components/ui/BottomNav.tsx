@@ -1,5 +1,6 @@
 import { NavLink } from 'react-router-dom';
-import { Icon, cn } from './Icon';
+import { cn } from '../../lib/utils';
+import { Icon } from './Icon';
 
 export function BottomNav() {
   const navItems = [

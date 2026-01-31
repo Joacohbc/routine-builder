@@ -1,5 +1,5 @@
-import { ReactNode } from 'react';
-import { cn } from './Icon';
+import type { ReactNode } from 'react';
+import { cn } from '../../lib/utils';
 
 interface StepperProps {
   currentStep: number;
@@ -9,20 +9,20 @@ interface StepperProps {
   className?: string;
 }
 
-export function Stepper({ 
-  currentStep, 
-  totalSteps, 
-  leftLabel, 
-  rightLabel, 
-  className 
+export function Stepper({
+  currentStep,
+  totalSteps,
+  leftLabel,
+  rightLabel,
+  className
 }: StepperProps) {
   const progress = Math.min(100, Math.max(0, (currentStep / totalSteps) * 100));
 
   return (
     <div className={cn("w-full", className)}>
       <div className="h-1 w-full bg-gray-200 dark:bg-surface-highlight rounded-full overflow-hidden">
-        <div 
-          className="h-full bg-primary transition-all duration-500" 
+        <div
+          className="h-full bg-primary transition-all duration-500"
           style={{ width: `${progress}%` }}
         ></div>
       </div>

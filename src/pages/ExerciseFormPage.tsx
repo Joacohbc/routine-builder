@@ -4,7 +4,8 @@ import { useExercises } from '../hooks/useExercises';
 import { useInventory } from '../hooks/useInventory';
 import { Layout } from '../components/ui/Layout';
 import { Button } from '../components/ui/Button';
-import { Icon, cn } from '../components/ui/Icon';
+import { Icon } from '../components/ui/Icon';
+import { cn } from '../lib/utils';
 import type { MediaItem, Exercise } from '../types';
 
 export default function ExerciseFormPage() {
@@ -26,18 +27,19 @@ export default function ExerciseFormPage() {
   
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     if (id && exercises.length > 0) {
       const ex = exercises.find(e => e.id === Number(id));
       if (ex) {
-        setTitle(ex.title);
-        setDescription(ex.description || '');
-        setMuscleGroup(ex.muscleGroup);
-        setTags(ex.tags || (ex.muscleGroup ? [ex.muscleGroup] : []));
-        setMedia(ex.media);
-        setSelectedEquipment(ex.primaryEquipmentIds);
-        setDefaultType(ex.defaultType);
+        setTimeout(() => {
+          setTitle(ex.title);
+          setDescription(ex.description || '');
+          setMuscleGroup(ex.muscleGroup);
+          setTags(ex.tags || (ex.muscleGroup ? [ex.muscleGroup] : []));
+          setMedia(ex.media);
+          setSelectedEquipment(ex.primaryEquipmentIds);
+          setDefaultType(ex.defaultType);
+        }, 0);
       }
     }
   }, [id, exercises]);
