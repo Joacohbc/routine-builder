@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route } from 'react-router-dom';
 import InventoryPage from './pages/InventoryPage';
 import ExerciseListPage from './pages/ExerciseListPage';
 import ExerciseFormPage from './pages/ExerciseFormPage';
@@ -9,7 +9,7 @@ import WorkInProgressPage from './pages/WorkInProgressPage';
 
 function App() {
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<InventoryPage />} />
         
@@ -30,7 +30,7 @@ function App() {
         <Route path="/train" element={<RoutineListPage />} /> 
         <Route path="/settings" element={<WorkInProgressPage />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
 
