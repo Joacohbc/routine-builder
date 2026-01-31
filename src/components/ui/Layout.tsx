@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { BottomNav } from './BottomNav';
+import { BottomNav } from '@/components/ui/BottomNav';
 
 interface LayoutProps {
   children: ReactNode;

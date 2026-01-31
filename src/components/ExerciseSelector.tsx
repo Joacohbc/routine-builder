@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { useExercises } from '../hooks/useExercises';
-import { Input } from '../components/ui/Input';
-import { Icon } from '../components/ui/Icon';
-import type { Exercise } from '../types';
+import { useExercises } from '@/hooks/useExercises';
+import { Input } from '@/components/ui/Input';
+import { Icon } from '@/components/ui/Icon';
+import type { Exercise } from '@/types';
 
 interface ExerciseSelectorProps {
   onSelect: (exercise: Exercise) => void;

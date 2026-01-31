@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useExercises } from '../hooks/useExercises';
-import { Layout } from '../components/ui/Layout';
-import { Input } from '../components/ui/Input';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Icon } from '../components/ui/Icon';
+import { useExercises } from '@/hooks/useExercises';
+import { Layout } from '@/components/ui/Layout';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 
 export default function ExerciseListPage() {
   const { exercises, loading, deleteExercise } = useExercises();

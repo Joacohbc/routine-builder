@@ -1,14 +1,14 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useRoutines } from '../hooks/useRoutines';
-import { useExercises } from '../hooks/useExercises';
-import { ExerciseSelector } from '../components/ExerciseSelector';
-import { Layout } from '../components/ui/Layout';
-import { Button } from '../components/ui/Button';
-import { Icon } from '../components/ui/Icon';
-import { cn } from '../lib/utils';
-import { formatTime, parseTime } from '../lib/timeUtils';
-import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise } from '../types';
+import { useRoutines } from '@/hooks/useRoutines';
+import { useExercises } from '@/hooks/useExercises';
+import { ExerciseSelector } from '@/components/ExerciseSelector';
+import { Layout } from '@/components/ui/Layout';
+import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
+import { cn } from '@/lib/utils';
+import { formatTime, parseTime } from '@/lib/timeUtils';
+import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise } from '@/types';
 
 function TimeInput({ value, onChange, disabled, className }: { value: number | undefined, onChange: (val: number) => void, disabled?: boolean, className?: string }) {
   const [localValue, setLocalValue] = useState(formatTime(value));

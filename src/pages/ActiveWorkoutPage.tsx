@@ -1,14 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useRoutines } from '../hooks/useRoutines';
-import { useExercises } from '../hooks/useExercises';
-import { Layout } from '../components/ui/Layout';
-import { Button } from '../components/ui/Button';
-import { TimerInput } from '../components/ui/TimerInput';
-import { Stepper } from '../components/ui/Stepper';
-import { Icon } from '../components/ui/Icon';
-import { cn } from '../lib/utils';
-import type { Routine, WorkoutSet } from '../types';
+import { useRoutines } from '@/hooks/useRoutines';
+import { useExercises } from '@/hooks/useExercises';
+import { Layout } from '@/components/ui/Layout';
+import { Button } from '@/components/ui/Button';
+import { TimerInput } from '@/components/ui/TimerInput';
+import { Stepper } from '@/components/ui/Stepper';
+import { Icon } from '@/components/ui/Icon';
+import { cn } from '@/lib/utils';
+import type { Routine, WorkoutSet } from '@/types';
 
 interface WorkoutStep {
   seriesId: string;

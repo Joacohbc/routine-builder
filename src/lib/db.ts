@@ -1,5 +1,5 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
-import type { InventoryItem, Exercise, Routine } from '../types';
+import type { InventoryItem, Exercise, Routine } from '@/types';
 
 interface StitchDB extends DBSchema {
   inventory: {

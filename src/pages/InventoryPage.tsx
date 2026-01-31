@@ -1,13 +1,13 @@
 import { useState, useMemo } from 'react';
-import { useInventory } from '../hooks/useInventory';
-import { Layout } from '../components/ui/Layout';
-import { Input } from '../components/ui/Input';
-import { Button } from '../components/ui/Button';
-import { Tag } from '../components/ui/Tag';
-import { Card } from '../components/ui/Card';
-import { Icon } from '../components/ui/Icon';
-import { cn } from '../lib/utils';
-import type { InventoryItem, InventoryCondition, InventoryStatus } from '../types';
+import { useInventory } from '@/hooks/useInventory';
+import { Layout } from '@/components/ui/Layout';
+import { Input } from '@/components/ui/Input';
+import { Button } from '@/components/ui/Button';
+import { Tag } from '@/components/ui/Tag';
+import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
+import { cn } from '@/lib/utils';
+import type { InventoryItem, InventoryCondition, InventoryStatus } from '@/types';
 
 export default function InventoryPage() {
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();

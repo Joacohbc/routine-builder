@@ -1,9 +1,9 @@
 import { useNavigate } from 'react-router-dom';
-import { useRoutines } from '../hooks/useRoutines';
-import { Layout } from '../components/ui/Layout';
-import { Button } from '../components/ui/Button';
-import { Card } from '../components/ui/Card';
-import { Icon } from '../components/ui/Icon';
+import { useRoutines } from '@/hooks/useRoutines';
+import { Layout } from '@/components/ui/Layout';
+import { Button } from '@/components/ui/Button';
+import { Card } from '@/components/ui/Card';
+import { Icon } from '@/components/ui/Icon';
 
 export default function RoutineListPage() {
   const { routines, loading, deleteRoutine } = useRoutines();

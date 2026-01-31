@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { Button } from './Button';
-import { Icon } from './Icon';
+import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
 
 interface TimerInputProps {
   value: number;

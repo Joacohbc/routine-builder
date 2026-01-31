@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise } from '../lib/db';
-import type { InventoryItem } from '../types';
+import { dbPromise } from '@/lib/db';
+import type { InventoryItem } from '@/types';
 
 export function useInventory() {
   const [items, setItems] = useState<InventoryItem[]>([]);

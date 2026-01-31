@@ -19,5 +19,16 @@ export default defineConfig([
       ecmaVersion: 2020,
       globals: globals.browser,
     },
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [{
+            group: ['./*', '../*'],
+            message: 'Usage of relative imports is not allowed. Use absolute imports instead.'
+          }]
+        }
+      ],
+    },
   },
 ])

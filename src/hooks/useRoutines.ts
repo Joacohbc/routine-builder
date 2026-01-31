@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise } from '../lib/db';
-import type { Routine } from '../types';
+import { dbPromise } from '@/lib/db';
+import type { Routine } from '@/types';
 
 export function useRoutines() {
   const [routines, setRoutines] = useState<Routine[]>([]);

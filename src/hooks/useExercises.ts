@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise } from '../lib/db';
-import type { Exercise } from '../types';
+import { dbPromise } from '@/lib/db';
+import type { Exercise } from '@/types';
 
 export function useExercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);

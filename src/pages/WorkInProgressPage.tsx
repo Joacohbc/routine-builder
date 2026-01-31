@@ -1,5 +1,5 @@
-import { Layout } from '../components/ui/Layout';
-import { Icon } from '../components/ui/Icon';
+import { Layout } from '@/components/ui/Layout';
+import { Icon } from '@/components/ui/Icon';
 
 export default function WorkInProgressPage() {
   return (

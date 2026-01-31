@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { useExercises } from '../hooks/useExercises';
-import { useInventory } from '../hooks/useInventory';
-import { Layout } from '../components/ui/Layout';
-import { Button } from '../components/ui/Button';
-import { Icon } from '../components/ui/Icon';
-import { cn } from '../lib/utils';
-import type { MediaItem, Exercise } from '../types';
+import { useExercises } from '@/hooks/useExercises';
+import { useInventory } from '@/hooks/useInventory';
+import { Layout } from '@/components/ui/Layout';
+import { Button } from '@/components/ui/Button';
+import { Icon } from '@/components/ui/Icon';
+import { cn } from '@/lib/utils';
+import type { MediaItem, Exercise } from '@/types';
 
 export default function ExerciseFormPage() {
   const { id } = useParams();
