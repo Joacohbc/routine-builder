@@ -2,8 +2,6 @@
 
 **Routine Builder** es esa app simple que necesitabas para anotar tus rutinas sin vueltas. Olvídate de crear cuentas o subir cosas a la nube: todo se queda en tu celular, 100% local y privado. Ideal para usar mientras te mueves.
 
-<br />
-
 <div align="center">
   
 [![React](https://img.shields.io/badge/React-%2320232a.svg?logo=react&logoColor=%2361DAFB)](#)
@@ -15,8 +13,6 @@
 [![IndexedDB](https://img.shields.io/badge/IndexedDB-00599C?logo=databricks&logoColor=white)](#)
 
 </div>
-
-<br />
 
 ### ¿Por qué usarla?
 
