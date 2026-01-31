@@ -3,6 +3,9 @@ name: Deploy PR Preview
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
+    paths-ignore:
+      - 'README.md'
+      - '.gitignore'
 
 concurrency: preview-${{ github.ref }}
 
