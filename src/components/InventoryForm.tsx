@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/Button';
 import { Form, useFormContext } from '@/components/ui/Form';
 import { TagSelector } from '@/components/ui/TagSelector';
+import { inventoryValidators } from '@/lib/validations';
 import type { InventoryItem } from '@/types';
 
 interface InventoryFormProps {
@@ -10,13 +11,6 @@ interface InventoryFormProps {
 }
 
 export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
-  // Validator function
-  const validateQuantity = (value: string) => {
-    const num = parseInt(value, 10);
-    if (isNaN(num)) return { ok: false, message: 'Must be a valid number' };
-    if (num < 1) return { ok: false, message: 'Must be at least 1' };
-    return { ok: true };
-  };
 
   const handleFormSubmit = async (rawValues: unknown) => {
     const values = rawValues as InventoryItem;
@@ -40,15 +34,26 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
           onSubmit={handleFormSubmit}
           className="flex flex-col gap-4"
         >
-          <Form.Input name="name" label="Name" defaultValue={item?.name} required />
+          <Form.Input 
+            name="name" 
+            label="Name" 
+            defaultValue={item?.name} 
+            validator={inventoryValidators.name}
+            required 
+          />
           <div className="grid grid-cols-2 gap-4">
-            <Form.Input name="icon" label="Icon (Symbol)" defaultValue={item?.icon} />
+            <Form.Input 
+              name="icon" 
+              label="Icon (Symbol)" 
+              defaultValue={item?.icon}
+              validator={inventoryValidators.icon}
+            />
             <Form.Input
               name="quantity"
               label="Quantity"
               type="number"
               defaultValue={item?.quantity}
-              validator={validateQuantity}
+              validator={inventoryValidators.quantity}
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
