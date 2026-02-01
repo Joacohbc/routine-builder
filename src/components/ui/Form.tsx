@@ -50,15 +50,15 @@ export function Form({ children, onSubmit, className }: FormProps) {
     });
   }, []);
 
-  const registerField = useCallback((name: string) => {
+  const registerField = useCallback((name: string, defaultValue?: unknown) => {
     setRegisteredFields(prev => {
       if (prev.includes(name)) return prev;
-      return [...prev, name];
+      return [...prev, name ];
     });
 
 		setValues(prev => {
 			if (prev[name] !== undefined) return prev;
-			return { ...prev, [name]: '' };
+			return { ...prev, [name]: defaultValue };
 		});
   }, []);
 
