@@ -36,7 +36,6 @@ interface FormProps {
 export function Form({ children, onSubmit, className }: FormProps) {
   const [values, setValues] = useState<FormFieldValues>({});
   const [errors, setErrors] = useState<FormErrors>({});
-  const [, setRegisteredFields] = useState<string[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setFieldValue = useCallback((name: string, value: unknown) => {
@@ -51,21 +50,14 @@ export function Form({ children, onSubmit, className }: FormProps) {
   }, []);
 
   const registerField = useCallback((name: string, defaultValue?: unknown) => {
-    setRegisteredFields(prev => {
-      if (prev.includes(name)) return prev;
-      return [...prev, name ];
+    setValues(prev => {
+      if (prev[name] !== undefined) return prev;
+      return { ...prev, [name]: defaultValue };
     });
-
-		setValues(prev => {
-			if (prev[name] !== undefined) return prev;
-			return { ...prev, [name]: defaultValue };
-		});
   }, []);
 
   const unregisterField = useCallback((name: string) => {
-    setRegisteredFields(prev => prev.filter(n => n !== name));
-    
-		setValues(prev => {
+    setValues(prev => {
       const next = { ...prev };
       delete next[name];
       return next;
@@ -76,7 +68,6 @@ export function Form({ children, onSubmit, className }: FormProps) {
       delete next[name];
       return next;
     });
-
   }, []);
 
   const handleSubmit = async (e: React.SubmitEvent) => {
@@ -123,6 +114,8 @@ interface FormFieldProps {
 
 function FormField({ name, defaultValue, validator, children }: FormFieldProps) {
   const { values, errors, setFieldValue, setFieldError, registerField, unregisterField } = useFormContext();
+  
+  const value = values[name] !== undefined ? values[name] : (defaultValue ?? '');
 
   useEffect(() => {
     registerField(name, defaultValue);
@@ -130,22 +123,16 @@ function FormField({ name, defaultValue, validator, children }: FormFieldProps) 
   }, [name, registerField, unregisterField, defaultValue]);
 
   useEffect(() => {
-    if (validator && values[name] !== undefined) {
-      const res = validator(values[name]);
-			if (!res.ok) setFieldError(name, res.message || 'Invalid value');
+    if (validator) {
+      const res = validator(value);
+      setFieldError(name, res.ok ? undefined : (res.message || 'Invalid value'));
     }
-  }, [name, setFieldError, validator, values]);
+  }, [name, value, validator, setFieldError]);
 
   const setValue = useCallback((newValue: unknown) => {
     setFieldValue(name, newValue);
-    if (validator) {
-      const res = validator(newValue);
-      setFieldError(name, res.ok ? undefined : (res.message || 'Invalid value'));
-    }
-  }, [name, setFieldValue, setFieldError, validator]);
+  }, [name, setFieldValue]);
 
-  const value = values[name] !== undefined ? values[name] : (defaultValue ?? '');
-  
   return <>{children({ value, setValue, onChange: setValue, error: errors[name], onBlur: () => {} })}</>;
 }
 
