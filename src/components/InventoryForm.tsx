@@ -20,7 +20,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
 
   const handleFormSubmit = async (rawValues: unknown) => {
     const values = rawValues as InventoryItem;
-    
+
     console.log('Form Values:', values);
     await onSave({
       name: values.name,
@@ -80,8 +80,8 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
               <TagSelector
                 label="Tags"
                 selectedTagIds={value as number[]}
-                onChange={setValue} 
-                type={'inventory'}/>
+                onChange={setValue}
+                type={'inventory'} />
             )}
           </Form.Field>
 
@@ -98,7 +98,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
 function FormSubmitButton() {
   const { errors, isSubmitting } = useFormContext();
   const hasErrors = Object.keys(errors).some(key => !!errors[key]);
-  
+
   return (
     <Button type="submit" className="flex-1" disabled={hasErrors || isSubmitting}>
       {isSubmitting ? 'Saving...' : 'Save'}
