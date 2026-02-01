@@ -1,6 +1,6 @@
 import type { InventoryCondition } from '@/types';
 
-export function getConditionColor(condition: InventoryCondition) {
+export function getInventoryConditionColors(condition: InventoryCondition) {
 	switch (condition) {
 		case 'new':
 			return 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-800';

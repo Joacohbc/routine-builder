@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { InventoryForm } from '@/components/InventoryForm';
 import { cn } from '@/lib/utils';
-import { getConditionColor } from '@/lib/typeUtils';
+import { getInventoryConditionColors } from '@/lib/typeColors';
 import type { InventoryItem, InventoryStatus } from '@/types';
 
 type FilterStatus = InventoryStatus | 'all';
@@ -131,7 +131,7 @@ export default function InventoryPage() {
                 <div className="flex flex-col truncate pr-2">
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{item.name}</h3>
-                    <div className={cn("flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold border", getConditionColor(item.condition))}>
+                    <div className={cn("flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold border", getInventoryConditionColors(item.condition))}>
                       <span>{item.condition.toUpperCase()}</span>
                     </div>
                   </div>
