@@ -29,7 +29,7 @@ export function ExerciseSelector({ onSelect, onClose }: ExerciseSelectorProps) {
         <Input 
           icon="search" 
           placeholder="Search..." 
-          value={search} 
+          defaultValue={search} 
           onChange={e => setSearch(e.target.value)} 
           className="mb-4"
         />
