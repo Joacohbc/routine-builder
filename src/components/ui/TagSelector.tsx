@@ -4,6 +4,7 @@ import { useInventory } from '@/hooks/useInventory';
 import { useExercises } from '@/hooks/useExercises';
 import { Icon } from '@/components/ui/Icon';
 import { Input } from '@/components/ui/Input';
+import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/lib/utils';
 
 interface TagSelectorProps {
@@ -14,7 +15,7 @@ interface TagSelectorProps {
 }
 
 const PRESET_COLORS = [
-  '#ef4444', '#3b82f6', '#10b981', '#f59e0b', 
+  '#ef4444', '#3b82f6', '#10b981', '#f59e0b',
   '#6366f1', '#ec4899', '#8b5cf6', '#06b6d4'
 ];
 
@@ -45,15 +46,15 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
 
   const filteredTags = useMemo(() => {
     if (!search) return [];
-    return tags.filter(tag => 
-      tag.name.toLowerCase().includes(search.toLowerCase()) && 
+    return tags.filter(tag =>
+      tag.name.toLowerCase().includes(search.toLowerCase()) &&
       !selectedTagIds.includes(tag.id!)
     );
   }, [search, tags, selectedTagIds]);
 
   const handleAddTag = async () => {
     if (!search.trim()) return;
-    
+
     // Check if tag already exists
     const existing = tags.find(t => t.name.toLowerCase() === search.toLowerCase());
     if (existing) {
@@ -78,7 +79,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
 
   const selectedTags = tags.filter(t => selectedTagIds.includes(t.id!));
 
-  const modalFilteredTags = tags.filter(tag => 
+  const modalFilteredTags = tags.filter(tag =>
     tag.name.toLowerCase().includes(modalSearch.toLowerCase())
   );
 
@@ -87,8 +88,8 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
       <div>
         <div className="flex items-center justify-between mb-2 px-1">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</label>
-          <button 
-            type="button" 
+          <button
+            type="button"
             onClick={() => setIsModalOpen(true)}
             className="text-gray-400 hover:text-primary transition-colors active:scale-95"
           >
@@ -109,7 +110,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
               <Icon name="close" size={14} className="opacity-60 group-hover:opacity-100" />
             </button>
           ))}
-          
+
           {/* Suggestions */}
           {!search && suggestedTags.map(tag => (
             <button
@@ -135,7 +136,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
               onKeyDown={(e) => e.key === 'Enter' && handleAddTag()}
             />
             {search && (
-              <button 
+              <button
                 type="button"
                 onClick={handleAddTag}
                 className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-primary"
@@ -144,7 +145,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
               </button>
             )}
           </div>
-          
+
           {/* Search Results Dropdown-like (simplified for now) */}
           {search && filteredTags.length > 0 && (
             <div className="flex flex-wrap gap-2 mt-3">
@@ -165,75 +166,78 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
     </div>
 
       {/* Full Screen Search Modal */}
-      {isModalOpen && (
-        <div className="fixed inset-0 z-[100] bg-background-light dark:bg-background-dark flex flex-col">
-          <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-surface-highlight">
-            <button 
-              type="button"
-              onClick={() => setIsModalOpen(false)} 
-              className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight"
-            >
-              <Icon name="arrow_back" />
-            </button>
-            <div className="flex-1 relative">
-               <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
-               <input 
-                  autoFocus
-                  value={modalSearch}
-                  onChange={e => setModalSearch(e.target.value)}
-                  placeholder="Search tags..."
-                  className="w-full bg-gray-100 dark:bg-surface-highlight rounded-xl py-3 pl-10 pr-4 outline-none border border-transparent focus:border-primary transition-all"
-               />
-            </div>
-          </div>
-          
-          <div className="flex-1 overflow-y-auto p-4">
-             <div className="flex flex-wrap gap-3">
-               {modalFilteredTags.length === 0 ? (
-                 <p className="text-gray-500 w-full text-center mt-10">No tags found matching "{modalSearch}"</p>
-               ) : (
-                 modalFilteredTags.map(tag => {
-                   const isSelected = selectedTagIds.includes(tag.id!);
-                   return (
-                     <button
-                       type="button"
-                       key={tag.id}
-                       onClick={() => toggleTag(tag.id!)}
-                       className={cn(
-                         "flex items-center gap-2 px-4 py-3 rounded-xl border transition-all w-full sm:w-auto justify-between sm:justify-start",
-                         isSelected 
-                           ? "bg-primary/5 border-primary" 
-                           : "bg-surface-light dark:bg-surface-dark border-gray-200 dark:border-surface-highlight"
-                       )}
-                     >
-                        <div className="flex items-center gap-3">
-                           <div 
-                              className="w-3 h-3 rounded-full"
-                              style={{ backgroundColor: tag.color }}
-                           />
-                           <span className={cn("font-medium", isSelected ? "text-primary" : "text-gray-700 dark:text-gray-300")}>
-                             {tag.name}
-                           </span>
-                        </div>
-                        {isSelected && <Icon name="check" size={18} className="text-primary" />}
-                     </button>
-                   );
-                 })
-               )}
-             </div>
-          </div>
-          
-          <div className="p-4 border-t border-gray-200 dark:border-surface-highlight">
-            <button 
-               type="button"
-               onClick={() => setIsModalOpen(false)}
-               className="w-full bg-primary text-white font-bold py-4 rounded-2xl"
-            >
-              Done
-            </button>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        variant="fullscreen"
+        className="bg-background-light dark:bg-background-dark"
+      >
+        <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-surface-highlight">
+          <button
+            type="button"
+            onClick={() => setIsModalOpen(false)}
+            className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight"
+          >
+            <Icon name="arrow_back" />
+          </button>
+          <div className="flex-1 relative">
+             <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+             <input
+                autoFocus
+                value={modalSearch}
+                onChange={e => setModalSearch(e.target.value)}
+                placeholder="Search tags..."
+                className="w-full bg-gray-100 dark:bg-surface-highlight rounded-xl py-3 pl-10 pr-4 outline-none border border-transparent focus:border-primary transition-all"
+             />
           </div>
         </div>
-      )}
+
+        <div className="flex-1 overflow-y-auto p-4">
+           <div className="flex flex-wrap gap-3">
+             {modalFilteredTags.length === 0 ? (
+               <p className="text-gray-500 w-full text-center mt-10">No tags found matching "{modalSearch}"</p>
+             ) : (
+               modalFilteredTags.map(tag => {
+                 const isSelected = selectedTagIds.includes(tag.id!);
+                 return (
+                   <button
+                     type="button"
+                     key={tag.id}
+                     onClick={() => toggleTag(tag.id!)}
+                     className={cn(
+                       "flex items-center gap-2 px-4 py-3 rounded-xl border transition-all w-full sm:w-auto justify-between sm:justify-start",
+                       isSelected
+                         ? "bg-primary/5 border-primary"
+                         : "bg-surface-light dark:bg-surface-dark border-gray-200 dark:border-surface-highlight"
+                     )}
+                   >
+                      <div className="flex items-center gap-3">
+                         <div
+                            className="w-3 h-3 rounded-full"
+                            style={{ backgroundColor: tag.color }}
+                         />
+                         <span className={cn("font-medium", isSelected ? "text-primary" : "text-gray-700 dark:text-gray-300")}>
+                           {tag.name}
+                         </span>
+                      </div>
+                      {isSelected && <Icon name="check" size={18} className="text-primary" />}
+                   </button>
+                 );
+               })
+             )}
+           </div>
+        </div>
+
+        <div className="p-4 border-t border-gray-200 dark:border-surface-highlight">
+          <button
+             type="button"
+             onClick={() => setIsModalOpen(false)}
+             className="w-full bg-primary text-white font-bold py-4 rounded-2xl"
+          >
+            Done
+          </button>
+        </div>
+      </Modal>
     </>
   );
 }

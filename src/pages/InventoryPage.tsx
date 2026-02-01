@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { InventoryForm } from '@/components/InventoryForm';
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { cn } from '@/lib/utils';
 import { getInventoryConditionColors } from '@/lib/typeColors';
 import type { InventoryItem, InventoryStatus } from '@/types';
@@ -21,6 +22,7 @@ export default function InventoryPage() {
   const [activeTagId, setActiveTagId] = useState<number | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
   // Derived state for tags present in current inventory
   const inventoryTags = useMemo(() => {
@@ -45,10 +47,8 @@ export default function InventoryPage() {
     setIsFormOpen(true);
   };
 
-  const handleDelete = async (id: number) => {
-    if (confirm('Are you sure you want to delete this item?')) {
-      await deleteItem(id);
-    }
+  const handleDelete = (id: number) => {
+    setItemToDelete(id);
   };
 
   return (
@@ -197,6 +197,21 @@ export default function InventoryPage() {
           }}
         />
       )}
+
+      <ConfirmationDialog
+        isOpen={!!itemToDelete}
+        onClose={() => setItemToDelete(null)}
+        onConfirm={async () => {
+          if (itemToDelete) {
+            await deleteItem(itemToDelete);
+            setItemToDelete(null);
+          }
+        }}
+        title="Delete Item"
+        description="Are you sure you want to delete this item? This action cannot be undone."
+        confirmText="Delete"
+        variant="danger"
+      />
     </Layout>
   );
 }
