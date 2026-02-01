@@ -9,7 +9,7 @@ import { Icon } from '@/components/ui/Icon';
 import { TagSelector } from '@/components/ui/TagSelector';
 import { Form, useFormContext } from '@/components/ui/Form';
 import { cn } from '@/lib/utils';
-import type { InventoryItem, InventoryCondition, InventoryStatus } from '@/types';
+import type { InventoryItem, InventoryCondition } from '@/types';
 
 export default function InventoryPage() {
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();
@@ -79,7 +79,7 @@ export default function InventoryPage() {
             icon="search"
             placeholder="Search equipment..."
             defaultValue={search}
-            setValue={setSearch}
+            onChange={(e) => setSearch(e.target.value)}
           />
         </div>
       }
@@ -209,18 +209,7 @@ export default function InventoryPage() {
   );
 }
 
-function FormTagSelector() {
-  const { values, setFieldValue } = useFormContext();
-  return (
-    <TagSelector
-      type="inventory"
-      selectedTagIds={values.tagIds || []}
-      onChange={(ids) => setFieldValue('tagIds', ids)}
-    />
-  );
-}
-
-function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, onClose: () => void, onSave: (item: Omit<InventoryItem, 'id'> & { id?: number }) => Promise<void> }) {
+function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, onClose: () => void, onSave: (item: Omit<InventoryItem, 'id'> & { id?: number }) => Promise<void> }) {  
   // Validator function
   const validateQuantity = (value: string) => {
     const num = parseInt(value, 10);
@@ -229,7 +218,10 @@ function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, 
     return { ok: true };
   };
 
-  const handleFormSubmit = async (values: unknown) => {
+  const handleFormSubmit = async (rawValues: unknown) => {
+    const values = rawValues as InventoryItem
+    
+    console.log('Form Values:', values);
     await onSave({
       name: values.name,
       icon: values.icon,
@@ -283,14 +275,33 @@ function InventoryForm({ item, onClose, onSave }: { item: InventoryItem | null, 
             />
           </div>
 
-          <FormTagSelector />
+          <Form.Field name="tagIds" defaultValue={item?.tagIds || []}>
+            {({ value, setValue }) => (
+              <TagSelector
+                label="Tags"
+                selectedTagIds={value as number[]}
+                onChange={setValue} 
+                type={'inventory'}/>
+            )}
+          </Form.Field>
 
           <div className="flex gap-3 mt-4">
             <Button type="button" variant="ghost" className="flex-1" onClick={onClose}>Cancel</Button>
-            <Button type="submit" className="flex-1">Save</Button>
+            <FormSubmitButton />
           </div>
         </Form>
       </div>
     </div>
+  );
+}
+
+function FormSubmitButton() {
+  const { errors, isSubmitting } = useFormContext();
+  const hasErrors = Object.keys(errors).some(key => !!errors[key]);
+  
+  return (
+    <Button type="submit" className="flex-1" disabled={hasErrors || isSubmitting}>
+      {isSubmitting ? 'Saving...' : 'Save'}
+    </Button>
   );
 }
