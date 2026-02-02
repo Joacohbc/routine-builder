@@ -1,14 +1,17 @@
 import { NavLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
 
 export function BottomNav() {
+  const { t } = useTranslation();
+
   const navItems = [
-    { name: 'Cellar', icon: 'inventory_2', path: '/', disabled: false },
-    { name: 'Exercises', icon: 'fitness_center', path: '/exercises', disabled: false },
-    { name: 'Builder', icon: 'edit_square', path: '/builder', disabled: false }, // Changed Stats to Builder for this task scope
-    { name: 'Train', icon: 'timer', path: '/train', disabled: false },
-    { name: 'Settings', icon: 'settings', path: '/settings', disabled: true },
+    { name: t('nav.cellar'), icon: 'inventory_2', path: '/', disabled: false },
+    { name: t('nav.exercises'), icon: 'fitness_center', path: '/exercises', disabled: false },
+    { name: t('nav.builder'), icon: 'edit_square', path: '/builder', disabled: false }, // Changed Stats to Builder for this task scope
+    { name: t('nav.train'), icon: 'timer', path: '/train', disabled: false },
+    { name: t('nav.settings'), icon: 'settings', path: '/settings', disabled: true },
   ];
 
   return (
@@ -17,7 +20,7 @@ export function BottomNav() {
         {navItems.map((item) => (
           item.disabled ? (
             <div
-              key={item.name}
+              key={item.path} // name is now translated, use path as key or handle duplicate names carefully. path is unique.
               className="flex flex-col items-center gap-1 text-gray-400 opacity-50 cursor-not-allowed"
             >
               <Icon name={item.icon} filled={false} />
@@ -25,7 +28,7 @@ export function BottomNav() {
             </div>
           ) : (
             <NavLink
-              key={item.name}
+              key={item.path}
               to={item.path}
               className={({ isActive }) => cn(
                 'flex flex-col items-center gap-1 transition-colors',

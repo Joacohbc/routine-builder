@@ -3,7 +3,48 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "save": "Save",
-    "saving": "Saving..."
+    "saving": "Saving...",
+    "delete": "Delete"
+  },
+  "nav": {
+    "cellar": "Cellar",
+    "exercises": "Exercises",
+    "builder": "Builder",
+    "train": "Train",
+    "settings": "Settings"
+  },
+  "routineList": {
+    "title": "Routine Builder",
+    "loading": "Loading routines...",
+    "empty": "No routines created yet.",
+    "emptyHint": "Tap + to build your first plan.",
+    "card": {
+      "series": "Series",
+      "exercises": "Exercises"
+    }
+  },
+  "inventoryPage": {
+    "title": "The Cellar",
+    "searchPlaceholder": "Search equipment...",
+    "filters": {
+      "all": "All Items",
+      "available": "Available",
+      "checkedOut": "Checked Out"
+    },
+    "tagsLabel": "Tags:",
+    "loading": "Loading inventory...",
+    "total": "Total: {{count}}",
+    "deleteDialog": {
+      "title": "Delete Item",
+      "description": "Are you sure you want to delete this item? This action cannot be undone."
+    }
+  },
+  "exerciseList": {
+    "title": "Exercise Library",
+    "searchPlaceholder": "Search exercises...",
+    "loading": "Loading library...",
+    "empty": "No exercises found.",
+    "emptyHint": "Tap + to create one."
   },
   "validations": {
     "required": "This field is required",

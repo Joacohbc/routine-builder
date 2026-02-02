@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useTags } from '@/hooks/useTags';
 import { Layout } from '@/components/ui/Layout';
@@ -9,6 +10,7 @@ import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 
 export default function ExerciseListPage() {
+  const { t } = useTranslation();
   const { exercises, loading, deleteExercise } = useExercises();
   const { tags } = useTags();
   const [search, setSearch] = useState('');
@@ -28,11 +30,11 @@ export default function ExerciseListPage() {
       header={
         <div className="flex flex-col px-6 pb-4 pt-12 gap-4">
           <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Exercise Library</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{t('exerciseList.title')}</h1>
           </div>
           <Input 
             icon="search" 
-            placeholder="Search exercises..." 
+            placeholder={t('exerciseList.searchPlaceholder')}
             defaultValue={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -40,10 +42,10 @@ export default function ExerciseListPage() {
       }
     >
       <div className="flex flex-col gap-4 mt-4">
-        {loading ? <p className="text-center text-gray-500">Loading library...</p> : filteredExercises.length === 0 ? (
+        {loading ? <p className="text-center text-gray-500">{t('exerciseList.loading')}</p> : filteredExercises.length === 0 ? (
            <div className="text-center py-10 text-gray-500">
-             <p>No exercises found.</p>
-             <p className="text-xs mt-2">Tap + to create one.</p>
+             <p>{t('exerciseList.empty')}</p>
+             <p className="text-xs mt-2">{t('exerciseList.emptyHint')}</p>
            </div>
         ) : filteredExercises.map((ex) => (
           <Card key={ex.id} hover className="group" onClick={() => navigate(`/exercises/${ex.id}`)}>

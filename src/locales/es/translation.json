@@ -3,7 +3,48 @@
     "confirm": "Confirmar",
     "cancel": "Cancelar",
     "save": "Guardar",
-    "saving": "Guardando..."
+    "saving": "Guardando...",
+    "delete": "Eliminar"
+  },
+  "nav": {
+    "cellar": "Bodega",
+    "exercises": "Ejercicios",
+    "builder": "Constructor",
+    "train": "Entrenar",
+    "settings": "Ajustes"
+  },
+  "routineList": {
+    "title": "Constructor de Rutinas",
+    "loading": "Cargando rutinas...",
+    "empty": "No hay rutinas creadas.",
+    "emptyHint": "Toca + para crear tu primer plan.",
+    "card": {
+      "series": "Series",
+      "exercises": "Ejercicios"
+    }
+  },
+  "inventoryPage": {
+    "title": "La Bodega",
+    "searchPlaceholder": "Buscar equipo...",
+    "filters": {
+      "all": "Todos",
+      "available": "Disponible",
+      "checkedOut": "Prestado"
+    },
+    "tagsLabel": "Etiquetas:",
+    "loading": "Cargando inventario...",
+    "total": "Total: {{count}}",
+    "deleteDialog": {
+      "title": "Eliminar Item",
+      "description": "¿Estás seguro de que quieres eliminar este item? Esta acción no se puede deshacer."
+    }
+  },
+  "exerciseList": {
+    "title": "Biblioteca de Ejercicios",
+    "searchPlaceholder": "Buscar ejercicios...",
+    "loading": "Cargando biblioteca...",
+    "empty": "No se encontraron ejercicios.",
+    "emptyHint": "Toca + para crear uno."
   },
   "validations": {
     "required": "Este campo es requerido",

@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/hooks/useInventory';
 import { useTags } from '@/hooks/useTags';
 import { Layout } from '@/components/ui/Layout';
@@ -15,6 +16,7 @@ import type { InventoryItem, InventoryStatus } from '@/types';
 type FilterStatus = InventoryStatus | 'all';
 
 export default function InventoryPage() {
+  const { t } = useTranslation();
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();
   const { tags } = useTags();
   const [search, setSearch] = useState('');
@@ -60,7 +62,7 @@ export default function InventoryPage() {
               <button className="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-highlight transition-colors">
                 <Icon name="menu" className="text-gray-600 dark:text-gray-300" />
               </button>
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">The Cellar</h1>
+              <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('inventoryPage.title')}</h1>
             </div>
             <button className="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-highlight transition-colors">
               <Icon name="notifications" className="text-gray-600 dark:text-gray-300" />
@@ -69,7 +71,7 @@ export default function InventoryPage() {
           </div>
           <Input
             icon="search"
-            placeholder="Search equipment..."
+            placeholder={t('inventoryPage.searchPlaceholder')}
             defaultValue={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -82,26 +84,26 @@ export default function InventoryPage() {
           size="sm"
           onClick={() => setFilterStatus('all')}
         >
-          All Items
+          {t('inventoryPage.filters.all')}
         </Button>
         <Button
           variant={filterStatus === 'available' ? 'primary' : 'secondary'}
           size="sm"
           onClick={() => setFilterStatus('available')}
         >
-          Available
+          {t('inventoryPage.filters.available')}
         </Button>
         <Button
           variant={filterStatus === 'checked_out' ? 'primary' : 'secondary'}
           size="sm"
           onClick={() => setFilterStatus('checked_out')}
         >
-          Checked Out
+          {t('inventoryPage.filters.checkedOut')}
         </Button>
       </div>
 
       <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
-        <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">Tags:</div>
+        <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">{t('inventoryPage.tagsLabel')}</div>
         {inventoryTags.map(tag => (
           <button
             key={tag.id}
@@ -121,7 +123,7 @@ export default function InventoryPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {loading ? <p className="text-center text-gray-500">Loading inventory...</p> : filteredItems.map((item) => (
+        {loading ? <p className="text-center text-gray-500">{t('inventoryPage.loading')}</p> : filteredItems.map((item) => (
           <Card key={item.id} hover className="group" onClick={() => handleEdit(item)}>
             <div className="flex items-start justify-between w-full">
               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -137,10 +139,10 @@ export default function InventoryPage() {
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">
                     <p className={cn("text-sm font-medium", item.status === 'available' ? "text-primary" : "text-gray-500")}>
-                      {item.status === 'available' ? 'Available' : item.status === 'checked_out' ? 'In Use' : 'Maintenance'}
+                      {item.status === 'available' ? t('inventory.statuses.available') : item.status === 'checked_out' ? t('inventory.statuses.checked_out') : t('inventory.statuses.maintenance')}
                     </p>
                     <span className="text-gray-300 dark:text-gray-600 text-xs">•</span>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">Total: {item.quantity}</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 font-medium">{t('inventoryPage.total', { count: item.quantity })}</p>
                   </div>
                 </div>
               </div>
@@ -207,9 +209,9 @@ export default function InventoryPage() {
             setItemToDelete(null);
           }
         }}
-        title="Delete Item"
-        description="Are you sure you want to delete this item? This action cannot be undone."
-        confirmText="Delete"
+        title={t('inventoryPage.deleteDialog.title')}
+        description={t('inventoryPage.deleteDialog.description')}
+        confirmText={t('common.delete')}
         variant="danger"
       />
     </Layout>
