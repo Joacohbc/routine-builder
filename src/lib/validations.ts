@@ -1,6 +1,6 @@
 export type ValidationResult =
   | { ok: true }
-  | { ok: false; error: { key: string; params?: Record<string, any> } };
+  | { ok: false; error: { key: string; params?: Record<string, string | number> } };
 
 // Generic validators
 export const validators = {
