@@ -8,7 +8,7 @@ export function BottomNav() {
     { name: 'Exercises', icon: 'fitness_center', path: '/exercises', disabled: false },
     { name: 'Builder', icon: 'edit_square', path: '/builder', disabled: false }, // Changed Stats to Builder for this task scope
     { name: 'Train', icon: 'timer', path: '/train', disabled: false },
-    { name: 'Settings', icon: 'settings', path: '/settings', disabled: true },
+    { name: 'Settings', icon: 'settings', path: '/settings', disabled: false },
   ];
 
   return (
