@@ -72,7 +72,7 @@ export function IconPicker({
                 <Icon name={value} size={20} />
               </div>
               <span className="flex-1 font-medium text-slate-900 dark:text-white truncate">
-                {value}
+
               </span>
               <Icon name="expand_more" className="text-gray-400" />
             </>
