@@ -2,7 +2,7 @@ import type { InputHTMLAttributes } from 'react';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
 
-export interface InputProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'value'> {
+export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   icon?: string;
   label?: string;
   error?: string;
