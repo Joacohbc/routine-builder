@@ -45,7 +45,7 @@ export function useTags() {
 
     // Check uniqueness
     if (tags.some(t => t.name.toLowerCase() === tag.name.toLowerCase())) {
-        errors['name'] = 'validations.uniqueName';
+        errors['name'] = { key: 'validations.uniqueName' };
     }
 
     if (Object.keys(errors).length > 0) throw errors;
@@ -63,7 +63,7 @@ export function useTags() {
 
     // Check uniqueness
     if (tags.some(t => t.id !== tag.id && t.name.toLowerCase() === tag.name.toLowerCase())) {
-        errors['name'] = 'validations.uniqueName';
+        errors['name'] = { key: 'validations.uniqueName' };
     }
 
     if (Object.keys(errors).length > 0) throw errors;

@@ -6,6 +6,9 @@ import { Select } from '@/components/ui/Select';
 import { Button } from '@/components/ui/Button';
 import type { ValidationResult } from '@/lib/validations';
 import { IconPicker } from '@/components/ui/IconPicker';
+import { cn } from '@/lib/utils';
+import { Icon } from '@/components/ui/Icon';
+import type { TextareaHTMLAttributes } from 'react';
 
 export type FormFieldValues = Record<string, unknown>;
 export type FormErrors = Record<string, string | undefined>;
@@ -89,9 +92,14 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
     } catch (err) {
       if (typeof err === 'object' && err !== null) {
         Object.entries(err).forEach(([key, value]) => {
-          if (typeof value === 'string') {
-            setFieldError(key, t(value));
-          }
+            // Handle { key: string, params?: object } error structure
+            if (typeof value === 'object' && value !== null && 'key' in value) {
+                const errorObj = value as { key: string; params?: Record<string, string | number> };
+                setFieldError(key, t(errorObj.key, errorObj.params));
+            } else if (typeof value === 'string') {
+                // Fallback for simple string errors
+                setFieldError(key, t(value));
+            }
         });
       }
       console.error(err);
@@ -188,10 +196,6 @@ function FormInput({ name, validator, defaultValue, ...props }: FormInputProps) 
 }
 
 // --- Form.Textarea ---
-import { cn } from '@/lib/utils';
-import { Icon } from '@/components/ui/Icon';
-import type { TextareaHTMLAttributes } from 'react';
-
 interface FormTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   name: string;
   label?: string;

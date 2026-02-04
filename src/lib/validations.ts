@@ -110,28 +110,24 @@ export function composeValidators(...validators: ((value: any) => ValidationResu
 }
 
 // Helpers
-export function validateSchema<T>(data: T, schema: Partial<Record<keyof T, (value: any) => ValidationResult>>): Record<string, string> {
-    const errors: Record<string, string> = {};
+export interface ValidationError {
+  key: string;
+  params?: Record<string, string | number>;
+}
+
+export function validateSchema<T>(data: T, schema: Partial<Record<keyof T, (value: any) => ValidationResult>>): Record<string, ValidationError> {
+    const errors: Record<string, ValidationError> = {};
 
     for (const key in schema) {
         const validator = schema[key];
         if (validator) {
             const result = validator(data[key]);
             if (!result.ok) {
-                // Return the error key directly; hydration happens in UI with t()
-                // But wait, the UI code expects existing validators to return t() key?
-                // The ValidationResult returns { key, params }.
-                // To keep it simple for hooks (backend-ish), we might return the result object.
-                // But for `validateSchema` usage in Hooks, we might want to throw an error containing all failures.
-
-                // Let's make validateSchema return a map of field -> errorKey for now.
-                // Note: The caller will need to translate this.
-                errors[key as string] = result.error.key;
+                errors[key as string] = result.error;
             }
         }
     }
 
-    // For now, we return errors map. If empty, valid.
     return errors;
 }
 
