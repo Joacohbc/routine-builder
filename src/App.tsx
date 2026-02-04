@@ -5,7 +5,7 @@ import ExerciseFormPage from '@/pages/ExerciseFormPage';
 import RoutineListPage from '@/pages/RoutineListPage';
 import RoutineBuilderPage from '@/pages/RoutineBuilderPage';
 import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
-import SettingsPage from '@/pages/SettingsPage';
+import WorkInProgressPage from '@/pages/WorkInProgressPage';
 import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
 
 function App() {
@@ -30,7 +30,7 @@ function App() {
 
         {/* Placeholders */}
         <Route path="/train" element={<RoutineListPage />} /> 
-        <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings" element={<WorkInProgressPage />} />
       </Routes>
     </HashRouter>
   );
