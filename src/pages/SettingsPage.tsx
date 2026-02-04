@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
+import { t } from 'i18next';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -63,6 +64,26 @@ export default function SettingsPage() {
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-slate-500 dark:text-slate-400">
                   <p className="text-sm font-normal leading-normal">{currentLanguage}</p>
+                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+            </div>
+            
+            {/* ListItem: Manage Tags */}
+            <div className="relative flex flex-col w-full border-t border-slate-200 dark:border-slate-800">
+               <button
+                onClick={() => navigate('/settings/tags')}
+                className="flex items-center gap-4 px-4 min-h-[60px] justify-between w-full hover:bg-slate-50 dark:hover:bg-white/5 transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                    <Icon name="label" size={18} />
+                  </div>
+                  <p className="text-slate-900 dark:text-white text-base font-medium leading-normal flex-1 truncate text-left">
+                    {t('settings.manageTags', 'Manage Tags')}
+                  </p>
+                </div>
+                <div className="shrink-0 flex items-center gap-2 text-slate-500 dark:text-slate-400">
                   <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
                 </div>
               </button>

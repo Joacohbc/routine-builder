@@ -97,6 +97,19 @@
     }
   },
   "tags": {
+    "title": "Manage Tags",
+    "addNew": "Add New Tag",
+    "createTag": "Create Tag",
+    "editTag": "Edit Tag",
+    "deleteTitle": "Delete Tag",
+    "deleteDescription": "Are you sure you want to delete this tag? It will be removed from all exercises and inventory items.",
+    "name": "Name",
+    "namePlaceholder": "e.g., Pull, Heavy",
+    "color": "Color",
+    "noTags": "No tags found. Create one to get started."
+  },
+  "settings": {
+    "manageTags": "Manage Tags"
   },
   "mobileWarning": {
     "title": "Mobile Only",

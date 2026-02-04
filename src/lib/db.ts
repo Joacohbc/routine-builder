@@ -18,6 +18,7 @@ interface StitchDB extends DBSchema {
   tags: {
     key: number;
     value: Tag;
+    color: string;
     indexes: { 'by-name': string };
   };
 }

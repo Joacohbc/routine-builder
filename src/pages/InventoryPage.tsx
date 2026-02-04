@@ -134,7 +134,7 @@ export default function InventoryPage() {
                   <div className="flex items-center gap-2">
                     <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{item.name}</h3>
                     <div className={cn("flex items-center gap-0.5 px-1.5 py-0.5 rounded-md text-[10px] font-bold border", getInventoryConditionColors(item.condition))}>
-                      <span>{item.condition.toUpperCase()}</span>
+                      <span>{item.condition?.toUpperCase()}</span>
                     </div>
                   </div>
                   <div className="flex items-center gap-2 mt-0.5">

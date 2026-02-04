@@ -38,7 +38,34 @@ export function useTags() {
 
   const deleteTag = async (id: number) => {
     const db = await dbPromise;
-    await db.delete('tags', id);
+    const tx = db.transaction(['tags', 'inventory', 'exercises'], 'readwrite');
+    
+    // 1. Delete the tag
+    await tx.objectStore('tags').delete(id);
+
+    // 2. Remove tagId from Inventory Items
+    let cursor = await tx.objectStore('inventory').openCursor();
+    while (cursor) {
+      const item = cursor.value;
+      if (item.tagIds && item.tagIds.includes(id)) {
+        item.tagIds = item.tagIds.filter(tId => tId !== id);
+        await cursor.update(item);
+      }
+      cursor = await cursor.continue();
+    }
+
+    // 3. Remove tagId from Exercises
+    let exCursor = await tx.objectStore('exercises').openCursor();
+    while (exCursor) {
+      const exercise = exCursor.value;
+      if (exercise.tagIds && exercise.tagIds.includes(id)) {
+        exercise.tagIds = exercise.tagIds.filter(tId => tId !== id);
+        await exCursor.update(exercise);
+      }
+      exCursor = await exCursor.continue();
+    }
+    
+    await tx.done;
     await fetchTags();
   };
 

@@ -6,6 +6,7 @@ import RoutineListPage from '@/pages/RoutineListPage';
 import RoutineBuilderPage from '@/pages/RoutineBuilderPage';
 import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
 import SettingsPage from '@/pages/SettingsPage';
+import ManageTagsPage from '@/pages/ManageTagsPage';
 import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
 
 function App() {
@@ -31,6 +32,7 @@ function App() {
         {/* Placeholders */}
         <Route path="/train" element={<RoutineListPage />} /> 
         <Route path="/settings" element={<SettingsPage />} />
+        <Route path="/settings/tags" element={<ManageTagsPage />} />
       </Routes>
     </HashRouter>
   );
