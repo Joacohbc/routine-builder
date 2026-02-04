@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTags } from '@/hooks/useTags';
 import { useInventory } from '@/hooks/useInventory';
@@ -15,12 +16,8 @@ interface TagSelectorProps {
   label?: string;
 }
 
-const PRESET_COLORS = [
-  '#ef4444', '#3b82f6', '#10b981', '#f59e0b',
-  '#6366f1', '#ec4899', '#8b5cf6', '#06b6d4'
-];
-
-export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles & Tags' }: TagSelectorProps) {  const { t } = useTranslation();  const { tags, addTag } = useTags();
+export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles & Tags' }: TagSelectorProps) {  const { t } = useTranslation();  const navigate = useNavigate();
+  const { tags } = useTags();
   const { items: inventoryItems } = useInventory();
   const { exercises } = useExercises();
   const [search, setSearch] = useState('');
@@ -54,20 +51,17 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
 
   const handleAddTag = async () => {
     if (!search.trim()) return;
-    
+
     const existing = tags.find(tag => tag.name.toLowerCase() === search.toLowerCase());
 
     if (existing) {
       if (!selectedTagIds.includes(existing.id!)) {
         onChange([...selectedTagIds, existing.id!]);
       }
+      setSearch('');
     } else {
-      const color = PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
-      // If adding a new tag, we add it as entered.
-      const id = await addTag({ name: search.trim(), color });
-      onChange([...selectedTagIds, id as number]);
+        navigate('/settings/tags');
     }
-    setSearch('');
   };
 
   const toggleTag = (id: number) => {
