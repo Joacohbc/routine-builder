@@ -206,6 +206,7 @@ function FormField({ name, defaultValue, validator, children }: FormFieldProps) 
   // Only show error if touched
   const visibleError = touched[name] ? errors[name] : undefined;
 
+  // eslint-disable-next-line react-hooks/refs
   return <>{children({ value, setValue, onChange: setValue, error: visibleError, onBlur: handleBlur })}</>;
 }
 
