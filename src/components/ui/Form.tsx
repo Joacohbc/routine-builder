@@ -203,7 +203,7 @@ function FormSelect({ name, validator, ...props }: FormSelectProps) {
 interface FormIconPickerProps extends Omit<ComponentProps<typeof IconPicker>, 'value' | 'onChange' | 'error'> {
   name: string;
   defaultValue?: string;
-  validator?: (value: string) => { ok: boolean; message?: string };
+  validator?: (value: string) => ValidationResult;
 }
 
 function FormIconPicker({ name, validator, defaultValue, ...props }: FormIconPickerProps) {
