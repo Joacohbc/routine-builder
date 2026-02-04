@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/hooks/useInventory';
 import { useTags } from '@/hooks/useTags';
+import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { Layout } from '@/components/ui/Layout';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
@@ -25,6 +26,8 @@ export default function InventoryPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
+
+  const tagsRef = useHorizontalScroll();
 
   // Derived state for tags present in current inventory
   const inventoryTags = useMemo(() => {
@@ -102,7 +105,7 @@ export default function InventoryPage() {
         </Button>
       </div>
 
-      <div className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
+      <div ref={tagsRef} className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
         <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">{t('inventoryPage.tagsLabel')}</div>
         {inventoryTags.map(tag => (
           <button
