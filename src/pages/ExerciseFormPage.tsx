@@ -124,15 +124,18 @@ export default function ExerciseFormPage() {
                                 return;
                             }
 
-                            const url = URL.createObjectURL(file);
-                            const newMedia: MediaItem = {
-                                id: crypto.randomUUID(),
-                                type: isImage ? 'image' : 'video',
-                                url,
-                                blob: file
-                            };
-                            setValue([...media, newMedia]);
-                        };
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Url = event.target?.result as string;
+      const newMedia: MediaItem = {
+        id: crypto.randomUUID(),
+        type: isImage ? 'image' : 'video',
+        url: base64Url
+      };
+      setMedia([...media, newMedia]);
+    };
+    reader.readAsDataURL(file);
+  };
 
                         const addYouTube = () => {
                             const url = prompt('Enter YouTube URL:');

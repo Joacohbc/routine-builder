@@ -22,8 +22,7 @@ export type MediaType = 'image' | 'video' | 'youtube';
 export interface MediaItem {
   id: string;
   type: MediaType;
-  url: string; // Blob URL or YouTube link
-  blob?: Blob; // Stored in DB
+  url: string; // Base64 Data URI or YouTube link
   thumbnailUrl?: string;
 }
 
