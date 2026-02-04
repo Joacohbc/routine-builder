@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 
@@ -18,10 +19,15 @@ export function ConfirmationDialog({
   onConfirm,
   title,
   description,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   variant = 'primary'
 }: ConfirmationDialogProps) {
+  const { t } = useTranslation();
+
+  const effectiveConfirmText = confirmText || t('common.confirm');
+  const effectiveCancelText = cancelText || t('common.cancel');
+
   return (
     <Modal
       isOpen={isOpen}
@@ -39,7 +45,7 @@ export function ConfirmationDialog({
           variant="ghost"
           onClick={onClose}
         >
-          {cancelText}
+          {effectiveCancelText}
         </Button>
         <Button
           variant="primary"
@@ -49,7 +55,7 @@ export function ConfirmationDialog({
           }}
           className={variant === 'danger' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30 text-white' : ''}
         >
-          {confirmText}
+          {effectiveConfirmText}
         </Button>
       </div>
     </Modal>

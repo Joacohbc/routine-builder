@@ -1,51 +1,55 @@
-export type ValidationResult = { ok: true } | { ok: false; message: string };
+export type ValidationResult =
+  | { ok: true }
+  | { ok: false; error: { key: string; params?: Record<string, string | number> } };
 
 // Generic validators
 export const validators = {
-  required: (value: string): ValidationResult => {
-    if (!value || value.trim() === '') {
-      return { ok: false, message: 'This field is required' };
+  required: (value: unknown): ValidationResult => {
+    if (value === null || value === undefined || String(value).trim() === '') {
+      return { ok: false, error: { key: 'validations.required' } };
     }
     return { ok: true };
   },
 
-  minLength: (min: number) => (value: string): ValidationResult => {
-    if (value.length < min) {
-      return { ok: false, message: `Must be at least ${min} characters` };
+  minLength: (min: number) => (value: unknown): ValidationResult => {
+    const strVal = String(value || '');
+    if (strVal.length < min) {
+      return { ok: false, error: { key: 'validations.minLength', params: { min } } };
     }
     return { ok: true };
   },
 
-  maxLength: (max: number) => (value: string): ValidationResult => {
-    if (value.length > max) {
-      return { ok: false, message: `Must be at most ${max} characters` };
+  maxLength: (max: number) => (value: unknown): ValidationResult => {
+    const strVal = String(value || '');
+    if (strVal.length > max) {
+      return { ok: false, error: { key: 'validations.maxLength', params: { max } } };
     }
     return { ok: true };
   },
 
-  number: (value: string): ValidationResult => {
+  number: (value: unknown): ValidationResult => {
     const num = Number(value);
     if (isNaN(num)) {
-      return { ok: false, message: 'Must be a valid number' };
+      return { ok: false, error: { key: 'validations.number' } };
     }
     return { ok: true };
   },
 
-  integer: (value: string): ValidationResult => {
-    const num = parseInt(value, 10);
+  integer: (value: unknown): ValidationResult => {
+    const num = parseInt(String(value), 10);
     if (isNaN(num) || !Number.isInteger(num)) {
-      return { ok: false, message: 'Must be a valid integer' };
+      return { ok: false, error: { key: 'validations.integer' } };
     }
     return { ok: true };
   },
 
-  min: (min: number) => (value: string): ValidationResult => {
+  min: (min: number) => (value: unknown): ValidationResult => {
     const num = Number(value);
     if (isNaN(num)) {
-      return { ok: false, message: 'Must be a valid number' };
+      return { ok: false, error: { key: 'validations.number' } };
     }
     if (num < min) {
-      return { ok: false, message: `Must be at least ${min}` };
+      return { ok: false, error: { key: 'validations.min', params: { min } } };
     }
     return { ok: true };
   },
@@ -53,10 +57,10 @@ export const validators = {
   max: (max: number) => (value: string): ValidationResult => {
     const num = Number(value);
     if (isNaN(num)) {
-      return { ok: false, message: 'Must be a valid number' };
+      return { ok: false, error: { key: 'validations.number' } };
     }
     if (num > max) {
-      return { ok: false, message: `Must be at most ${max}` };
+      return { ok: false, error: { key: 'validations.max', params: { max } } };
     }
     return { ok: true };
   },
@@ -64,7 +68,7 @@ export const validators = {
   email: (value: string): ValidationResult => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(value)) {
-      return { ok: false, message: 'Must be a valid email address' };
+      return { ok: false, error: { key: 'validations.email' } };
     }
     return { ok: true };
   },
@@ -74,7 +78,7 @@ export const validators = {
       new URL(value);
       return { ok: true };
     } catch {
-      return { ok: false, message: 'Must be a valid URL' };
+      return { ok: false, error: { key: 'validations.url' } };
     }
   },
 };
@@ -103,20 +107,20 @@ export const inventoryValidators = {
   quantity: (value: string): ValidationResult => {
     const num = parseInt(value, 10);
     if (isNaN(num)) {
-      return { ok: false, message: 'Must be a valid number' };
+      return { ok: false, error: { key: 'validations.number' } };
     }
     if (num < 1) {
-      return { ok: false, message: 'Must be at least 1' };
+      return { ok: false, error: { key: 'validations.min', params: { min: 1 } } };
     }
     if (num > 9999) {
-      return { ok: false, message: 'Must be at most 9999' };
+      return { ok: false, error: { key: 'validations.max', params: { max: 9999 } } };
     }
     return { ok: true };
   },
 
   icon: (value: string): ValidationResult => {
     if (value && value.length > 50) {
-      return { ok: false, message: 'Icon name is too long' };
+      return { ok: false, error: { key: 'validations.iconTooLong' } };
     }
     return { ok: true };
   },

@@ -1,0 +1,122 @@
+{
+  "common": {
+    "confirm": "Confirmar",
+    "cancel": "Cancelar",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "delete": "Eliminar"
+  },
+  "nav": {
+    "cellar": "Bodega",
+    "exercises": "Ejercicios",
+    "builder": "Constructor",
+    "train": "Entrenar",
+    "settings": "Ajustes"
+  },
+  "routineList": {
+    "title": "Constructor de Rutinas",
+    "loading": "Cargando rutinas...",
+    "empty": "No hay rutinas creadas.",
+    "emptyHint": "Toca + para crear tu primer plan.",
+    "card": {
+      "series": "Series",
+      "exercises": "Ejercicios"
+    }
+  },
+  "inventoryPage": {
+    "title": "La Bodega",
+    "searchPlaceholder": "Buscar equipo...",
+    "filters": {
+      "all": "Todos",
+      "available": "Disponible",
+      "checkedOut": "Prestado"
+    },
+    "tagsLabel": "Etiquetas:",
+    "loading": "Cargando inventario...",
+    "total": "Total: {{count}}",
+    "deleteDialog": {
+      "title": "Eliminar Item",
+      "description": "¿Estás seguro de que quieres eliminar este item? Esta acción no se puede deshacer."
+    }
+  },
+  "exerciseList": {
+    "title": "Biblioteca de Ejercicios",
+    "searchPlaceholder": "Buscar ejercicios...",
+    "loading": "Cargando biblioteca...",
+    "empty": "No se encontraron ejercicios.",
+    "emptyHint": "Toca + para crear uno."
+  },
+  "validations": {
+    "required": "Este campo es requerido",
+    "minLength": "Debe tener al menos {{min}} caracteres",
+    "maxLength": "Debe tener como máximo {{max}} caracteres",
+    "number": "Debe ser un número válido",
+    "integer": "Debe ser un número entero válido",
+    "min": "Debe ser al menos {{min}}",
+    "max": "Debe ser como máximo {{max}}",
+    "email": "Debe ser una dirección de correo electrónico válida",
+    "url": "Debe ser una URL válida",
+    "iconTooLong": "El nombre del icono es demasiado largo"
+  },
+  "routineBuilder": {
+    "newRoutine": "Nueva Rutina",
+    "series": "Serie {{count}}",
+    "union": "Unión 🔗",
+    "standard": "Estándar",
+    "superset": "Superserie",
+    "switchToReps": "Cambiar a Repeticiones",
+    "switchToTime": "Cambiar a Tiempo",
+    "set": "Set",
+    "kg": "kg",
+    "fail": "Fallo",
+    "duration": "Duración",
+    "reps": "Reps",
+    "addSet": "+ Añadir Set",
+    "addExercise": "Añadir Ejercicio",
+    "addSeries": "+ Añadir Serie"
+  },
+  "inventory": {
+    "titleEdit": "Editar Item",
+    "titleNew": "Nuevo Item",
+    "name": "Nombre",
+    "icon": "Icono (Símbolo)",
+    "quantity": "Cantidad",
+    "condition": "Condición",
+    "status": "Estado",
+    "tags": "Etiquetas",
+    "conditions": {
+      "new": "Nuevo",
+      "good": "Bueno",
+      "worn": "Desgastado",
+      "poor": "Pobre"
+    },
+    "statuses": {
+      "available": "Disponible",
+      "checked_out": "Prestado",
+      "maintenance": "Mantenimiento"
+    }
+  },
+  "tags": {
+    "title": "Gestionar Etiquetas",
+    "addNew": "Añadir Nueva Etiqueta",
+    "createTag": "Crear Etiqueta",
+    "editTag": "Editar Etiqueta",
+    "deleteTitle": "Eliminar Etiqueta",
+    "deleteDescription": "¿Estás seguro de que quieres eliminar esta etiqueta? Se eliminará de todos los ejercicios y elementos del inventario.",
+    "name": "Nombre",
+    "namePlaceholder": "ej., Empuje, Pesado",
+    "color": "Color",
+    "noTags": "No se encontraron etiquetas. Crea una para empezar."
+  },
+  "settings": {
+    "manageTags": "Gestionar Etiquetas"
+  },
+  "mobileWarning": {
+    "title": "Solo para Teléfonos",
+    "description": "Esta aplicación está pensada para el uso en vertical y desde teléfonos."
+  },
+  "workInProgress": {
+    "title": "En Construcción",
+    "description": "Esta función está actualmente en desarrollo. ¡Vuelve pronto para ver actualizaciones!"
+  }
+}

@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useExercises } from '@/hooks/useExercises';
 import { ExerciseSelector } from '@/components/ExerciseSelector';
@@ -42,12 +43,13 @@ function TimeInput({ value, onChange, disabled, className }: { value: number | u
 }
 
 export default function RoutineBuilderPage() {
+  const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
   const { routines, addRoutine, updateRoutine } = useRoutines();
   const { exercises } = useExercises(); // To lookup names
 
-  const [name, setName] = useState('New Routine');
+  const [name, setName] = useState(t('routineBuilder.newRoutine'));
   const [series, setSeries] = useState<RoutineSeries[]>([]);
   const [showSelector, setShowSelector] = useState<{ seriesId: string } | null>(null);
 
@@ -71,9 +73,11 @@ export default function RoutineBuilderPage() {
       }
     } else if (!id) {
        // Init with one empty series
-       addSeries();
+       if (series.length === 0) {
+           addSeries();
+       }
     }
-  }, [id, routines, addSeries]);
+  }, [id, routines, addSeries, series.length]);
 
   const addExerciseToSeries = (seriesId: string, exercise: Exercise) => {
     setSeries(prev => prev.map(s => {
@@ -205,7 +209,7 @@ export default function RoutineBuilderPage() {
             onChange={e => setName(e.target.value)}
             className="bg-transparent text-center font-bold text-lg focus:outline-none focus:ring-1 focus:ring-primary rounded px-2 w-full max-w-[200px]"
           />
-          <Button size="sm" onClick={handleSave}>Save</Button>
+          <Button size="sm" onClick={handleSave}>{t('common.save')}</Button>
         </div>
       }
     >
@@ -216,7 +220,7 @@ export default function RoutineBuilderPage() {
             {s.type === 'superset' && (
               <div className="absolute left-0 top-4 bottom-4 w-1 bg-gradient-to-b from-primary via-primary to-primary/50 rounded-full">
                  <div className="absolute -left-[18px] top-1/2 -translate-y-1/2 -rotate-90 origin-center">
-                    <span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background-light dark:bg-background-dark px-1">Superset</span>
+                    <span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background-light dark:bg-background-dark px-1">{t('routineBuilder.superset')}</span>
                 </div>
               </div>
             )}
@@ -224,13 +228,13 @@ export default function RoutineBuilderPage() {
             <div className={cn("flex flex-col gap-2", s.type === 'superset' ? "pl-4" : "")}>
                {/* Series Header / Controls */}
                <div className="flex justify-between items-center px-1 mb-1">
-                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Series {sIndex + 1}</span>
+                 <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('routineBuilder.series', { count: sIndex + 1 })}</span>
                  <div className="flex gap-2">
                    <button 
                      onClick={() => toggleSeriesType(s.id)}
                      className={cn("text-xs px-2 py-1 rounded border transition-colors", s.type === 'superset' ? "bg-primary text-white border-primary" : "bg-transparent border-gray-300 text-gray-500")}
                    >
-                     {s.type === 'superset' ? 'Union 🔗' : 'Standard'}
+                     {s.type === 'superset' ? t('routineBuilder.union') : t('routineBuilder.standard')}
                    </button>
                  </div>
                </div>
@@ -264,7 +268,7 @@ export default function RoutineBuilderPage() {
                                     "p-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight transition-colors",
                                     ex.trackingType === 'time' ? "text-primary" : "text-gray-400"
                                 )}
-                                title={ex.trackingType === 'time' ? "Switch to Reps" : "Switch to Time"}
+                                title={ex.trackingType === 'time' ? t('routineBuilder.switchToReps') : t('routineBuilder.switchToTime')}
                             >
                                 <Icon name={ex.trackingType === 'time' ? "schedule" : "tag"} />
                             </button>
@@ -276,12 +280,12 @@ export default function RoutineBuilderPage() {
 
                      {/* Sets Header */}
                      <div className="grid grid-cols-12 gap-2 mb-2 px-1">
-                        <div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">Set</div>
-                        <div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">kg</div>
+                        <div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">{t('routineBuilder.set')}</div>
+                        <div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">{t('routineBuilder.kg')}</div>
                         <div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
-                            {ex.trackingType === 'time' ? 'Duration' : 'Reps'}
+                            {ex.trackingType === 'time' ? t('routineBuilder.duration') : t('routineBuilder.reps')}
                         </div>
-                        <div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">Fail</div>
+                        <div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">{t('routineBuilder.fail')}</div>
                      </div>
 
                      {/* Set Rows */}
@@ -348,7 +352,7 @@ export default function RoutineBuilderPage() {
                        onClick={() => addSet(s.id, ex.id)}
                        className="w-full mt-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 hover:text-primary transition-colors border border-dashed border-gray-300 dark:border-gray-700"
                      >
-                        + Add Set
+                        {t('routineBuilder.addSet')}
                      </button>
                    </div>
                  );
@@ -360,14 +364,14 @@ export default function RoutineBuilderPage() {
                  className="flex items-center justify-center w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl text-gray-400 hover:text-primary hover:border-primary transition-colors gap-2"
                >
                  <Icon name="add_circle" />
-                 <span className="font-medium text-sm">Add Exercise</span>
+                 <span className="font-medium text-sm">{t('routineBuilder.addExercise')}</span>
                </button>
             </div>
           </div>
         ))}
 
         <Button onClick={addSeries} variant="secondary" className="mt-4">
-           + Add Series
+           {t('routineBuilder.addSeries')}
         </Button>
         
         {/* Spacer for FAB */}

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Form, useFormContext } from '@/components/ui/Form';
@@ -12,6 +13,7 @@ interface InventoryFormProps {
 }
 
 export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
+  const { t } = useTranslation();
 
   const handleFormSubmit = async (rawValues: unknown) => {
     const values = rawValues as InventoryItem;
@@ -34,14 +36,14 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
       variant="centered"
       className="max-w-sm p-6 border border-gray-200 dark:border-surface-highlight overflow-y-auto"
     >
-      <h2 className="text-xl font-bold mb-4">{item ? 'Edit Item' : 'New Item'}</h2>
+      <h2 className="text-xl font-bold mb-4">{item ? t('inventory.titleEdit') : t('inventory.titleNew')}</h2>
       <Form
         onSubmit={handleFormSubmit}
         className="flex flex-col gap-4"
       >
         <Form.Input
           name="name"
-          label="Name"
+          label={t('inventory.name')}
           defaultValue={item?.name}
           validator={inventoryValidators.name}
           required
@@ -49,13 +51,13 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
         <div className="grid grid-cols-2 gap-4">
           <Form.IconPicker
             name="icon"
-            label="Icon"
+            label={t('inventory.icon')}
             defaultValue={item?.icon}
             validator={inventoryValidators.icon}
           />
           <Form.Input
             name="quantity"
-            label="Quantity"
+            label={t('inventory.quantity')}
             type="number"
             defaultValue={item?.quantity}
             validator={inventoryValidators.quantity}
@@ -64,23 +66,23 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
         <div className="grid grid-cols-2 gap-4">
           <Form.Select
             name="condition"
-            label="Condition"
+            label={t('inventory.condition')}
             defaultValue={item?.condition}
             options={[
-              { label: 'New', value: 'new' },
-              { label: 'Good', value: 'good' },
-              { label: 'Worn', value: 'worn' },
-              { label: 'Poor', value: 'poor' },
+              { label: t('inventory.conditions.new'), value: 'new' },
+              { label: t('inventory.conditions.good'), value: 'good' },
+              { label: t('inventory.conditions.worn'), value: 'worn' },
+              { label: t('inventory.conditions.poor'), value: 'poor' },
             ]}
           />
           <Form.Select
             name="status"
-            label="Status"
+            label={t('inventory.status')}
             defaultValue={item?.status}
             options={[
-              { label: 'Available', value: 'available' },
-              { label: 'Checked Out', value: 'checked_out' },
-              { label: 'Maintenance', value: 'maintenance' },
+              { label: t('inventory.statuses.available'), value: 'available' },
+              { label: t('inventory.statuses.checked_out'), value: 'checked_out' },
+              { label: t('inventory.statuses.maintenance'), value: 'maintenance' },
             ]}
           />
         </div>
@@ -88,7 +90,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
         <Form.Field name="tagIds" defaultValue={item?.tagIds || []}>
           {({ value, setValue }) => (
             <TagSelector
-              label="Tags"
+              label={t('inventory.tags')}
               selectedTagIds={value as number[]}
               onChange={setValue}
               type={'inventory'} />
@@ -96,7 +98,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
         </Form.Field>
 
         <div className="flex gap-3 mt-4">
-          <Button type="button" variant="ghost" className="flex-1" onClick={onClose}>Cancel</Button>
+          <Button type="button" variant="ghost" className="flex-1" onClick={onClose}>{t('common.cancel')}</Button>
           <FormSubmitButton />
         </div>
       </Form>
@@ -105,12 +107,13 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
 }
 
 function FormSubmitButton() {
+  const { t } = useTranslation();
   const { errors, isSubmitting } = useFormContext();
   const hasErrors = Object.keys(errors).some(key => !!errors[key]);
 
   return (
     <Button type="submit" className="flex-1" disabled={hasErrors || isSubmitting}>
-      {isSubmitting ? 'Saving...' : 'Save'}
+      {isSubmitting ? t('common.saving') : t('common.save')}
     </Button>
   );
 }

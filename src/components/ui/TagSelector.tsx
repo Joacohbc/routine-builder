@@ -50,19 +50,25 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
       tag.name.toLowerCase().includes(search.toLowerCase()) &&
       !selectedTagIds.includes(tag.id!)
     );
-  }, [search, tags, selectedTagIds]);
+  }, [search, tags, selectedTagIds ]);
 
   const handleAddTag = async () => {
     if (!search.trim()) return;
 
-    // Check if tag already exists
-    const existing = tags.find(t => t.name.toLowerCase() === search.toLowerCase());
+    // Check if tag already exists (check both raw name and translated name if needed, but storage is raw)
+    // For simplicity, we check raw name first, but user sees translated.
+    // Ideally we shouldn't create "Pecho" if "Chest" exists and translates to "Pecho".
+    // But since `tags` contains raw names ("Chest"), we can check against translated names.
+
+    const existing = tags.find(tag => tag.name.toLowerCase() === search.toLowerCase());
+
     if (existing) {
       if (!selectedTagIds.includes(existing.id!)) {
         onChange([...selectedTagIds, existing.id!]);
       }
     } else {
       const color = PRESET_COLORS[Math.floor(Math.random() * PRESET_COLORS.length)];
+      // If adding a new tag, we add it as entered.
       const id = await addTag({ name: search.trim(), color });
       onChange([...selectedTagIds, id as number]);
     }
