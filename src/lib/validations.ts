@@ -57,7 +57,7 @@ export const validators = {
     return { ok: true };
   },
 
-  max: (max: number) => (value: string): ValidationResult => {
+  max: (max: number) => (value: unknown): ValidationResult => {
     const num = Number(value);
     if (isNaN(num)) {
       return { ok: false, error: { key: 'validations.number' } };
@@ -140,26 +140,13 @@ export const inventoryValidators = {
     validators.maxLength(100)
   ),
 
-  quantity: (value: string): ValidationResult => {
-    const num = parseInt(value, 10);
-    if (isNaN(num)) {
-      return { ok: false, error: { key: 'validations.number' } };
-    }
-    if (num < 1) {
-      return { ok: false, error: { key: 'validations.min', params: { min: 1 } } };
-    }
-    if (num > 9999) {
-      return { ok: false, error: { key: 'validations.max', params: { max: 9999 } } };
-    }
-    return { ok: true };
-  },
+  quantity: composeValidators(
+    validators.integer,
+    validators.min(1),
+    validators.max(9999)
+  ),
 
-  icon: (value: string): ValidationResult => {
-    if (value && value.length > 50) {
-      return { ok: false, error: { key: 'validations.iconTooLong' } };
-    }
-    return { ok: true };
-  },
+  icon: validators.maxLength(50),
 };
 
 export const tagValidators = {
