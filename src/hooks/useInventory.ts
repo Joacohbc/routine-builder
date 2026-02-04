@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { dbPromise } from '@/lib/db';
+import { validateSchema, inventoryValidators } from '@/lib/validations';
 import type { InventoryItem } from '@/types';
 
 export function useInventory() {
@@ -23,6 +24,9 @@ export function useInventory() {
   }, [fetchItems]);
 
   const addItem = async (item: Omit<InventoryItem, 'id'>) => {
+    const errors = validateSchema(item, inventoryValidators);
+    if (Object.keys(errors).length > 0) throw errors;
+
     const db = await dbPromise;
     await db.add('inventory', item as InventoryItem);
     await fetchItems();
@@ -30,6 +34,10 @@ export function useInventory() {
 
   const updateItem = async (item: InventoryItem) => {
     if (!item.id) return;
+
+    const errors = validateSchema(item, inventoryValidators);
+    if (Object.keys(errors).length > 0) throw errors;
+
     const db = await dbPromise;
     await db.put('inventory', item);
     await fetchItems();

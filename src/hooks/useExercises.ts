@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { dbPromise } from '@/lib/db';
+import { validateSchema, exerciseValidators } from '@/lib/validations';
 import type { Exercise } from '@/types';
 
 export function useExercises() {
@@ -36,6 +37,9 @@ export function useExercises() {
   }, [fetchExercises]);
 
   const addExercise = async (exercise: Omit<Exercise, 'id'>) => {
+    const errors = validateSchema(exercise, exerciseValidators);
+    if (Object.keys(errors).length > 0) throw errors;
+
     const db = await dbPromise;
     await db.add('exercises', exercise as Exercise);
     await fetchExercises();
@@ -43,6 +47,10 @@ export function useExercises() {
 
   const updateExercise = async (exercise: Exercise) => {
     if (!exercise.id) return;
+
+    const errors = validateSchema(exercise, exerciseValidators);
+    if (Object.keys(errors).length > 0) throw errors;
+
     const db = await dbPromise;
     await db.put('exercises', exercise);
     await fetchExercises();

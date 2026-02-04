@@ -56,7 +56,11 @@
     "max": "Must be at most {{max}}",
     "email": "Must be a valid email address",
     "url": "Must be a valid URL",
-    "iconTooLong": "Icon name is too long"
+    "iconTooLong": "Icon name is too long",
+    "array": "Must be a list",
+    "minArray": "Must have at least {{min}} items",
+    "emptySeries": "Series must contain at least one exercise",
+    "uniqueName": "Name must be unique"
   },
   "routineBuilder": {
     "newRoutine": "New Routine",

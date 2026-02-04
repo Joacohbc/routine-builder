@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { dbPromise } from '@/lib/db';
+import { validateSchema, tagValidators } from '@/lib/validations';
 import type { Tag } from '@/types';
 
 export const TAG_COLORS = [
@@ -40,6 +41,15 @@ export function useTags() {
   }, [fetchTags]);
 
   const addTag = async (tag: Omit<Tag, 'id'>) => {
+    const errors = validateSchema(tag, tagValidators);
+
+    // Check uniqueness
+    if (tags.some(t => t.name.toLowerCase() === tag.name.toLowerCase())) {
+        errors['name'] = 'validations.uniqueName';
+    }
+
+    if (Object.keys(errors).length > 0) throw errors;
+
     const db = await dbPromise;
     const id = await db.add('tags', tag as Tag);
     await fetchTags();
@@ -48,6 +58,16 @@ export function useTags() {
 
   const updateTag = async (tag: Tag) => {
     if (!tag.id) return;
+
+    const errors = validateSchema(tag, tagValidators);
+
+    // Check uniqueness
+    if (tags.some(t => t.id !== tag.id && t.name.toLowerCase() === tag.name.toLowerCase())) {
+        errors['name'] = 'validations.uniqueName';
+    }
+
+    if (Object.keys(errors).length > 0) throw errors;
+
     const db = await dbPromise;
     await db.put('tags', tag);
     await fetchTags();

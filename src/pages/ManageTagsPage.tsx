@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { Form, type FormFieldValues } from '@/components/ui/Form';
-import { validators } from '@/lib/validations';
+import { tagValidators, validators } from '@/lib/validations';
 import type { Tag } from '@/types';
 
 export default function ManageTagsPage() {
@@ -138,7 +138,7 @@ export default function ManageTagsPage() {
           >
             <Form.Field
               name="name"
-              validator={validators.required}
+              validator={tagValidators.name}
             >
               {({ value, onChange, error }) => (
                  <Input
