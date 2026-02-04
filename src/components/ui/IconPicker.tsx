@@ -13,6 +13,7 @@ interface IconPickerProps {
   className?: string;
   placeholder?: string;
   label?: string;
+  onBlur?: () => void;
 }
 
 export function IconPicker({
@@ -21,7 +22,8 @@ export function IconPicker({
   error,
   className,
   placeholder,
-  label
+  label,
+  onBlur
 }: IconPickerProps) {
   const { t } = useTranslation();
   const displayPlaceholder = placeholder || t('iconPicker.selectPlaceholder', 'Select an icon...');
@@ -56,6 +58,7 @@ export function IconPicker({
         )}
         <button
           type="button"
+          onBlur={onBlur}
           onClick={() => {
             setIsOpen(true);
             setSearch('');

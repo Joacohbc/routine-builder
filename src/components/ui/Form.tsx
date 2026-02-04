@@ -1,5 +1,5 @@
 import type { ReactNode, ComponentProps } from 'react';
-import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -15,12 +15,15 @@ import { RadioButton } from '@/components/ui/RadioButton';
 
 export type FormFieldValues = Record<string, unknown>;
 export type FormErrors = Record<string, string | undefined>;
+export type FormTouched = Record<string, boolean>;
 
 type FormContextType = {
   values: FormFieldValues;
   errors: FormErrors;
+  touched: FormTouched;
   setFieldValue: (name: string, value: unknown) => void;
   setFieldError: (name: string, error?: string) => void;
+  setFieldTouched: (name: string, isTouched: boolean) => void;
   registerField: (name: string, defaultValue?: unknown) => void;
   unregisterField: (name: string) => void;
   isSubmitting: boolean;
@@ -49,6 +52,7 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
   const { t } = useTranslation();
   const [values, setValues] = useState<FormFieldValues>(defaultValues || {});
   const [errors, setErrors] = useState<FormErrors>({});
+  const [touched, setTouched] = useState<FormTouched>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const setFieldValue = useCallback((name: string, value: unknown) => {
@@ -59,6 +63,13 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
     setErrors(prev => {
       if (prev[name] === error) return prev;
       return { ...prev, [name]: error };
+    });
+  }, []);
+
+  const setFieldTouched = useCallback((name: string, isTouched: boolean) => {
+    setTouched(prev => {
+        if (prev[name] === isTouched) return prev;
+        return { ...prev, [name]: isTouched };
     });
   }, []);
 
@@ -76,10 +87,22 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
       delete next[name];
       return next;
     });
+    setTouched(prev => {
+        const next = { ...prev };
+        delete next[name];
+        return next;
+    });
   }, []);
 
   const handleSubmit = async (e: React.SubmitEvent) => {
     e.preventDefault();
+
+    // Mark all registered fields as touched
+    const allTouched: FormTouched = {};
+    Object.keys(values).forEach(key => {
+        allTouched[key] = true;
+    });
+    setTouched(prev => ({ ...prev, ...allTouched }));
     
     // Check if any error exists
     const hasErrors = Object.keys(errors).some(key => !!errors[key]);
@@ -112,7 +135,7 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
   };
 
   return (
-    <FormContext.Provider value={{ values, errors, setFieldValue, setFieldError, registerField, unregisterField, isSubmitting }}>
+    <FormContext.Provider value={{ values, errors, touched, setFieldValue, setFieldError, setFieldTouched, registerField, unregisterField, isSubmitting }}>
       <form onSubmit={handleSubmit} className={className}>
         {children}
         {submitLabel && (
@@ -137,13 +160,14 @@ interface FormFieldProps {
     setValue: (value: unknown) => void;
     onChange: (value: unknown) => void;
     error?: string;
-    onBlur: () => void; // Optional, for future use
+    onBlur: () => void;
   }) => ReactNode;
 }
 
 function FormField({ name, defaultValue, validator, children }: FormFieldProps) {
-  const { values, errors, setFieldValue, setFieldError, registerField, unregisterField } = useFormContext();
+  const { values, errors, touched, setFieldValue, setFieldError, setFieldTouched, registerField, unregisterField } = useFormContext();
   const { t } = useTranslation();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const value = values[name] !== undefined ? values[name] : (defaultValue ?? '');
 
@@ -165,10 +189,24 @@ function FormField({ name, defaultValue, validator, children }: FormFieldProps) 
   }, [name, value, validator, setFieldError, t]);
 
   const setValue = useCallback((newValue: unknown) => {
-    setFieldValue(name, newValue);
-  }, [name, setFieldValue]);
+    // Debounce touched update
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
+        setFieldTouched(name, true);
+    }, 500);
 
-  return <>{children({ value, setValue, onChange: setValue, error: errors[name], onBlur: () => {} })}</>;
+    setFieldValue(name, newValue);
+  }, [name, setFieldValue, setFieldTouched]);
+
+  const handleBlur = useCallback(() => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+      setFieldTouched(name, true);
+  }, [name, setFieldTouched]);
+
+  // Only show error if touched
+  const visibleError = touched[name] ? errors[name] : undefined;
+
+  return <>{children({ value, setValue, onChange: setValue, error: visibleError, onBlur: handleBlur })}</>;
 }
 
 // --- Form.Input ---
@@ -183,11 +221,12 @@ function FormInput({ name, validator, defaultValue, ...props }: FormInputProps) 
 			name={name} 
 			defaultValue={defaultValue} 
 			validator={validator ? (v) => validator(String(v)) : undefined}>
-      {({ onChange, setValue, error, value }) => (
+      {({ onChange, setValue, error, value, onBlur }) => (
         <Input
           {...props}
 					defaultValue={String(value)}
 					error={error}
+          onBlur={onBlur}
           onChange={(e) => {
             onChange(e);
             setValue(e.target.value);
@@ -212,7 +251,7 @@ function FormTextarea({ name, validator, label, className, defaultValue, ...prop
       defaultValue={defaultValue}
       validator={validator ? (v) => validator(String(v)) : undefined}
     >
-      {({ onChange, setValue, error, value }) => (
+      {({ onChange, setValue, error, value, onBlur }) => (
         <div className="w-full">
           {label && (
             <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1 ml-1">
@@ -230,6 +269,7 @@ function FormTextarea({ name, validator, label, className, defaultValue, ...prop
               className="flex-1 w-full bg-transparent border-none p-4 text-base font-normal text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:ring-0 min-h-[100px] resize-none"
               {...props}
               value={String(value || '')}
+              onBlur={onBlur}
               onChange={(e) => {
                 onChange(e);
                 setValue(e.target.value);
@@ -264,11 +304,12 @@ function FormSelect({ name, validator, ...props }: FormSelectProps) {
 			name={name} 
 			defaultValue={props.defaultValue} 
 			validator={validator ? (v) => validator(String(v)) : undefined}>
-      {({ onChange, setValue, error, value }) => (
+      {({ onChange, setValue, error, value, onBlur }) => (
         <Select
           {...props}
 					error={error}
 					defaultValue={String(value)}
+          onBlur={onBlur}
           onChange={(e) => {
 						onChange(e);	
 						setValue(e.target.value);
@@ -293,11 +334,12 @@ function FormIconPicker({ name, validator, defaultValue, ...props }: FormIconPic
       defaultValue={defaultValue}
       validator={validator ? (v) => validator(String(v)) : undefined}
     >
-      {({ setValue, error, value }) => (
+      {({ setValue, error, value, onBlur }) => (
         <IconPicker
           {...props}
           value={String(value || '')}
           error={error}
+          onBlur={onBlur}
           onChange={(v) => setValue(v)}
         />
       )}
@@ -344,7 +386,7 @@ interface FormRadioButtonProps {
 function FormRadioButton({ name, value: radioValue, label, icon, description, className }: FormRadioButtonProps) {
   return (
      <FormField name={name}>
-       {({ value, setValue }) => (
+       {({ value, setValue, onBlur }) => (
          <RadioButton
             name={name}
             label={label}
@@ -352,6 +394,7 @@ function FormRadioButton({ name, value: radioValue, label, icon, description, cl
             description={description}
             className={className}
             checked={value === radioValue}
+            onBlur={onBlur}
             onChange={() => setValue(radioValue)}
             // Helper to prevent form submission on enter if needed, but radio usually fine.
          />
@@ -383,7 +426,7 @@ function FormRadioButtonGroup({ name, options, validator, className, defaultValu
       defaultValue={defaultValue}
       validator={validator}
     >
-      {({ value, setValue, error }) => (
+      {({ value, setValue, error, onBlur }) => (
         <div className={cn("flex flex-col gap-3", className)}>
           {options.map((option) => (
             <RadioButton
@@ -392,6 +435,7 @@ function FormRadioButtonGroup({ name, options, validator, className, defaultValu
               icon={option.icon}
               description={option.description}
               checked={value === option.value}
+              onBlur={onBlur}
               onChange={() => setValue(option.value)}
               className={error ? "border-red-400 dark:border-red-500" : undefined}
             />
