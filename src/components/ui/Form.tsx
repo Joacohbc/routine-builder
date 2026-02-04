@@ -11,6 +11,7 @@ import { Icon } from '@/components/ui/Icon';
 import { MediaUploadInput } from '@/components/ui/MediaUploadInput';
 import type { TextareaHTMLAttributes } from 'react';
 import type { MediaItem } from '@/types';
+import { RadioButton } from '@/components/ui/RadioButton';
 
 export type FormFieldValues = Record<string, unknown>;
 export type FormErrors = Record<string, string | undefined>;
@@ -330,9 +331,87 @@ function FormMedia({ name, defaultValue, validator, className }: FormMediaProps)
   );
 }
 
+// --- Form.RadioButton ---
+interface FormRadioButtonProps {
+  name: string;
+  label: string;
+  value: string | number | boolean;
+  icon?: string;
+  description?: string;
+  className?: string;
+}
+
+function FormRadioButton({ name, value: radioValue, label, icon, description, className }: FormRadioButtonProps) {
+  return (
+     <FormField name={name}>
+       {({ value, setValue }) => (
+         <RadioButton
+            name={name}
+            label={label}
+            icon={icon}
+            description={description}
+            className={className}
+            checked={value === radioValue}
+            onChange={() => setValue(radioValue)}
+            // Helper to prevent form submission on enter if needed, but radio usually fine.
+         />
+       )}
+     </FormField>
+  );
+}
+
+// --- Form.RadioButtonGroup ---
+export interface RadioOption {
+  label: string;
+  value: string | number | boolean;
+  icon?: string;
+  description?: string;
+}
+
+interface FormRadioButtonGroupProps {
+  name: string;
+  options: RadioOption[];
+  validator?: (value: unknown) => ValidationResult;
+  className?: string;
+  defaultValue?: string | number | boolean;
+}
+
+function FormRadioButtonGroup({ name, options, validator, className, defaultValue }: FormRadioButtonGroupProps) {
+  return (
+    <FormField
+      name={name}
+      defaultValue={defaultValue}
+      validator={validator}
+    >
+      {({ value, setValue, error }) => (
+        <div className={cn("flex flex-col gap-3", className)}>
+          {options.map((option) => (
+            <RadioButton
+              key={String(option.value)}
+              label={option.label}
+              icon={option.icon}
+              description={option.description}
+              checked={value === option.value}
+              onChange={() => setValue(option.value)}
+              className={error ? "border-red-400 dark:border-red-500" : undefined}
+            />
+          ))}
+          {error && (
+            <p className="text-xs text-red-500 dark:text-red-400 mt-1 ml-1">
+              {error}
+            </p>
+          )}
+        </div>
+      )}
+    </FormField>
+  );
+}
+
 Form.Field = FormField;
 Form.Input = FormInput;
 Form.Select = FormSelect;
 Form.IconPicker = FormIconPicker;
 Form.Textarea = FormTextarea;
 Form.Media = FormMedia;
+Form.RadioButton = FormRadioButton;
+Form.RadioButtonGroup = FormRadioButtonGroup;

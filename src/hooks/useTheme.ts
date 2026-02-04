@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-type Theme = 'light' | 'dark' | 'system';
+export type Theme = 'light' | 'dark' | 'system';
 
 const THEME_STORAGE_KEY = 'theme';
 
