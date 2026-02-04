@@ -97,26 +97,14 @@
     }
   },
   "tags": {
-    "title": "Gestionar Etiquetas",
-    "addNew": "Añadir Nueva Etiqueta",
-    "createTag": "Crear Etiqueta",
-    "editTag": "Editar Etiqueta",
-    "deleteTitle": "Eliminar Etiqueta",
-    "deleteDescription": "¿Estás seguro de que quieres eliminar esta etiqueta? Se eliminará de todos los ejercicios y elementos del inventario.",
-    "name": "Nombre",
-    "namePlaceholder": "ej., Empuje, Pesado",
-    "color": "Color",
-    "noTags": "No se encontraron etiquetas. Crea una para empezar."
-  },
-  "settings": {
-    "manageTags": "Gestionar Etiquetas"
-  },
-  "mobileWarning": {
-    "title": "Solo para Teléfonos",
-    "description": "Esta aplicación está pensada para el uso en vertical y desde teléfonos."
-  },
-  "workInProgress": {
-    "title": "En Construcción",
-    "description": "Esta función está actualmente en desarrollo. ¡Vuelve pronto para ver actualizaciones!"
+    "defaults": {
+      "Chest": "Pecho",
+      "Back": "Espalda",
+      "Legs": "Piernas",
+      "Shoulders": "Hombros",
+      "Heavy": "Pesado",
+      "Favorite": "Favorito",
+      "Mobility": "Movilidad"
+    }
   }
 }

@@ -3,12 +3,10 @@ import React, { createContext, useContext, useState, useCallback, useEffect } fr
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
-import { Button } from '@/components/ui/Button';
 import type { ValidationResult } from '@/lib/validations';
-import { IconPicker } from '@/components/ui/IconPicker';
 
-export type FormFieldValues = Record<string, unknown>;
-export type FormErrors = Record<string, string | undefined>;
+type FormFieldValues = Record<string, unknown>;
+type FormErrors = Record<string, string | undefined>;
 
 type FormContextType = {
   values: FormFieldValues;
@@ -35,12 +33,10 @@ interface FormProps {
   children: ReactNode;
   onSubmit: (values: FormFieldValues) => Promise<void> | void;
   className?: string;
-  defaultValues?: FormFieldValues;
-  submitLabel?: string;
 }
 
-export function Form({ children, onSubmit, className, defaultValues, submitLabel }: FormProps) {
-  const [values, setValues] = useState<FormFieldValues>(defaultValues || {});
+export function Form({ children, onSubmit, className }: FormProps) {
+  const [values, setValues] = useState<FormFieldValues>({});
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -99,13 +95,6 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
     <FormContext.Provider value={{ values, errors, setFieldValue, setFieldError, registerField, unregisterField, isSubmitting }}>
       <form onSubmit={handleSubmit} className={className}>
         {children}
-        {submitLabel && (
-          <div className="mt-6 flex justify-end">
-            <Button type="submit" disabled={isSubmitting}>
-              {submitLabel}
-            </Button>
-          </div>
-        )}
       </form>
     </FormContext.Provider>
   );
@@ -166,7 +155,7 @@ function FormInput({ name, validator, defaultValue, ...props }: FormInputProps) 
     <FormField 
 			name={name} 
 			defaultValue={defaultValue} 
-			validator={validator ? (v) => validator(String(v)) : undefined}>
+			validator={validator ? (v): ValidationResult => validator(String(v)) : undefined}>
       {({ onChange, setValue, error, value }) => (
         <Input
           {...props}
@@ -193,7 +182,7 @@ function FormSelect({ name, validator, ...props }: FormSelectProps) {
     <FormField 
 			name={name} 
 			defaultValue={props.defaultValue} 
-			validator={validator ? (v) => validator(String(v)) : undefined}>
+			validator={validator ? (v): ValidationResult => validator(String(v)) : undefined}>
       {({ onChange, setValue, error, value }) => (
         <Select
           {...props}
@@ -209,33 +198,6 @@ function FormSelect({ name, validator, ...props }: FormSelectProps) {
   );
 }
 
-// --- Form.IconPicker ---
-interface FormIconPickerProps extends Omit<ComponentProps<typeof IconPicker>, 'value' | 'onChange' | 'error'> {
-  name: string;
-  defaultValue?: string;
-  validator?: (value: string) => ValidationResult;
-}
-
-function FormIconPicker({ name, validator, defaultValue, ...props }: FormIconPickerProps) {
-  return (
-    <FormField
-      name={name}
-      defaultValue={defaultValue}
-      validator={validator ? (v) => validator(String(v)) : undefined}
-    >
-      {({ setValue, error, value }) => (
-        <IconPicker
-          {...props}
-          value={String(value || '')}
-          error={error}
-          onChange={(v) => setValue(v)}
-        />
-      )}
-    </FormField>
-  );
-}
-
 Form.Field = FormField;
 Form.Input = FormInput;
 Form.Select = FormSelect;
-Form.IconPicker = FormIconPicker;

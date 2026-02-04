@@ -1,4 +1,5 @@
 import { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTags } from '@/hooks/useTags';
 import { useInventory } from '@/hooks/useInventory';
 import { useExercises } from '@/hooks/useExercises';
@@ -6,6 +7,7 @@ import { Icon } from '@/components/ui/Icon';
 import { Input } from '@/components/ui/Input';
 import { Modal } from '@/components/ui/Modal';
 import { cn } from '@/lib/utils';
+import { getDisplayTag } from '@/lib/tagUtils';
 
 interface TagSelectorProps {
   selectedTagIds: number[];
@@ -20,6 +22,7 @@ const PRESET_COLORS = [
 ];
 
 export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles & Tags' }: TagSelectorProps) {
+  const { t } = useTranslation();
   const { tags, addTag } = useTags();
   const { items: inventoryItems } = useInventory();
   const { exercises } = useExercises();
@@ -47,10 +50,10 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
   const filteredTags = useMemo(() => {
     if (!search) return [];
     return tags.filter(tag =>
-      tag.name.toLowerCase().includes(search.toLowerCase()) &&
+      getDisplayTag(tag, t).toLowerCase().includes(search.toLowerCase()) &&
       !selectedTagIds.includes(tag.id!)
     );
-  }, [search, tags, selectedTagIds ]);
+  }, [search, tags, selectedTagIds, t]);
 
   const handleAddTag = async () => {
     if (!search.trim()) return;
@@ -60,7 +63,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
     // Ideally we shouldn't create "Pecho" if "Chest" exists and translates to "Pecho".
     // But since `tags` contains raw names ("Chest"), we can check against translated names.
 
-    const existing = tags.find(tag => tag.name.toLowerCase() === search.toLowerCase());
+    const existing = tags.find(tag => getDisplayTag(tag, t).toLowerCase() === search.toLowerCase());
 
     if (existing) {
       if (!selectedTagIds.includes(existing.id!)) {
@@ -86,7 +89,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
   const selectedTags = tags.filter(t => selectedTagIds.includes(t.id!));
 
   const modalFilteredTags = tags.filter(tag =>
-    tag.name.toLowerCase().includes(modalSearch.toLowerCase())
+    getDisplayTag(tag, t).toLowerCase().includes(modalSearch.toLowerCase())
   );
 
   return (
@@ -112,7 +115,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
               className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all hover:bg-primary/20"
               style={{ color: tag.color, backgroundColor: `${tag.color}15`, borderColor: `${tag.color}30` }}
             >
-              <span className="text-sm font-medium">{tag.name}</span>
+              <span className="text-sm font-medium">{getDisplayTag(tag, t)}</span>
               <Icon name="close" size={14} className="opacity-60 group-hover:opacity-100" />
             </button>
           ))}
@@ -124,7 +127,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
               onClick={() => toggleTag(tag.id!)}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-surface-highlight text-gray-600 dark:text-gray-400 border border-transparent transition-all hover:border-gray-300 dark:hover:border-gray-600"
             >
-              <span className="text-sm font-medium">{tag.name}</span>
+              <span className="text-sm font-medium">{getDisplayTag(tag, t)}</span>
             </button>
           ))}
         </div>
@@ -162,7 +165,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
                   onClick={() => toggleTag(tag.id!)}
                   className="px-3 py-1 rounded-full text-xs bg-surface-highlight border border-gray-700 hover:border-primary transition-colors"
                 >
-                  {tag.name}
+                  {getDisplayTag(tag, t)}
                 </button>
               ))}
             </div>
@@ -223,7 +226,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
                             style={{ backgroundColor: tag.color }}
                          />
                          <span className={cn("font-medium", isSelected ? "text-primary" : "text-gray-700 dark:text-gray-300")}>
-                           {tag.name}
+                           {getDisplayTag(tag, t)}
                          </span>
                       </div>
                       {isSelected && <Icon name="check" size={18} className="text-primary" />}

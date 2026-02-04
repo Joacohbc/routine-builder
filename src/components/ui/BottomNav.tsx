@@ -11,7 +11,7 @@ export function BottomNav() {
     { name: t('nav.exercises'), icon: 'fitness_center', path: '/exercises', disabled: false },
     { name: t('nav.builder'), icon: 'edit_square', path: '/builder', disabled: false }, // Changed Stats to Builder for this task scope
     { name: t('nav.train'), icon: 'timer', path: '/train', disabled: false },
-    { name: t('nav.settings'), icon: 'settings', path: '/settings', disabled: false },
+    { name: t('nav.settings'), icon: 'settings', path: '/settings', disabled: true },
   ];
 
   return (

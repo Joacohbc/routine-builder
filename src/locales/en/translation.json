@@ -97,26 +97,14 @@
     }
   },
   "tags": {
-    "title": "Manage Tags",
-    "addNew": "Add New Tag",
-    "createTag": "Create Tag",
-    "editTag": "Edit Tag",
-    "deleteTitle": "Delete Tag",
-    "deleteDescription": "Are you sure you want to delete this tag? It will be removed from all exercises and inventory items.",
-    "name": "Name",
-    "namePlaceholder": "e.g., Pull, Heavy",
-    "color": "Color",
-    "noTags": "No tags found. Create one to get started."
-  },
-  "settings": {
-    "manageTags": "Manage Tags"
-  },
-  "mobileWarning": {
-    "title": "Mobile Only",
-    "description": "This application is designed for vertical use and on mobile phones."
-  },
-  "workInProgress": {
-    "title": "Work In Progress",
-    "description": "This feature is currently being developed. Check back soon for updates!"
+    "defaults": {
+      "Chest": "Chest",
+      "Back": "Back",
+      "Legs": "Legs",
+      "Shoulders": "Shoulders",
+      "Heavy": "Heavy",
+      "Favorite": "Favorite",
+      "Mobility": "Mobility"
+    }
   }
 }
