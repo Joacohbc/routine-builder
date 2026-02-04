@@ -8,7 +8,6 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
-import { getDisplayTag } from '@/lib/tagUtils';
 
 export default function ExerciseListPage() {
   const { t } = useTranslation();
@@ -87,7 +86,7 @@ export default function ExerciseListPage() {
                               borderColor: `${tag.color}30`
                             }}
                           >
-                              {getDisplayTag(tag, t)}
+                              {tag.name}
                           </span>
                         );
                     })}
