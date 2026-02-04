@@ -83,15 +83,17 @@ export default function ExerciseFormPage() {
       return;
     }
 
-    const url = URL.createObjectURL(file);
-    const newMedia: MediaItem = {
-      id: crypto.randomUUID(),
-      type: isImage ? 'image' : 'video',
-      url, // For immediate preview
-      blob: file // For persistence
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64Url = event.target?.result as string;
+      const newMedia: MediaItem = {
+        id: crypto.randomUUID(),
+        type: isImage ? 'image' : 'video',
+        url: base64Url
+      };
+      setMedia([...media, newMedia]);
     };
-    
-    setMedia([...media, newMedia]);
+    reader.readAsDataURL(file);
   };
 
   const addYouTube = () => {

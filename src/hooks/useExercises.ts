@@ -11,18 +11,7 @@ export function useExercises() {
       const db = await dbPromise;
       const allExercises = await db.getAll('exercises');
       
-      // Hydrate blob URLs for persisted media
-      const hydrated = allExercises.map(ex => ({
-        ...ex,
-        media: ex.media.map(m => {
-          if (m.blob && (m.type === 'image' || m.type === 'video')) {
-            return { ...m, url: URL.createObjectURL(m.blob) };
-          }
-          return m;
-        })
-      }));
-
-      setExercises(hydrated);
+      setExercises(allExercises);
     } catch (error) {
       console.error('Failed to fetch exercises:', error);
     } finally {
