@@ -129,7 +129,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
                 autoFocus
                 value={modalSearch}
                 onChange={e => setModalSearch(e.target.value)}
-                placeholder={t('tags.searchPlaceholder', 'Search tags...')}
+                placeholder={t('common.search', 'Search...')}
                 className="w-full bg-gray-100 dark:bg-surface-highlight rounded-xl py-3 pl-10 pr-4 outline-none border border-transparent focus:border-primary transition-all"
              />
           </div>

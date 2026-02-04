@@ -34,7 +34,7 @@ export default function ExerciseListPage() {
           </div>
           <Input 
             icon="search" 
-            placeholder={t('exerciseList.searchPlaceholder')}
+            placeholder={t('common.search')}
             defaultValue={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -42,7 +42,7 @@ export default function ExerciseListPage() {
       }
     >
       <div className="flex flex-col gap-4 mt-4">
-        {loading ? <p className="text-center text-gray-500">{t('exerciseList.loading')}</p> : filteredExercises.length === 0 ? (
+        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : filteredExercises.length === 0 ? (
            <div className="text-center py-10 text-gray-500">
              <p>{t('exerciseList.empty')}</p>
              <p className="text-xs mt-2">{t('exerciseList.emptyHint')}</p>

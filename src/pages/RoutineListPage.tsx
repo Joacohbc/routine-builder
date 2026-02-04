@@ -22,7 +22,7 @@ export default function RoutineListPage() {
       }
     >
       <div className="flex flex-col gap-4 mt-2">
-        {loading ? <p className="text-center text-gray-500">{t('routineList.loading')}</p> : routines.length === 0 ? (
+        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : routines.length === 0 ? (
            <div className="text-center py-10 text-gray-500">
              <p>{t('routineList.empty')}</p>
              <p className="text-xs mt-2">{t('routineList.emptyHint')}</p>
@@ -33,7 +33,7 @@ export default function RoutineListPage() {
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-gray-900 dark:text-white">{routine.name}</h3>
                 <p className="text-sm text-gray-500">
-                  {routine.series.length} {t('routineList.card.series')} · {routine.series.reduce((acc, s) => acc + s.exercises.length, 0)} {t('routineList.card.exercises')}
+                  {routine.series.length} {t('routineList.card.series')} · {routine.series.reduce((acc, s) => acc + s.exercises.length, 0)} {t('common.exercises')}
                 </p>
               </div>
               <div className="flex gap-2">

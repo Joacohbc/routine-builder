@@ -7,11 +7,11 @@ export function BottomNav() {
   const { t } = useTranslation();
 
   const navItems = [
-    { name: t('nav.cellar'), icon: 'inventory_2', path: '/', disabled: false },
-    { name: t('nav.exercises'), icon: 'fitness_center', path: '/exercises', disabled: false },
+    { name: t('nav.inventory'), icon: 'inventory_2', path: '/', disabled: false },
+    { name: t('common.exercises'), icon: 'fitness_center', path: '/exercises', disabled: false },
     { name: t('nav.builder'), icon: 'edit_square', path: '/builder', disabled: false }, // Changed Stats to Builder for this task scope
     { name: t('nav.train'), icon: 'timer', path: '/train', disabled: false },
-    { name: t('nav.settings'), icon: 'settings', path: '/settings', disabled: false },
+    { name: t('common.settings'), icon: 'settings', path: '/settings', disabled: false },
   ];
 
   return (

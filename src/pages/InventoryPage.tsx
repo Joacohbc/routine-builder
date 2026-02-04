@@ -71,7 +71,7 @@ export default function InventoryPage() {
           </div>
           <Input
             icon="search"
-            placeholder={t('inventoryPage.searchPlaceholder')}
+            placeholder={t('common.search')}
             defaultValue={search}
             onChange={(e) => setSearch(e.target.value)}
           />
@@ -123,7 +123,7 @@ export default function InventoryPage() {
       </div>
 
       <div className="flex flex-col gap-4">
-        {loading ? <p className="text-center text-gray-500">{t('inventoryPage.loading')}</p> : filteredItems.map((item) => (
+        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : filteredItems.map((item) => (
           <Card key={item.id} hover className="group" onClick={() => handleEdit(item)}>
             <div className="flex items-start justify-between w-full">
               <div className="flex items-center gap-4 flex-1 min-w-0">

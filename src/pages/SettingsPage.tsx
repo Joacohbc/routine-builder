@@ -35,7 +35,7 @@ export default function SettingsPage() {
           >
             <Icon name="arrow_back" size={24} />
           </button>
-          <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">{t('settings.title', 'Settings')}</h2>
+          <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">{t('common.settings', 'Settings')}</h2>
         </div>
       }
     >
@@ -68,7 +68,7 @@ export default function SettingsPage() {
                     <Icon name="label" size={18} />
                   </div>
                   <p className="text-slate-900 dark:text-white text-base font-medium leading-normal flex-1 truncate text-left">
-                    {t('settings.manageTags', 'Manage Tags')}
+                    {t('tags.title', 'Manage Tags')}
                   </p>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-slate-500 dark:text-slate-400">

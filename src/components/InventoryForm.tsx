@@ -90,7 +90,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
         <Form.Field name="tagIds" defaultValue={item?.tagIds || []}>
           {({ value, setValue }) => (
             <TagSelector
-              label={t('inventory.tags')}
+              label={t('common.tags')}
               selectedTagIds={value as number[]}
               onChange={setValue}
               type={'inventory'} />

@@ -9,7 +9,7 @@ export default function WorkInProgressPage() {
     <Layout
       header={
         <div className="flex items-center justify-between px-6 pb-4 pt-12">
-            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('nav.settings')}</h1>
+            <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{t('common.settings')}</h1>
         </div>
       }
     >

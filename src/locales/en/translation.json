@@ -11,35 +11,32 @@
     "addItem": "Add Item",
     "inventory": "Inventory",
     "upload": "Upload",
-    "search": "Search..."
+    "search": "Search...",
+    "tags": "Tags",
+    "settings": "Settings",
+    "exercises": "Exercises"
   },
   "nav": {
-    "cellar": "Cellar",
-    "exercises": "Exercises",
+    "inventory": "Inventory",
     "builder": "Builder",
-    "train": "Train",
-    "settings": "Settings"
+    "train": "Train"
   },
   "routineList": {
     "title": "Routine Builder",
-    "loading": "Loading routines...",
     "empty": "No routines created yet.",
     "emptyHint": "Tap + to build your first plan.",
     "card": {
-      "series": "Series",
-      "exercises": "Exercises"
+      "series": "Series"
     }
   },
   "inventoryPage": {
-    "title": "The Cellar",
-    "searchPlaceholder": "Search equipment...",
+    "title": "Inventory",
     "filters": {
       "all": "All Items",
       "available": "Available",
       "checkedOut": "Checked Out"
     },
     "tagsLabel": "Tags:",
-    "loading": "Loading inventory...",
     "total": "Total: {{count}}",
     "deleteDialog": {
       "title": "Delete Item",
@@ -48,8 +45,6 @@
   },
   "exerciseList": {
     "title": "Exercise Library",
-    "searchPlaceholder": "Search exercises...",
-    "loading": "Loading library...",
     "empty": "No exercises found.",
     "emptyHint": "Tap + to create one."
   },
@@ -96,7 +91,6 @@
     "quantity": "Quantity",
     "condition": "Condition",
     "status": "Status",
-    "tags": "Tags",
     "conditions": {
       "new": "New",
       "good": "Good",
@@ -122,8 +116,7 @@
     "namePlaceholder": "e.g., Pull, Heavy",
     "color": "Color",
     "noTags": "No tags found. Create one to get started.",
-    "addPlaceholder": "Add custom tag...",
-    "searchPlaceholder": "Search tags..."
+    "addPlaceholder": "Add custom tag..."
   },
   "settings": {
     "title": "Settings",
@@ -135,13 +128,11 @@
     "darkMode": "Dark Mode",
     "systemDefault": "System Default",
     "selectLanguage": "Select Language",
-    "cancel": "Cancel",
     "version": "Lavender Focus v1.0.4",
     "localData": "Local Data Storage Active"
   },
   "iconPicker": {
     "title": "Select Icon",
-    "searchPlaceholder": "Search icons...",
     "selectPlaceholder": "Select an icon..."
   },
   "mobileWarning": {

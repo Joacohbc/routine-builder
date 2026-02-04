@@ -11,35 +11,32 @@
     "addItem": "Añadir Item",
     "inventory": "Inventario",
     "upload": "Subir",
-    "search": "Buscar..."
+    "search": "Buscar...",
+    "tags": "Etiquetas",
+    "settings": "Ajustes",
+    "exercises": "Ejercicios"
   },
   "nav": {
-    "cellar": "Bodega",
-    "exercises": "Ejercicios",
+    "inventory": "Inventario",
     "builder": "Constructor",
-    "train": "Entrenar",
-    "settings": "Ajustes"
+    "train": "Entrenar"
   },
   "routineList": {
     "title": "Constructor de Rutinas",
-    "loading": "Cargando rutinas...",
     "empty": "No hay rutinas creadas.",
     "emptyHint": "Toca + para crear tu primer plan.",
     "card": {
-      "series": "Series",
-      "exercises": "Ejercicios"
+      "series": "Series"
     }
   },
   "inventoryPage": {
-    "title": "La Bodega",
-    "searchPlaceholder": "Buscar equipo...",
+    "title": "Inventario",
     "filters": {
       "all": "Todos",
       "available": "Disponible",
       "checkedOut": "Prestado"
     },
     "tagsLabel": "Etiquetas:",
-    "loading": "Cargando inventario...",
     "total": "Total: {{count}}",
     "deleteDialog": {
       "title": "Eliminar Item",
@@ -48,8 +45,6 @@
   },
   "exerciseList": {
     "title": "Biblioteca de Ejercicios",
-    "searchPlaceholder": "Buscar ejercicios...",
-    "loading": "Cargando biblioteca...",
     "empty": "No se encontraron ejercicios.",
     "emptyHint": "Toca + para crear uno."
   },
@@ -96,7 +91,6 @@
     "quantity": "Cantidad",
     "condition": "Condición",
     "status": "Estado",
-    "tags": "Etiquetas",
     "conditions": {
       "new": "Nuevo",
       "good": "Bueno",
@@ -122,8 +116,7 @@
     "namePlaceholder": "ej., Empuje, Pesado",
     "color": "Color",
     "noTags": "No se encontraron etiquetas. Crea una para empezar.",
-    "addPlaceholder": "Añadir etiqueta personalizada...",
-    "searchPlaceholder": "Buscar etiquetas..."
+    "addPlaceholder": "Añadir etiqueta personalizada..."
   },
   "settings": {
     "title": "Ajustes",
@@ -135,13 +128,11 @@
     "darkMode": "Modo Oscuro",
     "systemDefault": "Sistema",
     "selectLanguage": "Seleccionar Idioma",
-    "cancel": "Cancelar",
     "version": "Lavender Focus v1.0.4",
     "localData": "Almacenamiento Local Activo"
   },
   "iconPicker": {
     "title": "Seleccionar Icono",
-    "searchPlaceholder": "Buscar iconos...",
     "selectPlaceholder": "Seleccionar un icono..."
   },
   "mobileWarning": {

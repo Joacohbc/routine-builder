@@ -114,7 +114,7 @@ export function IconPicker({
 
           <Input
             icon="search"
-            placeholder={t('iconPicker.searchPlaceholder', 'Search icons...')}
+            placeholder={t('common.search', 'Search...')}
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full"
