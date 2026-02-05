@@ -107,3 +107,49 @@ The app supports dark/light modes via `src/hooks/useTheme`. Ensure colors use Ta
 
 ### Routing
 Uses `HashRouter` to ensure compatibility with static file hosting (e.g., GitHub Pages) where rewriting rules might not be available.
+
+---
+
+## 7. Development & Maintenance Scripts
+
+### Standard Commands
+*   `pnpm dev`: Starts the Vite development server.
+*   `pnpm build`: Runs TypeScript validation (`tsc -b`) and builds the production bundle.
+*   `pnpm lint`: Runs ESLint checks.
+
+### Utility Scripts
+*   **Locale Validation:** `python3 validate_locales.py`
+    *   *Purpose:* Scans source code for usage of `t('key')` and compares against `src/locales` JSON files.
+    *   *Use When:* Adding new text or debugging missing translations.
+    *   *Checks:* Reports missing keys in JSON and unused keys in code.
+
+---
+
+## 8. State Management & Data Pattern
+The app does **not** use a global state manager (Redux, Zustand). It uses a **"Database-as-Single-Source-of-Truth"** pattern.
+
+### The Hook Pattern (e.g., `useExercises`)
+1.  **Fetch:** Hooks simply fetch all data from IDB on mount into a local `useState`.
+2.  **Mutation:** Functions like `addExercise` write directly to IDB first.
+3.  **Sync:** After a successful DB write, the local state is re-fetched/updated to reflect the change.
+
+**Rule:** Do not create duplicate complex state logic. Write to DB, then update UI.
+
+---
+
+## 9. Styling Conventions
+*   **Utility:** Always use the `cn()` helper from `src/lib/utils.ts` for conditional class names.
+    *   *Bad:* `` className={`btn ${isActive ? 'active' : ''}`} ``
+    *   *Good:* `className={cn("btn", isActive && "active")}`
+*   **Component Library:** Check `src/components/ui/` before building new primitives.
+*   **Mobile-First Config:** Do not use `sm:` for default styles. Default styles are for mobile. Use `md:` or `lg:` only for desktop-specific overrides (which should be minimal).
+
+---
+
+## 10. Testing Strategy
+*   **Current State:** No automated unit/integration tests are currently configured.
+*   **Expectation:** Changes must be manually verified.
+*   **Critical Paths to Check:**
+    1.  Data persistence (Refresh page after saving).
+    2.  Offline functionality (Disconnect network tab).
+    3.  Mobile viewport rendering.
