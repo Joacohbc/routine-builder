@@ -102,8 +102,21 @@ Located in `src/lib/validations.ts`.
 *   Returns standardized `ValidationResult` objects.
 *   Error messages are returned as translation keys (e.g., `validations.required`), not raw strings.
 
-### Theming
-The app supports dark/light modes via `src/hooks/useTheme`. Ensure colors use Tailwind's `dark:` modifier where appropriate.
+### Theming & Colors (Semantic Tokens)
+The app uses a **Semantic Token System** to ensure consistency and contrast across Light and Dark modes.
+*   **Do not use hardcoded colors** (e.g., `bg-white`, `text-slate-900`, `bg-gray-800`).
+*   **Use semantic tokens** defined in `src/index.css` and exposed via Tailwind.
+
+#### Key Tokens:
+*   `bg-background`: Main page background (Light: Off-white, Dark: Tinted `#18141E`).
+*   `bg-surface`: Cards, Modals, Inputs (Light: White, Dark: Tinted Surface).
+*   `bg-surface-highlight`: Hover states, secondary backgrounds.
+*   `text-text-main`: Primary content (High contrast).
+*   `text-text-secondary`: Subtitles, meta info.
+*   `text-text-muted`: Disabled states, placeholders.
+*   `border-border`: Default borders.
+
+**Note:** The design philosophy prioritizes "softer" high-contrast colors. Avoid pure black (`#000000`) or pure white (`#FFFFFF`) for text. Dark mode strictly follows the tinted background to maintain brand identity.
 
 ### Routing
 Uses `HashRouter` to ensure compatibility with static file hosting (e.g., GitHub Pages) where rewriting rules might not be available.
@@ -143,6 +156,7 @@ The app does **not** use a global state manager (Redux, Zustand). It uses a **"D
     *   *Good:* `className={cn("btn", isActive && "active")}`
 *   **Component Library:** Check `src/components/ui/` before building new primitives.
 *   **Mobile-First Config:** Do not use `sm:` for default styles. Default styles are for mobile. Use `md:` or `lg:` only for desktop-specific overrides (which should be minimal).
+*   **Color Usage:** Always prefer `text-text-main` over `text-black` or `text-slate-900`.
 
 ---
 
