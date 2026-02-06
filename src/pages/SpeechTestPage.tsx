@@ -1,143 +1,46 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { Layout } from '@/components/ui/Layout';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { Input } from '@/components/ui/Input';
-
-// Define minimal types for Speech Recognition
-interface SpeechRecognitionEvent {
-  results: {
-    [index: number]: {
-      [index: number]: {
-        transcript: string;
-      };
-      isFinal: boolean;
-    };
-    length: number;
-  };
-}
-
-interface SpeechRecognitionErrorEvent {
-  error: string;
-}
-
-interface SpeechRecognition extends EventTarget {
-  continuous: boolean;
-  interimResults: boolean;
-  lang: string;
-  start: () => void;
-  stop: () => void;
-  abort: () => void;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onerror: (event: SpeechRecognitionErrorEvent) => void;
-  onend: () => void;
-}
-
-interface SpeechRecognitionConstructor {
-  new (): SpeechRecognition;
-}
-
-declare global {
-  interface Window {
-    SpeechRecognition?: SpeechRecognitionConstructor;
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
-  }
-}
+import { useSpeechRecognition, useSpeechSynthesis } from '@/lib/webSpeech';
 
 export default function SpeechTestPage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
 
-  const [isListening, setIsListening] = useState(false);
-  const [transcript, setTranscript] = useState('');
   const [textToSpeak, setTextToSpeak] = useState('');
-  const [isSpeaking, setIsSpeaking] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [isSupported] = useState(() => {
-    return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
-  });
 
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  // Use custom hooks
+  const {
+      isListening,
+      transcript,
+      error,
+      toggleListening,
+      isSupported: isRecognitionSupported
+  } = useSpeechRecognition(i18n.language);
 
-  useEffect(() => {
-    // Check browser support
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const {
+      isSpeaking,
+      voices,
+      selectedVoice,
+      setSelectedVoice,
+      speak
+  } = useSpeechSynthesis(i18n.language);
 
-    if (!SpeechRecognition) {
-      return;
-    }
-
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    recognition.lang = i18n.language; // Use current app language
-
-    recognition.onresult = (event: SpeechRecognitionEvent) => {
-      let currentTranscript = '';
-      for (let i = 0; i < event.results.length; ++i) {
-          currentTranscript += event.results[i][0].transcript;
-      }
-      setTranscript(currentTranscript);
-      setError(null);
-    };
-
-    recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
-      console.error('Speech recognition error', event.error);
-
-      let errorMessage = t('speechTest.errors.default');
-
-      if (event.error === 'network') {
-          errorMessage = t('speechTest.errors.network');
-      } else if (event.error === 'not-allowed') {
-          errorMessage = t('speechTest.errors.notAllowed');
-      } else if (event.error === 'no-speech') {
-          errorMessage = t('speechTest.errors.noSpeech');
-      }
-
-      setError(errorMessage);
-      setIsListening(false);
-    };
-
-    recognition.onend = () => {
-      setIsListening(false);
-    };
-
-    recognitionRef.current = recognition;
-
-    return () => {
-        if (recognitionRef.current) {
-            recognitionRef.current.abort();
-        }
-    };
-  }, [i18n.language]);
-
-  const toggleListening = () => {
-    if (!recognitionRef.current) return;
-
-    if (isListening) {
-      recognitionRef.current.stop();
-    } else {
-      setError(null);
-      setTranscript('');
-      recognitionRef.current.start();
-      setIsListening(true);
-    }
+  // Helper to get error message from code
+  const getErrorMessage = (errorCode: string | null) => {
+      if (!errorCode) return null;
+      if (errorCode === 'network') return t('speechTest.errors.network');
+      if (errorCode === 'not-allowed') return t('speechTest.errors.notAllowed');
+      if (errorCode === 'no-speech') return t('speechTest.errors.noSpeech');
+      return t('speechTest.errors.default');
   };
 
-  const handleSpeak = () => {
-    if (!textToSpeak) return;
-
-    const utterance = new SpeechSynthesisUtterance(textToSpeak);
-    utterance.lang = i18n.language;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    window.speechSynthesis.speak(utterance);
-  };
+  const errorMessage = getErrorMessage(error);
+  const isSupported = isRecognitionSupported; // Simplified check for now
 
   if (!isSupported) {
     return (
@@ -201,10 +104,10 @@ export default function SpeechTestPage() {
                 )}
             </div>
 
-            {error && (
+            {errorMessage && (
                  <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-medium border border-red-500/20">
                     <Icon name="error" size={20} />
-                    <p>{error}</p>
+                    <p>{errorMessage}</p>
                 </div>
             )}
 
@@ -230,9 +133,34 @@ export default function SpeechTestPage() {
                     onChange={(e) => setTextToSpeak(e.target.value)}
                     placeholder={t('speechTest.placeholder')}
                 />
+
+                {/* Voice Selector */}
+                {voices.length > 0 && (
+                    <div className="relative">
+                        <select
+                            className="w-full h-12 pl-4 pr-10 rounded-2xl bg-surface border border-border text-text-main appearance-none focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary transition-all"
+                            value={selectedVoice ? selectedVoice.name : ''}
+                            onChange={(e) => {
+                                const voice = voices.find(v => v.name === e.target.value);
+                                if (voice) setSelectedVoice(voice);
+                            }}
+                        >
+                             {voices.map((voice) => (
+                                <option key={voice.name} value={voice.name}>
+                                    {voice.name} ({voice.lang})
+                                </option>
+                            ))}
+                        </select>
+                         <div className="absolute right-4 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none">
+                            <Icon name="expand_more" size={20} />
+                        </div>
+                    </div>
+                )}
+
+
                 <Button
                     variant="secondary"
-                    onClick={handleSpeak}
+                    onClick={() => speak(textToSpeak)}
                     disabled={!textToSpeak || isSpeaking}
                     icon="volume_up"
                 >
