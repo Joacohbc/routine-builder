@@ -52,7 +52,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
         >
             <Layout
                 header={
-                    <div className="flex items-center justify-between px-4 py-3 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
+                    <div className="flex items-center justify-between px-4 py-3 bg-background/95 backdrop-blur-md border-b border-gray-200 dark:border-white/5">
                         <button type="button" onClick={onCancel} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight">
                             <Icon name="arrow_back" />
                         </button>
@@ -184,7 +184,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
                                         {s.type === 'superset' && (
                                             <div className="absolute left-0 top-4 bottom-4 w-1 bg-linear-to-b from-primary via-primary to-primary/50 rounded-full">
                                                 <div className="absolute -left-4.5 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
-                                                    <span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background-light dark:bg-background-dark px-1">{t('routineBuilder.superset')}</span>
+                                                    <span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background px-1">{t('routineBuilder.superset')}</span>
                                                 </div>
                                             </div>
                                         )}
@@ -210,7 +210,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 
                                                 return (
                                                     <div key={ex.id} className={cn(
-                                                        "bg-surface-light dark:bg-surface-dark p-4 shadow-sm border border-gray-100 dark:border-surface-highlight relative overflow-hidden",
+                                                        "bg-surface p-4 shadow-sm border border-gray-100 dark:border-surface-highlight relative overflow-hidden",
                                                         s.type === 'superset'
                                                             ? "rounded-2xl first:rounded-tl-2xl first:rounded-tr-2xl last:rounded-bl-2xl last:rounded-br-2xl mb-1" // Stacked look for superset
                                                             : "rounded-2xl"

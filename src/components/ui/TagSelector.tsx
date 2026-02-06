@@ -60,7 +60,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
         <div className="flex items-center justify-between mb-2 px-1">
           <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</label>
         </div>
-        <div className="bg-surface-light dark:bg-surface-dark border border-gray-200 dark:border-surface-highlight rounded-2xl p-4 space-y-4">
+        <div className="bg-surface border border-gray-200 dark:border-surface-highlight rounded-2xl p-4 space-y-4">
         {/* Selected Tags */}
         <div className="flex flex-wrap gap-2">
           {selectedTags.map(tag => (
@@ -113,7 +113,7 @@ export function TagSelector({ selectedTagIds, onChange, type, label = 'Muscles &
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         variant="fullscreen"
-        className="bg-background-light dark:bg-background-dark"
+        className="bg-background"
       >
         <div className="flex items-center gap-3 p-4 border-b border-gray-200 dark:border-surface-highlight">
           <button

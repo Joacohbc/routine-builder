@@ -115,7 +115,7 @@ export default function InventoryPage() {
               "flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
               activeTagId === tag.id
                 ? "bg-primary/10 border-primary text-primary"
-                : "bg-surface-light dark:bg-surface-dark border-gray-200 dark:border-surface-highlight text-gray-500 dark:text-gray-400"
+                : "bg-surface border-gray-200 dark:border-surface-highlight text-gray-500 dark:text-gray-400"
             )}
             style={activeTagId === tag.id ? { color: tag.color, borderColor: tag.color, backgroundColor: `${tag.color}15` } : {}}
           >

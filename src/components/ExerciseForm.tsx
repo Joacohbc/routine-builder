@@ -26,7 +26,7 @@ export function ExerciseForm({ initialValues, onSubmit, isEditing }: ExerciseFor
         >
             <Layout
                 header={
-                    <div className="flex items-center justify-between px-6 py-4 bg-background-light/95 dark:bg-background-dark/95 backdrop-blur-md z-50">
+                    <div className="flex items-center justify-between px-6 py-4 bg-background/95 backdrop-blur-md z-50">
                         <button type="button" onClick={() => navigate(-1)} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight text-gray-900 dark:text-white transition-colors">
                             <Icon name="close" />
                         </button>

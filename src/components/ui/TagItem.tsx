@@ -32,7 +32,7 @@ export function TagItem({
         "flex items-center justify-between p-3 rounded-xl border transition-all w-full text-left",
         selected
           ? "bg-primary/5 border-primary"
-          : "bg-surface-light dark:bg-surface-dark border-slate-200 dark:border-slate-800 shadow-sm",
+          : "bg-surface border-slate-200 dark:border-slate-800 shadow-sm",
         onClick && "hover:border-primary cursor-pointer",
         className
       )}

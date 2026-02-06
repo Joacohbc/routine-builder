@@ -175,7 +175,7 @@ export default function ActiveWorkoutPage() {
   const currentExercise = exercises.find(e => e.id === currentStep.exerciseId);
 
   return (
-    <div className="flex flex-col h-screen bg-background-light dark:bg-background-dark text-gray-900 dark:text-white">
+    <div className="flex flex-col h-screen bg-background text-gray-900 dark:text-white">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 pt-safe-top">
         <button onClick={() => navigate(-1)} className="text-gray-500">
