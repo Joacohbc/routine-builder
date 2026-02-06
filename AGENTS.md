@@ -76,6 +76,7 @@ The database logic is centralized in `src/lib/db.ts`.
 1.  **Package Manager:** Always use **`pnpm`**. Never use `npm` or `yarn`.
 2.  **Data Safety:** Never implement logic that deletes user data (clearing DB) without an explicit, user-confirmed action (e.g., using `ConfirmationDialog`).
 3.  **Mobile Performance:** Prioritize performance on low-end mobile devices. Avoid heavy computations on the main thread during render.
+4.  **Component Reuse:** Strictly use existing UI components located in `src/components/ui/` whenever possible. Do not create new components or use raw HTML elements if an existing UI component can serve the purpose.
 
 ### 🌍 Internationalization (i18n)
 *   **Strict Requirement:** All user-facing text **MUST** be internationalized.
@@ -154,7 +155,7 @@ The app does **not** use a global state manager (Redux, Zustand). It uses a **"D
 *   **Utility:** Always use the `cn()` helper from `src/lib/utils.ts` for conditional class names.
     *   *Bad:* `` className={`btn ${isActive ? 'active' : ''}`} ``
     *   *Good:* `className={cn("btn", isActive && "active")}`
-*   **Component Library:** Check `src/components/ui/` before building new primitives.
+*   **Component Library:** You **MUST** use existing components in `src/components/ui/` whenever possible to promote reuse. Check `src/components/ui/` before building new primitives.
 *   **Mobile-First Config:** Do not use `sm:` for default styles. Default styles are for mobile. Use `md:` or `lg:` only for desktop-specific overrides (which should be minimal).
 *   **Color Usage:** Always prefer `text-text-main` over `text-black` or `text-slate-900`.
 
