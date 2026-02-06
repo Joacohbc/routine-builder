@@ -53,6 +53,7 @@ export default function SpeechTestPage() {
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
   const [textToSpeak, setTextToSpeak] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [isSupported] = useState(() => {
     return !!(window.SpeechRecognition || window.webkitSpeechRecognition);
   });
@@ -78,10 +79,23 @@ export default function SpeechTestPage() {
           currentTranscript += event.results[i][0].transcript;
       }
       setTranscript(currentTranscript);
+      setError(null);
     };
 
     recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       console.error('Speech recognition error', event.error);
+
+      let errorMessage = t('speechTest.errors.default');
+
+      if (event.error === 'network') {
+          errorMessage = t('speechTest.errors.network');
+      } else if (event.error === 'not-allowed') {
+          errorMessage = t('speechTest.errors.notAllowed');
+      } else if (event.error === 'no-speech') {
+          errorMessage = t('speechTest.errors.noSpeech');
+      }
+
+      setError(errorMessage);
       setIsListening(false);
     };
 
@@ -104,6 +118,7 @@ export default function SpeechTestPage() {
     if (isListening) {
       recognitionRef.current.stop();
     } else {
+      setError(null);
       setTranscript('');
       recognitionRef.current.start();
       setIsListening(true);
@@ -172,13 +187,20 @@ export default function SpeechTestPage() {
                 </span>
             </div>
 
-            <div className="bg-surface rounded-xl p-4 min-h-[120px] border border-border shadow-sm">
+            <div className="bg-surface rounded-xl p-4 min-h-[120px] border border-border shadow-sm relative">
                 {transcript ? (
                     <p className="text-text-main leading-relaxed">{transcript}</p>
                 ) : (
                     <p className="text-text-muted italic text-sm">{t('speechTest.transcript')}...</p>
                 )}
             </div>
+
+            {error && (
+                 <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-medium border border-red-500/20">
+                    <Icon name="error" size={20} />
+                    <p>{error}</p>
+                </div>
+            )}
 
             <Button
                 variant={isListening ? 'secondary' : 'primary'}

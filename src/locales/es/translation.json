@@ -168,6 +168,12 @@
     "speak": "Hablar",
     "transcript": "Transcripción",
     "placeholder": "Texto para hablar...",
-    "notSupported": "Web Speech API no soportada en este navegador"
+    "notSupported": "Web Speech API no soportada en este navegador",
+    "errors": {
+      "network": "Error de red: Por favor verifica tu conexión.",
+      "notAllowed": "Permiso denegado: Por favor permite el acceso al micrófono.",
+      "noSpeech": "No se detectó voz: Por favor intenta de nuevo.",
+      "default": "Ocurrió un error desconocido."
+    }
   }
 }
