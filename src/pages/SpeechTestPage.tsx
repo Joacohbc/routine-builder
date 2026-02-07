@@ -9,160 +9,160 @@ import { Select } from '@/components/ui/Select';
 import { useSpeechRecognition, useSpeechSynthesis } from '@/lib/webSpeech';
 
 export default function SpeechTestPage() {
-  const { t, i18n } = useTranslation();
-  const navigate = useNavigate();
+	const { t, i18n } = useTranslation();
+	const navigate = useNavigate();
 
-  const [textToSpeak, setTextToSpeak] = useState('');
+	const [textToSpeak, setTextToSpeak] = useState('');
 
-  // Use custom hooks
-  const {
-      isListening,
-      transcript,
-      error,
-      toggleListening,
-      isSupported: isRecognitionSupported
-  } = useSpeechRecognition(i18n.language);
+	// Use custom hooks
+	const {
+		isListening,
+		transcript,
+		error,
+		toggleListening,
+		isSupported: isRecognitionSupported
+	} = useSpeechRecognition(i18n.language);
 
-  const {
-      isSpeaking,
-      voices,
-      selectedVoice,
-      setSelectedVoice,
-      speak
-  } = useSpeechSynthesis(i18n.language);
+	const {
+		isSpeaking,
+		voices,
+		selectedVoice,
+		setSelectedVoice,
+		speak
+	} = useSpeechSynthesis(i18n.language);
 
-  // Helper to get error message from code
-  const getErrorMessage = (errorCode: string | null) => {
-      if (!errorCode) return null;
-      if (errorCode === 'network') return t('speechTest.errors.network');
-      if (errorCode === 'not-allowed') return t('speechTest.errors.notAllowed');
-      if (errorCode === 'no-speech') return t('speechTest.errors.noSpeech');
-      return t('speechTest.errors.default');
-  };
+	// Helper to get error message from code
+	const getErrorMessage = (errorCode: string | null) => {
+		if (!errorCode) return null;
+		if (errorCode === 'network') return t('speechTest.errors.network');
+		if (errorCode === 'not-allowed') return t('speechTest.errors.notAllowed');
+		if (errorCode === 'no-speech') return t('speechTest.errors.noSpeech');
+		return t('speechTest.errors.default');
+	};
 
-  const errorMessage = getErrorMessage(error);
-  const isSupported = isRecognitionSupported; // Simplified check for now
+	const errorMessage = getErrorMessage(error);
+	const isSupported = isRecognitionSupported; // Simplified check for now
 
-  if (!isSupported) {
-    return (
-      <Layout
-        header={
-            <div className="flex items-center p-4 pb-2 justify-between border-b border-border">
-                <button
-                    onClick={() => navigate(-1)}
-                    className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
-                >
-                    <Icon name="arrow_back" size={24} />
-                </button>
-                <h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-                    {t('speechTest.title')}
-                </h2>
-            </div>
-        }
-      >
-        <div className="p-8 text-center text-text-secondary">
-          <Icon name="error" size={48} className="mx-auto mb-4 text-red-400" />
-          <p>{t('speechTest.notSupported')}</p>
-        </div>
-      </Layout>
-    );
-  }
+	if (!isSupported) {
+		return (
+			<Layout
+				header={
+					<div className="flex items-center p-4 pb-2 justify-between border-b border-border">
+						<button
+							onClick={() => navigate(-1)}
+							className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
+						>
+							<Icon name="arrow_back" size={24} />
+						</button>
+						<h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
+							{t('speechTest.title')}
+						</h2>
+					</div>
+				}
+			>
+				<div className="p-8 text-center text-text-secondary">
+					<Icon name="error" size={48} className="mx-auto mb-4 text-red-400" />
+					<p>{t('speechTest.notSupported')}</p>
+				</div>
+			</Layout>
+		);
+	}
 
-  return (
-    <Layout
-      header={
-        <div className="flex items-center p-4 pb-2 justify-between border-b border-border">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
-          >
-            <Icon name="arrow_back" size={24} />
-          </button>
-          <h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-            {t('speechTest.title')}
-          </h2>
-        </div>
-      }
-    >
-      <div className="flex flex-col gap-8 p-4">
+	return (
+		<Layout
+			header={
+				<div className="flex items-center p-4 pb-2 justify-between border-b border-border">
+					<button
+						onClick={() => navigate(-1)}
+						className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
+					>
+						<Icon name="arrow_back" size={24} />
+					</button>
+					<h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
+						{t('speechTest.title')}
+					</h2>
+				</div>
+			}
+		>
+			<div className="flex flex-col gap-8 p-4">
 
-        {/* Speech Recognition Section */}
-        <section className="flex flex-col gap-4">
-            <div className="flex items-center justify-between">
-                <h3 className="text-primary text-sm font-bold uppercase tracking-wider">
-                    Speech to Text
-                </h3>
-                <span className={`text-xs font-medium px-2 py-1 rounded-full ${isListening ? 'bg-green-500/10 text-green-500' : 'bg-surface text-text-muted'}`}>
-                    {isListening ? (i18n.language.startsWith('es') ? 'Escuchando...' : 'Listening...') : (i18n.language.startsWith('es') ? 'Inactivo' : 'Idle')}
-                </span>
-            </div>
+				{/* Speech Recognition Section */}
+				<section className="flex flex-col gap-4">
+					<div className="flex items-center justify-between">
+						<h3 className="text-primary text-sm font-bold uppercase tracking-wider">
+							Speech to Text
+						</h3>
+						<span className={`text-xs font-medium px-2 py-1 rounded-full ${isListening ? 'bg-green-500/10 text-green-500' : 'bg-surface text-text-muted'}`}>
+							{isListening ? (i18n.language.startsWith('es') ? 'Escuchando...' : 'Listening...') : (i18n.language.startsWith('es') ? 'Inactivo' : 'Idle')}
+						</span>
+					</div>
 
-            <div className="bg-surface rounded-xl p-4 min-h-[120px] border border-border shadow-sm relative">
-                {transcript ? (
-                    <p className="text-text-main leading-relaxed">{transcript}</p>
-                ) : (
-                    <p className="text-text-muted italic text-sm">{t('speechTest.transcript')}...</p>
-                )}
-            </div>
+					<div className="bg-surface rounded-xl p-4 min-h-[120px] border border-border shadow-sm relative">
+						{transcript ? (
+							<p className="text-text-main leading-relaxed">{transcript}</p>
+						) : (
+							<p className="text-text-muted italic text-sm">{t('speechTest.transcript')}...</p>
+						)}
+					</div>
 
-            {errorMessage && (
-                 <div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-medium border border-red-500/20">
-                    <Icon name="error" size={20} />
-                    <p>{errorMessage}</p>
-                </div>
-            )}
+					{errorMessage && (
+						<div className="flex items-center gap-2 p-3 rounded-xl bg-red-500/10 text-red-500 text-sm font-medium border border-red-500/20">
+							<Icon name="error" size={20} />
+							<p>{errorMessage}</p>
+						</div>
+					)}
 
-            <Button
-                variant={isListening ? 'secondary' : 'primary'}
-                onClick={toggleListening}
-                className="w-full"
-                icon={isListening ? 'mic_off' : 'mic'}
-            >
-                {isListening ? t('speechTest.stopListening') : t('speechTest.startListening')}
-            </Button>
-        </section>
+					<Button
+						variant={isListening ? 'secondary' : 'primary'}
+						onClick={toggleListening}
+						className="w-full"
+						icon={isListening ? 'mic_off' : 'mic'}
+					>
+						{isListening ? t('speechTest.stopListening') : t('speechTest.startListening')}
+					</Button>
+				</section>
 
-        {/* Text to Speech Section */}
-        <section className="flex flex-col gap-4">
-             <h3 className="text-primary text-sm font-bold uppercase tracking-wider">
-                Text to Speech
-            </h3>
+				{/* Text to Speech Section */}
+				<section className="flex flex-col gap-4">
+					<h3 className="text-primary text-sm font-bold uppercase tracking-wider">
+						Text to Speech
+					</h3>
 
-            <div className="flex flex-col gap-3">
-                <Input
-                    value={textToSpeak}
-                    onChange={(e) => setTextToSpeak(e.target.value)}
-                    placeholder={t('speechTest.placeholder')}
-                />
+					<div className="flex flex-col gap-3">
+						<Input
+							value={textToSpeak}
+							onChange={(e) => setTextToSpeak(e.target.value)}
+							placeholder={t('speechTest.placeholder')}
+						/>
 
-                {/* Voice Selector */}
-                {voices.length > 0 && (
-                    <Select
-                        options={voices.map(voice => ({
-                            label: `${voice.name} (${voice.lang})`,
-                            value: voice.name
-                        }))}
-                        value={selectedVoice ? selectedVoice.name : ''}
-                        onChange={(e) => {
-                            const voice = voices.find(v => v.name === e.target.value);
-                            if (voice) setSelectedVoice(voice);
-                        }}
-                    />
-                )}
+						{/* Voice Selector */}
+						{voices.length > 0 && (
+							<Select
+								options={voices.map(voice => ({
+									label: `${voice.name} (${voice.lang})`,
+									value: voice.name
+								}))}
+								value={selectedVoice ? selectedVoice.name : ''}
+								onChange={(e) => {
+									const voice = voices.find(v => v.name === e.target.value);
+									if (voice) setSelectedVoice(voice);
+								}}
+							/>
+						)}
 
 
-                <Button
-                    variant="secondary"
-                    onClick={() => speak(textToSpeak)}
-                    disabled={!textToSpeak || isSpeaking}
-                    icon="volume_up"
-                >
-                    {isSpeaking ? (i18n.language.startsWith('es') ? 'Reproduciendo...' : 'Speaking...') : t('speechTest.speak')}
-                </Button>
-            </div>
-        </section>
+						<Button
+							variant="secondary"
+							onClick={() => speak(textToSpeak)}
+							disabled={!textToSpeak || isSpeaking}
+							icon="volume_up"
+						>
+							{isSpeaking ? (i18n.language.startsWith('es') ? 'Reproduciendo...' : 'Speaking...') : t('speechTest.speak')}
+						</Button>
+					</div>
+				</section>
 
-      </div>
-    </Layout>
-  );
+			</div>
+		</Layout>
+	);
 }
