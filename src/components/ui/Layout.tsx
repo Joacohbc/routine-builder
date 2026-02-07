@@ -8,7 +8,7 @@ interface LayoutProps {
 
 export function Layout({ children, header }: LayoutProps) {
   return (
-    <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden max-w-md mx-auto shadow-2xl bg-background">
+    <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-background">
       {header && (
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md pt-safe-top">
           {header}
