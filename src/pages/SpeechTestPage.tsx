@@ -33,33 +33,6 @@ export default function SpeechTestPage() {
 		isSupported: isSpeechSynthesisSupported
 	} = useSpeechSynthesis();
 
-	const isSupported = isRecognitionSupported;
-
-	if (!isSupported) {
-		return (
-			<Layout
-				header={
-					<div className="flex items-center p-4 pb-2 justify-between border-b border-border">
-						<button
-							onClick={() => navigate(-1)}
-							className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
-						>
-							<Icon name="arrow_back" size={24} />
-						</button>
-						<h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-							{t('speechTest.title')}
-						</h2>
-					</div>
-				}
-			>
-				<div className="p-8 text-center text-text-secondary">
-					<Icon name="error" size={48} className="mx-auto mb-4 text-red-400" />
-					<p>{t('speechTest.notSupported')}</p>
-				</div>
-			</Layout>
-		);
-	}
-
 	return (
 		<Layout
 			header={
@@ -79,6 +52,7 @@ export default function SpeechTestPage() {
 			<div className="flex flex-col gap-8 p-4">
 
 				<SpeechRecognition
+					isSupported={isRecognitionSupported}
 					isListening={isListening}
 					transcript={transcript}
 					error={error}

@@ -5,6 +5,7 @@ import { Select } from '@/components/ui/Select';
 import { cn } from '@/lib/utils';
 
 interface SpeechRecognitionProps {
+	isSupported: boolean;
 	isListening: boolean;
 	transcript: string;
 	error: string | null;
@@ -15,6 +16,7 @@ interface SpeechRecognitionProps {
 }
 
 export function SpeechRecognition({
+	isSupported,
 	isListening,
 	transcript,
 	error,
@@ -34,6 +36,20 @@ export function SpeechRecognition({
 	};
 
 	const errorMessage = getErrorMessage(error);
+
+	if (!isSupported) {
+		return (
+			<section className="flex flex-col gap-4">
+				<h3 className="text-primary text-sm font-bold uppercase tracking-wider">
+					{t('speechTest.speechToText')}
+				</h3>
+				<div className="p-8 text-center text-text-secondary bg-surface rounded-xl border border-border">
+					<Icon name="error" size={48} className="mx-auto mb-4 text-red-400" />
+					<p>{t('speechTest.notSupported')}</p>
+				</div>
+			</section>
+		);
+	}
 
 	return (
 		<section className="flex flex-col gap-4">
