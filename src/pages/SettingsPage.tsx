@@ -76,6 +76,26 @@ export default function SettingsPage() {
                 </div>
               </button>
             </div>
+
+            {/* ListItem: Speech Test */}
+            <div className="relative flex flex-col w-full border-t border-border">
+              <button
+                onClick={() => navigate('/speech-test')}
+                className="flex items-center gap-4 px-4 min-h-[60px] justify-between w-full hover:bg-surface-highlight transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                    <Icon name="mic" size={18} />
+                  </div>
+                  <p className="text-text-main text-base font-medium leading-normal flex-1 truncate text-left">
+                    {t('speechTest.title', 'Web Speech API Test')}
+                  </p>
+                </div>
+                <div className="shrink-0 flex items-center gap-2 text-text-secondary">
+                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+            </div>
           </div>
         </section>
 

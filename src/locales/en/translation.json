@@ -160,5 +160,27 @@
     "descriptionPlaceholder": "Add cues, form tips, or setup instructions...",
     "equipment": "Required Equipment",
     "tags": "Muscle & Tags"
+  },
+  "speechTest": {
+    "title": "Web Speech API Test",
+    "speechToText": "Speech to Text",
+    "textToSpeech": "Text to Speech",
+    "startListening": "Start Listening",
+    "stopListening": "Stop Listening",
+    "listening": "Listening...",
+    "idle": "Idle",
+    "speakNow": "Speak now...",
+    "speaking": "Speaking...",
+    "recognitionLanguage": "Recognition Language",
+    "speak": "Speak",
+    "transcript": "Transcript",
+    "placeholder": "Text to speak...",
+    "notSupported": "Web Speech API not supported in this browser",
+    "errors": {
+      "network": "Network error: Please check your connection.",
+      "notAllowed": "Permission denied: Please allow microphone access.",
+      "noSpeech": "No speech detected: Please try again.",
+      "default": "An unknown error occurred."
+    }
   }
 }

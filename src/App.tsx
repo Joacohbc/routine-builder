@@ -7,6 +7,7 @@ import RoutineBuilderPage from '@/pages/RoutineBuilderPage';
 import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
 import SettingsPage from '@/pages/SettingsPage';
 import ManageTagsPage from '@/pages/ManageTagsPage';
+import SpeechTestPage from '@/pages/SpeechTestPage';
 import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
 
 function App() {
@@ -33,6 +34,7 @@ function App() {
         <Route path="/train" element={<RoutineListPage />} /> 
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/tags" element={<ManageTagsPage />} />
+        <Route path="/speech-test" element={<SpeechTestPage />} />
       </Routes>
     </HashRouter>
   );
