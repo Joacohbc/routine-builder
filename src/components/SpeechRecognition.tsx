@@ -66,7 +66,7 @@ export function SpeechRecognition({
 			</div>
 
 			<div className={cn(
-				"bg-surface rounded-xl p-4 min-h-[120px] border shadow-sm relative transition-colors",
+				"bg-surface rounded-xl p-4 min-h-30 border shadow-sm relative transition-colors",
 				isListening ? "border-green-500/40" : "border-border"
 			)}>
 				{transcript ? (
