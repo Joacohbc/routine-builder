@@ -181,7 +181,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
                                         {/* Superset Connector Line */}
                                         {s.type === 'superset' && (
                                             <div className="absolute left-0 top-4 bottom-4 w-1 bg-linear-to-b from-primary via-primary to-primary/50 rounded-full">
-                                                <div className="absolute -left-4.5 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
+                                                <div className="absolute -left-9.5 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
                                                     <span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background px-1">{t('routineBuilder.superset')}</span>
                                                 </div>
                                             </div>
