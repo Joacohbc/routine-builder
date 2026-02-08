@@ -18,8 +18,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
 
   const handleFormSubmit = async (rawValues: unknown) => {
     const values = rawValues as InventoryItem;
-
-    console.log('Form Values:', values);
+  
     await onSave({
       name: values.name,
       icon: values.icon,

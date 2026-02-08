@@ -17,6 +17,15 @@ import type { InventoryItem, InventoryStatus } from '@/types';
 
 type FilterStatus = InventoryStatus | 'all';
 
+const emptyItem: InventoryItem = {
+  name: '',
+  status: 'available',
+  condition: 'good',
+  icon: '',
+  quantity: 0,
+  tags: []
+};
+
 export default function InventoryPage() {
   const { t } = useTranslation();
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();
@@ -25,7 +34,7 @@ export default function InventoryPage() {
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [activeTagId, setActiveTagId] = useState<number | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [editingItem, setEditingItem] = useState<InventoryItem>(emptyItem);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
   const tagsRef = useHorizontalScroll();
@@ -57,13 +66,13 @@ export default function InventoryPage() {
     setItemToDelete(id);
   };
 
-  if (isFormOpen && editingItem !== null) {
+  if (isFormOpen) {
     return (
       <InventoryForm
         item={editingItem}
         onClose={() => {
           setIsFormOpen(false);
-          setEditingItem(null);
+          setEditingItem(emptyItem);
         }}
         onSave={async (item) => {
           if (editingItem && editingItem.id) {
@@ -72,7 +81,7 @@ export default function InventoryPage() {
             await addItem(item);
           }
           setIsFormOpen(false);
-          setEditingItem(null);
+          setEditingItem(emptyItem);
         }}
       />
     );
@@ -201,7 +210,10 @@ export default function InventoryPage() {
 
       <Button
         variant="floating"
-        onClick={() => { setEditingItem(null); setIsFormOpen(true); }}
+        onClick={() => { 
+          setEditingItem(emptyItem); 
+          setIsFormOpen(true); 
+        }}
       >
         <Icon name="add" size={32} />
       </Button>
