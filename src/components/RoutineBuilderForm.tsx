@@ -231,20 +231,20 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
                                                             : "rounded-2xl"
                                                     )}>
                                                         {/* Exercise Header */}
-                                                        <div className="flex items-center justify-between mb-4">
-                                                            <div className="flex items-center gap-2">
-                                                                <button
-                                                                    type="button"
-                                                                    onClick={() => toggleTrackingType(s.id, ex.id)}
-                                                                    className={cn(
-                                                                        "p-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight transition-colors",
-                                                                        ex.trackingType === 'time' ? "text-primary" : "text-gray-400"
-                                                                    )}
-                                                                    title={ex.trackingType === 'time' ? t('routineBuilder.switchToReps') : t('routineBuilder.switchToTime')}
-                                                                >
-                                                                    <Icon name={ex.trackingType === 'time' ? "schedule" : "tag"} />
-                                                                </button>
-                                                                <button type="button" onClick={() => removeExercise(s.id, ex.id)} className="text-gray-400 hover:text-red-500">
+                                                        <div className="flex items-center justify-end mb-4">
+                                                            <div className="flex items-center justify-center gap-2">
+                                                                <SegmentedControl
+                                                                  options={[
+                                                                    { value: 'reps', label: t('routineBuilder.switchToReps') },
+                                                                    { value: 'time', label: t('routineBuilder.switchToTime') },
+                                                                  ]}
+                                                                  value={String(ex.trackingType)}
+                                                                  onChange={(newTrackingType) => { {
+                                                                    toggleTrackingType(s.id, ex.id)
+                                                                    ex.trackingType = newTrackingType as 'time' | 'reps';
+                                                                  } }}
+                                                                />
+                                                                <button type="button" onClick={() => removeExercise(s.id, ex.id)} className="flex items-center justify-center text-gray-400 hover:text-red-500">
                                                                     <Icon name="close" />
                                                                 </button>
                                                             </div>
