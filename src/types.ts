@@ -1,5 +1,3 @@
-import type { MuscleGroup } from '@/lib/typesMuscle';
-
 export type { MuscleGroup, Muscle } from '@/lib/typesMuscle';
 export {
   MUSCLES_BY_GROUP,

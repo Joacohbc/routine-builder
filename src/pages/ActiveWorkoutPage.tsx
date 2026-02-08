@@ -205,7 +205,6 @@ export default function ActiveWorkoutPage() {
         {/* Exercise Info */}
         <div className="text-center z-10">
           <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || 'Unknown Exercise'}</h1>
-          <p className="text-lg text-gray-500">{currentExercise?.muscleGroup}</p>
           {currentStep.isSuperset && (
             <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
               SUPERSET FLOW
