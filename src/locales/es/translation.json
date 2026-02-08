@@ -14,7 +14,11 @@
     "search": "Buscar...",
     "tags": "Etiquetas",
     "settings": "Ajustes",
-    "exercises": "Ejercicios"
+    "exercises": "Ejercicios",
+    "tagTypes": {
+      "muscle": "Músculo",
+      "custom": "Etiqueta Personalizada"
+    }
   },
   "nav": {
     "inventory": "Inventario",
@@ -64,7 +68,8 @@
     "emptySeries": "La serie debe contener al menos un ejercicio",
     "uniqueName": "El nombre debe ser único",
     "mediaType": "Solo se soportan imágenes y videos.",
-    "invalidYoutubeUrl": "URL de YouTube inválida"
+    "invalidYoutubeUrl": "URL de YouTube inválida",
+    "systemTagProtected": "Las etiquetas del sistema no pueden ser modificadas ni eliminadas"
   },
   "routineBuilder": {
     "newRoutine": "Nueva Rutina",
@@ -161,7 +166,67 @@
     "description": "Descripción",
     "descriptionPlaceholder": "Añade indicaciones, consejos de forma o instrucciones...",
     "equipment": "Equipo Requerido",
-    "tags": "Músculos y Etiquetas"
+    "tags": "Músculos y Etiquetas",
+    "muscleGroups": {
+      "chest": "Pecho",
+      "back": "Espalda",
+      "lats": "Dorsales",
+      "traps": "Trapecios",
+      "lower_back": "Espalda Baja",
+      "shoulders": "Hombros",
+      "biceps": "Bíceps",
+      "triceps": "Tríceps",
+      "forearms": "Antebrazos",
+      "abs": "Abdominales",
+      "obliques": "Oblicuos",
+      "quadriceps": "Cuádriceps",
+      "hamstrings": "Isquiotibiales",
+      "glutes": "Glúteos",
+      "calves": "Pantorrillas",
+      "full_body": "Cuerpo Completo"
+    },
+    "muscles": {
+      "pectoralis_major": "Pectoral Mayor",
+      "pectoralis_minor": "Pectoral Menor",
+      "serratus_anterior": "Serrato Anterior",
+      "latissimus_dorsi": "Dorsal Ancho",
+      "rhomboids": "Romboides",
+      "teres_major": "Redondo Mayor",
+      "teres_minor": "Redondo Menor",
+      "trapezius_upper": "Trapecio Superior",
+      "trapezius_middle": "Trapecio Medio",
+      "trapezius_lower": "Trapecio Inferior",
+      "erector_spinae": "Erector de la Columna",
+      "quadratus_lumborum": "Cuadrado Lumbar",
+      "deltoid_anterior": "Deltoides Anterior",
+      "deltoid_lateral": "Deltoides Lateral",
+      "deltoid_posterior": "Deltoides Posterior",
+      "rotator_cuff": "Manguito Rotador",
+      "biceps_brachii": "Bíceps Braquial",
+      "brachialis": "Braquial",
+      "triceps_brachii": "Tríceps Braquial",
+      "brachioradialis": "Braquiorradial",
+      "wrist_flexors": "Flexores de Muñeca",
+      "wrist_extensors": "Extensores de Muñeca",
+      "rectus_abdominis": "Recto Abdominal",
+      "transversus_abdominis": "Transverso Abdominal",
+      "obliquus_externus": "Oblicuo Externo",
+      "obliquus_internus": "Oblicuo Interno",
+      "rectus_femoris": "Recto Femoral",
+      "vastus_lateralis": "Vasto Lateral",
+      "vastus_medialis": "Vasto Medial",
+      "vastus_intermedius": "Vasto Intermedio",
+      "biceps_femoris": "Bíceps Femoral",
+      "semitendinosus": "Semitendinoso",
+      "semimembranosus": "Semimembranoso",
+      "gluteus_maximus": "Glúteo Mayor",
+      "gluteus_medius": "Glúteo Medio",
+      "gluteus_minimus": "Glúteo Menor",
+      "gastrocnemius": "Gastrocnemio",
+      "soleus": "Sóleo",
+      "tibialis_anterior": "Tibial Anterior",
+      "composite": "Compuesto (Cuerpo Completo)"
+    }
   },
   "speechTest": {
     "title": "Prueba Web Speech API",
