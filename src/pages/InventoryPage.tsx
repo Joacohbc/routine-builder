@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
+import { TagBadge } from '@/components/ui/TagBadge';
 import { InventoryForm } from '@/components/InventoryForm';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { cn } from '@/lib/utils';
@@ -160,17 +161,10 @@ export default function InventoryPage() {
             </div>
             <div className="flex flex-wrap gap-2 mt-3 pl-16">
               {(item.tags || []).map(tag => (
-                  <span
-                    key={tag.id}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-medium border"
-                    style={{
-                      backgroundColor: `${tag.color}15`,
-                      color: tag.color,
-                      borderColor: `${tag.color}30`
-                    }}
-                  >
-                    {formatTagName(tag)}
-                  </span>
+                  <TagBadge key={tag.id} 
+                    label={formatTagName(tag)}
+                    color={tag.color}
+                  />
               ))}
             </div>
           </Card>
