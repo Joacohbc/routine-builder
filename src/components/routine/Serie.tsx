@@ -76,7 +76,7 @@ export function Serie({
 				{serie.exercises.map((ex) => (
 					<ExerciseSerie
 						key={ex.id}
-						exercise={ex}
+						routineExercise={ex}
 						seriesId={serie.id}
 						seriesType={serie.type}
 						onRemoveExercise={onRemoveExercise}

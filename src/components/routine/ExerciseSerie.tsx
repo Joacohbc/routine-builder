@@ -10,7 +10,7 @@ import { ExerciseSerieRow } from '@/components/routine/ExerciseSerieRowProps';
 
 // ==================== ExerciseSerie Component ====================
 export interface ExerciseSerieProps {
-    exercise: RoutineExercise;
+    routineExercise: RoutineExercise;
     seriesId: string;
     seriesType: SeriesType;
     onRemoveExercise: (seriesId: string, exId: string) => void;
@@ -22,13 +22,13 @@ export interface ExerciseSerieProps {
 }
 
 export function ExerciseSerie({
-	exercise, seriesId, seriesType, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfter
+	routineExercise, seriesId, seriesType, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfter
 }: ExerciseSerieProps) {
 	const { t } = useTranslation();
 	const { exercises } = useExercises();
 
-	const exerciseDef = exercises.find(e => e.id === exercise.exerciseId);
-	if (!exerciseDef) return null;
+	const exerciseComplete = exercises.find(e => e.id === routineExercise.exerciseId);
+	if (!exerciseComplete) return null;
 
 	return (
 		<div className={cn(
@@ -42,11 +42,11 @@ export function ExerciseSerie({
 				{/* Exercise Name */}
 				<div className="flex items-center justify-between mb-3">
 					<h3 className="text-base font-semibold text-text-main truncate flex-1">
-						{exerciseDef.title}
+						{exerciseComplete.title}
 					</h3>
 					<button
 						type="button"
-						onClick={() => onRemoveExercise(seriesId, exercise.id)}
+						onClick={() => onRemoveExercise(seriesId, routineExercise.id)}
 						className="flex items-center justify-center text-gray-400 hover:text-red-500 ml-2"
 					>
 						<Icon name="close" />
@@ -60,8 +60,8 @@ export function ExerciseSerie({
 							{ value: 'reps', label: t('routineBuilder.switchToReps') },
 							{ value: 'time', label: t('routineBuilder.switchToTime') },
 						]}
-						value={String(exercise.trackingType)}
-						onChange={() => onToggleTrackingType(seriesId, exercise.id)} />
+						value={String(routineExercise.trackingType)}
+						onChange={() => onToggleTrackingType(seriesId, routineExercise.id)} />
 				</div>
 			</div>
 
@@ -74,7 +74,7 @@ export function ExerciseSerie({
 					{t('routineBuilder.kg')}
 				</div>
 				<div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
-					{exercise.trackingType === 'time' ? t('routineBuilder.duration') : t('routineBuilder.reps')}
+					{routineExercise.trackingType === 'time' ? t('routineBuilder.duration') : t('routineBuilder.reps')}
 				</div>
 				<div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
 					{t('routineBuilder.fail')}
@@ -83,14 +83,14 @@ export function ExerciseSerie({
 
 			{/* Set Rows */}
 			<div className="space-y-2">
-				{exercise.sets.map((set, index) => (
+				{routineExercise.sets.map((set, index) => (
 					<ExerciseSerieRow
 						key={set.id}
 						set={set}
 						index={index}
-						trackingType={exercise.trackingType}
+						trackingType={routineExercise.trackingType}
 						seriesId={seriesId}
-						exerciseId={exercise.id}
+						exerciseId={routineExercise.id}
 						onUpdateSet={onUpdateSet}
 						onRemoveSet={onRemoveSet} />
 				))}
@@ -98,7 +98,7 @@ export function ExerciseSerie({
 
 			<button
 				type="button"
-				onClick={() => onAddSet(seriesId, exercise.id)}
+				onClick={() => onAddSet(seriesId, routineExercise.id)}
 				className="w-full mt-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 hover:text-primary transition-colors border border-dashed border-gray-300 dark:border-gray-700"
 			>
 				{t('routineBuilder.addSet')}
@@ -116,8 +116,8 @@ export function ExerciseSerie({
 							"w-24 bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold h-9 focus:ring-1 focus:ring-primary",
 							seriesType === 'superset' ? "text-gray-400 cursor-not-allowed" : "text-gray-900 dark:text-white"
 						)}
-						value={seriesType === 'superset' ? 0 : (exercise.restAfter || 0)}
-						onChange={(val) => onUpdateRestAfter(seriesId, exercise.id, val)}
+						value={seriesType === 'superset' ? 0 : (routineExercise.restAfter || 0)}
+						onChange={(val) => onUpdateRestAfter(seriesId, routineExercise.id, val)}
 						disabled={seriesType === 'superset'} />
 				</div>
 				{seriesType === 'superset' && (
