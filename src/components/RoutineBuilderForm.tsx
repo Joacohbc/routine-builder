@@ -68,7 +68,7 @@ function ExerciseSerieRow({
 				) : trackingType === 'time' ? (
 					<FormattedTimeInput
 						className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
-						value={set.time}
+						value={set.time || 0}
 						onChange={(val) => onUpdateSet(seriesId, exerciseId, set.id, 'time', val)}
 					/>
 				) : (

@@ -1,5 +1,6 @@
 export function formatTime(seconds: number | undefined | null): string {
-  if (seconds === undefined || seconds === null || seconds === 0) return '';
+  if (seconds === undefined || seconds === null) return '';
+  if (seconds === 0) return '0';
 
   if (seconds < 60) {
     return seconds.toString();

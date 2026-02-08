@@ -2,29 +2,38 @@ import { useState, useEffect } from 'react';
 import { formatTime, parseTime } from '@/lib/timeUtils';
 
 interface FormattedTimeInputProps {
-    value: number | undefined;
+    value: number;
     onChange: (val: number) => void;
     disabled?: boolean;
     className?: string;
 }
 
+function formatTimeWithSuffix(seconds: number) {
+    const formatted = formatTime(seconds);
+    const suffix = formatted.includes(':') ? 'm' : 's';
+    const displayValue = formatted.replace(/:\d{2}$/, '') + suffix;
+    return displayValue;
+}
+
 export function FormattedTimeInput({ value, onChange, disabled, className }: FormattedTimeInputProps) {
-    const [localValue, setLocalValue] = useState(formatTime(value));
+    const [localValue, setLocalValue] = useState(formatTimeWithSuffix(value ));
 
     useEffect(() => {
-        setLocalValue(formatTime(value));
+        setLocalValue(formatTimeWithSuffix(value));
     }, [value]);
 
     const handleBlur = () => {
         const seconds = parseTime(localValue);
         onChange(seconds);
-        setLocalValue(formatTime(seconds));
+
+        const displayValue = formatTimeWithSuffix(seconds);
+        setLocalValue(displayValue);
     };
 
     return (
         <input
             className={className}
-            placeholder="-"
+            placeholder="0s"
             type="text"
             disabled={disabled}
             value={localValue}
