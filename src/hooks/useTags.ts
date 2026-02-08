@@ -40,24 +40,32 @@ export function useTags() {
     fetchTags();
   }, [fetchTags]);
 
-  const addTag = async (tag: Omit<Tag, 'id'>) => {
-    const errors = validateSchema(tag, tagValidators);
+  const addTag = async (tag: Omit<Tag, 'id' | 'system'>) => {
+    // User-created tags are never system tags
+    const userTag: Omit<Tag, 'id'> = { ...tag, system: false, type: 'custom' };
+    const errors = validateSchema(userTag, tagValidators);
 
     // Check uniqueness
-    if (tags.some(t => t.name.toLowerCase() === tag.name.toLowerCase())) {
+    if (tags.some(t => t.name.toLowerCase() === userTag.name.toLowerCase())) {
         errors['name'] = { key: 'validations.uniqueName' };
     }
 
     if (Object.keys(errors).length > 0) throw errors;
 
     const db = await dbPromise;
-    const id = await db.add('tags', tag as Tag);
+    const id = await db.add('tags', userTag as Tag);
     await fetchTags();
     return id;
   };
 
   const updateTag = async (tag: Tag) => {
     if (!tag.id) return;
+
+    // System tags cannot be modified by the user
+    const existing = tags.find(t => t.id === tag.id);
+    if (existing?.system) {
+      throw { _system: { key: 'validations.systemTagProtected' } };
+    }
 
     const errors = validateSchema(tag, tagValidators);
 
@@ -74,6 +82,12 @@ export function useTags() {
   };
 
   const deleteTag = async (id: number) => {
+    // System tags cannot be deleted
+    const existing = tags.find(t => t.id === id);
+    if (existing?.system) {
+      throw { _system: { key: 'validations.systemTagProtected' } };
+    }
+
     const db = await dbPromise;
     const tx = db.transaction(['tags', 'inventory', 'exercises'], 'readwrite');
     

@@ -17,8 +17,7 @@ export function ExerciseSelector({ onSelect, onClose }: ExerciseSelectorProps) {
   const [search, setSearch] = useState('');
 
   const filtered = exercises.filter(e => 
-    e.title.toLowerCase().includes(search.toLowerCase()) || 
-    e.muscleGroup.toLowerCase().includes(search.toLowerCase())
+    e.title.toLowerCase().includes(search.toLowerCase()) 
   );
 
   return (
@@ -57,7 +56,6 @@ export function ExerciseSelector({ onSelect, onClose }: ExerciseSelectorProps) {
               </div>
               <div>
                 <p className="font-semibold text-sm">{ex.title}</p>
-                <p className="text-xs text-gray-500">{ex.muscleGroup}</p>
               </div>
           </button>
         ))}

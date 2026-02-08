@@ -232,15 +232,6 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
                                                     )}>
                                                         {/* Exercise Header */}
                                                         <div className="flex items-center justify-between mb-4">
-                                                            <div className="flex items-center gap-3">
-                                                                <div className="w-10 h-10 rounded-xl bg-gray-100 dark:bg-surface-input flex items-center justify-center text-primary">
-                                                                    <Icon name="fitness_center" />
-                                                                </div>
-                                                                <div>
-                                                                    <h3 className="text-base font-bold text-gray-900 dark:text-white leading-tight">{exerciseDef.title}</h3>
-                                                                    <p className="text-xs text-gray-500 font-medium">{exerciseDef.muscleGroup}</p>
-                                                                </div>
-                                                            </div>
                                                             <div className="flex items-center gap-2">
                                                                 <button
                                                                     type="button"

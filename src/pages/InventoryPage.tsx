@@ -32,7 +32,7 @@ export default function InventoryPage() {
   // Derived state for tags present in current inventory
   const inventoryTags = useMemo(() => {
     const ids = new Set<number>();
-    items.forEach(item => item.tagIds?.forEach(id => ids.add(id)));
+    items.forEach(item => item.tags?.forEach(tag => tag.id && ids.add(tag.id)));
     return tags.filter(t => ids.has(t.id!));
   }, [items, tags]);
 
@@ -43,7 +43,7 @@ export default function InventoryPage() {
       : filterStatus === 'available'
         ? item.status === 'available'
         : item.status !== 'available'; // Simplified logic
-    const matchesTag = activeTagId ? item.tagIds?.includes(activeTagId) : true;
+    const matchesTag = activeTagId ? item.tags?.some(tag => tag.id === activeTagId) : true;
     return matchesSearch && matchesStatus && matchesTag;
   });
 
@@ -159,12 +159,9 @@ export default function InventoryPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 mt-3 pl-16">
-              {(item.tagIds || []).map(tagId => {
-                const tag = tags.find(t => t.id === tagId);
-                if (!tag) return null;
-                return (
+              {(item.tags || []).map(tag => (
                   <span
-                    key={tagId}
+                    key={tag.id}
                     className="px-2 py-0.5 rounded-md text-[10px] font-medium border"
                     style={{
                       backgroundColor: `${tag.color}15`,
@@ -174,8 +171,7 @@ export default function InventoryPage() {
                   >
                     {tag.name}
                   </span>
-                );
-              })}
+              ))}
             </div>
           </Card>
         ))}

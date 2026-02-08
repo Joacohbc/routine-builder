@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { dbPromise } from '@/lib/db';
 import { validateSchema, exerciseValidators } from '@/lib/validations';
-import type { Exercise } from '@/types';
+import type { Exercise, Tag, InventoryItem } from '@/types';
 
 export function useExercises() {
   const [exercises, setExercises] = useState<Exercise[]>([]);
@@ -10,9 +10,20 @@ export function useExercises() {
   const fetchExercises = useCallback(async () => {
     try {
       const db = await dbPromise;
-      const allExercises = await db.getAll('exercises');
+      const [allExercises, allTags, allInventory] = await Promise.all([
+        db.getAll('exercises'),
+        db.getAll('tags'),
+        db.getAll('inventory')
+      ]);
       
-      setExercises(allExercises);
+      // Hydrate tags and equipment
+      const hydratedExercises = allExercises.map((ex: any) => ({
+        ...ex,
+        tags: ex.tags || (ex.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[],
+        primaryEquipment: ex.primaryEquipment || (ex.primaryEquipmentIds || []).map((id: number) => allInventory.find((i: InventoryItem) => i.id === id)).filter(Boolean) as InventoryItem[]
+      }));
+
+      setExercises(hydratedExercises);
     } catch (error) {
       console.error('Failed to fetch exercises:', error);
     } finally {
@@ -30,7 +41,18 @@ export function useExercises() {
     if (Object.keys(errors).length > 0) throw errors;
 
     const db = await dbPromise;
-    await db.add('exercises', exercise as Exercise);
+    // Dehydrate for storage
+    const exToSave = {
+        ...exercise,
+        tagIds: (exercise.tags || []).map(t => t.id).filter(Boolean) as number[],
+        primaryEquipmentIds: (exercise.primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
+    };
+    // @ts-ignore
+    delete exToSave.tags;
+    // @ts-ignore
+    delete exToSave.primaryEquipment;
+
+    await db.add('exercises', exToSave as any);
     await fetchExercises();
   };
 
@@ -41,7 +63,18 @@ export function useExercises() {
     if (Object.keys(errors).length > 0) throw errors;
 
     const db = await dbPromise;
-    await db.put('exercises', exercise);
+    // Dehydrate for storage
+    const exToSave = {
+        ...exercise,
+        tagIds: (exercise.tags || []).map(t => t.id).filter(Boolean) as number[],
+        primaryEquipmentIds: (exercise.primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
+    };
+    // @ts-ignore
+    delete exToSave.tags;
+    // @ts-ignore
+    delete exToSave.primaryEquipment;
+
+    await db.put('exercises', exToSave as any);
     await fetchExercises();
   };
 

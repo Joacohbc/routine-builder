@@ -40,6 +40,7 @@ export default function ManageTagsPage() {
     const tagData = {
       name: data.name as string,
       color: (data.color as string) || TAG_COLORS[0],
+      type: 'custom' as const,
     };
 
     if (editingTag) {

@@ -19,10 +19,7 @@ export default function ExerciseListPage() {
   const filteredExercises = exercises.filter(ex => 
     ex.title.toLowerCase().includes(search.toLowerCase()) ||
     ex.muscleGroup?.toLowerCase().includes(search.toLowerCase()) ||
-    ex.tagIds?.some(tagId => {
-      const tag = tags.find(t => t.id === tagId);
-      return tag?.name.toLowerCase().includes(search.toLowerCase());
-    })
+    ex.tags?.some(tag => tag.name.toLowerCase().includes(search.toLowerCase()))
   );
 
   return (
@@ -73,12 +70,9 @@ export default function ExerciseListPage() {
                         </span>
                     )}
                     {/* Show tags */}
-                    {(ex.tagIds || []).slice(0, 2).map(tagId => {
-                        const tag = tags.find(t => t.id === tagId);
-                        if (!tag) return null;
-                        return (
+                    {(ex.tags || []).slice(0, 2).map(tag => (
                           <span 
-                            key={tagId} 
+                            key={tag.id} 
                             className="text-[10px] px-2 py-0.5 rounded-md font-medium border"
                             style={{ 
                               backgroundColor: `${tag.color}15`, 
@@ -88,9 +82,8 @@ export default function ExerciseListPage() {
                           >
                               {tag.name}
                           </span>
-                        );
-                    })}
-                    {ex.tagIds && ex.tagIds.length > 2 && (
+                    ))}
+                    {ex.tags && ex.tags.length > 2 && (
                         <span className="text-xs text-gray-400 px-1">...</span>
                     )}
                   </div>

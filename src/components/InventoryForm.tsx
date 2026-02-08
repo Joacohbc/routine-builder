@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/Button';
 import { Form, useFormContext } from '@/components/ui/Form';
 import { TagSelector } from '@/components/ui/TagSelector';
 import { inventoryValidators } from '@/lib/validations';
-import type { InventoryItem } from '@/types';
+import type { InventoryItem, Tag } from '@/types';
 
 interface InventoryFormProps {
   item: InventoryItem | null;
@@ -25,7 +25,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
       status: values.status,
       condition: values.condition,
       quantity: Number(values.quantity),
-      tagIds: values.tagIds,
+      tags: values.tags,
     });
   };
 
@@ -87,11 +87,11 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
           />
         </div>
 
-        <Form.Field name="tagIds" defaultValue={item?.tagIds || []}>
+        <Form.Field name="tags" defaultValue={item?.tags || []}>
           {({ value, setValue }) => (
             <TagSelector
               label={t('common.tags')}
-              selectedTagIds={value as number[]}
+              selectedTags={value as Tag[]}
               onChange={setValue}
               type={'inventory'} />
           )}
