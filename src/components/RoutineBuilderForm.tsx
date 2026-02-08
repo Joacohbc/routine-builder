@@ -108,6 +108,7 @@ interface ExerciseSerieProps {
 	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
 	onAddSet: (seriesId: string, exId: string) => void;
 	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
+	onUpdateRestAfter: (seriesId: string, exId: string, restAfter: number) => void;
 }
 
 function ExerciseSerie({
@@ -118,7 +119,8 @@ function ExerciseSerie({
 	onToggleTrackingType,
 	onUpdateSet,
 	onAddSet,
-	onRemoveSet
+	onRemoveSet,
+	onUpdateRestAfter
 }: ExerciseSerieProps) {
 	const { t } = useTranslation();
 	const { exercises } = useExercises();
@@ -191,6 +193,30 @@ function ExerciseSerie({
 			>
 				{t('routineBuilder.addSet')}
 			</button>
+
+			{/* Rest Time Control */}
+			<div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+				<div className="flex items-center justify-between gap-3">
+					<div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+						<Icon name="timer" size={18} />
+						<span className="text-sm font-medium">{t('routineBuilder.restTime')}</span>
+					</div>
+					<FormattedTimeInput
+						className={cn(
+							"w-24 bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold h-9 focus:ring-1 focus:ring-primary",
+							seriesType === 'superset' ? "text-gray-400 cursor-not-allowed" : "text-gray-900 dark:text-white"
+						)}
+						value={seriesType === 'superset' ? 0 : (exercise.restAfter || 0)}
+						onChange={(val) => onUpdateRestAfter(seriesId, exercise.id, val)}
+						disabled={seriesType === 'superset'}
+					/>
+				</div>
+				{seriesType === 'superset' && (
+					<p className="mt-2 text-xs text-gray-500 dark:text-gray-500">
+						{t('routineBuilder.supersetNoRest')}
+					</p>
+				)}
+			</div>
 		</div>
 	);
 }
@@ -208,6 +234,7 @@ interface SerieProps {
 	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
 	onAddSet: (seriesId: string, exId: string) => void;
 	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
+	onUpdateRestAfter: (seriesId: string, exId: string, restAfter: number) => void;
 }
 
 function Serie({
@@ -221,7 +248,8 @@ function Serie({
 	onToggleTrackingType,
 	onUpdateSet,
 	onAddSet,
-	onRemoveSet
+	onRemoveSet,
+	onUpdateRestAfter
 }: SerieProps) {
 	const { t } = useTranslation();
 
@@ -285,6 +313,7 @@ function Serie({
 						onUpdateSet={onUpdateSet}
 						onAddSet={onAddSet}
 						onRemoveSet={onRemoveSet}
+						onUpdateRestAfter={onUpdateRestAfter}
 					/>
 				))}
 
@@ -319,6 +348,8 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 			if (s.id !== seriesId) return s;
 
 			const trackingType = exercise.defaultType === 'time' ? 'time' : 'reps';
+			// Set restAfter to 0 for superset, 90 seconds for standard
+			const restAfter = s.type === 'superset' ? 0 : 90;
 			const newEx: RoutineExercise = {
 				id: crypto.randomUUID(),
 				exerciseId: exercise.id!,
@@ -327,7 +358,8 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 					{ id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false },
 					{ id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false },
 					{ id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false }
-				]
+				],
+				restAfter
 			};
 			return { ...s, exercises: [...s.exercises, newEx] };
 		});
@@ -457,6 +489,19 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 							}));
 						};
 
+						const updateRestAfter = (seriesId: string, exId: string, restAfter: number) => {
+							updateSeriesList(series.map(s => {
+								if (s.id !== seriesId) return s;
+								return {
+									...s,
+									exercises: s.exercises.map(ex => {
+										if (ex.id !== exId) return ex;
+										return { ...ex, restAfter };
+									})
+								};
+							}));
+						};
+
 						return (
 							<div className="flex flex-col gap-6 py-6">
 								{error && (
@@ -474,17 +519,23 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 										canRemove={series.length > 1}
 										onRemoveSeries={removeSeries}
 										onUpdateSerieType={(seriesId, newType) => {
-											updateSeriesList(series.map(serie =>
-												serie.id === seriesId ? { ...serie, type: newType } : serie
-											));
+										updateSeriesList(series.map(serie => {
+											if (serie.id !== seriesId) return serie;
+											// When changing to superset, set all restAfter to 0
+											// When changing to standard, set default restAfter to 90 seconds
+											const updatedExercises = serie.exercises.map(ex => ({
+												...ex,
+												restAfter: newType === 'superset' ? 0 : (ex.restAfter || 90)
+											}));
+											return { ...serie, type: newType, exercises: updatedExercises };
+										}));
 										}}
 										onOpenSelector={(seriesId) => setShowSelector({ seriesId })}
 										onRemoveExercise={removeExercise}
 										onToggleTrackingType={toggleTrackingType}
 										onUpdateSet={updateSet}
 										onAddSet={addSet}
-										onRemoveSet={removeSet}
-									/>
+										onRemoveSet={removeSet}									onUpdateRestAfter={updateRestAfter}									/>
 								))}
 
 								<Button type="button" onClick={addSeries} variant="secondary" className="mt-4">

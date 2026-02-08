@@ -38,11 +38,8 @@ export type TrackingType = 'reps' | 'time';
  * 
  * - superset: 2-3 exercises performed back-to-back with no rest between them (Exercise A → Exercise B → Rest → Repeat)
  *   Focus: Time efficiency, antagonist muscle groups, high intensity with heavier loads
- * 
- * - circuit: 3+ exercises (typically 4-8) performed consecutively with minimal/no rest (Exercise A → B → C → D → Rest → Repeat circuit)
- *   Focus: Cardiovascular conditioning, muscular endurance, calorie burn with moderate loads
  */
-export type SeriesType = 'standard' | 'superset' | 'circuit';
+export type SeriesType = 'standard' | 'superset';
 
 /** Supported media format types */
 export type MediaType = 'image' | 'video' | 'youtube';

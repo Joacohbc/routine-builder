@@ -90,7 +90,10 @@
     "addExercise": "Añadir Ejercicio",
     "addSeries": "+ Añadir Serie",
     "removeSeries": "Eliminar Serie",
-    "seriesType": "Tipo de Serie"
+    "seriesType": "Tipo de Serie",
+    "restTime": "Tiempo de Descanso",
+    "supersetNoRest": "Sin descanso entre ejercicios en superserie",
+    "routineName": "Nombre de Rutina"
   },
   "inventory": {
     "titleEdit": "Editar Item",
