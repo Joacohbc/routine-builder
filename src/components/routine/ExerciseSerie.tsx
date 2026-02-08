@@ -6,7 +6,7 @@ import { FormattedTimeInput } from '@/components/ui/FormattedTimeInput';
 import { Icon } from '@/components/ui/Icon';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import type { RoutineExercise, SeriesType, WorkoutSet } from '@/types';
-import { ExerciseSerieRow } from '@/components/routine/ExerciseSerieRowProps';
+import { ExerciseSerieRow } from '@/components/routine/ExerciseSerieRow';
 
 // ==================== ExerciseSerie Component ====================
 export interface ExerciseSerieProps {
