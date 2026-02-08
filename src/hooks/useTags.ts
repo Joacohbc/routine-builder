@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { dbPromise, DB_TABLES } from '@/lib/db';
 import { validateSchema, tagValidators } from '@/lib/validations';
 import type { Tag } from '@/types';
+import { useTranslation } from 'react-i18next';
 
 export const TAG_COLORS = [
   '#ef4444', // red-500
@@ -120,20 +121,22 @@ const deleteTag = async (tags: Tag[], id: number) => {
   await tx.done;
 };
 
+
 export function useTags() {
+  const { t } = useTranslation();
   const [ tags, setTags ] = useState<Tag[]>([]);
   const [ loading, setLoading ] = useState(true);
 
   const refresh = useCallback(async () => {
     try {
       const fetchedTags = await fetchTags();
-      setTags(fetchedTags);
+      setTags(fetchedTags.map(tag => ({ ...tag, name: tag.system ? t('exercise.muscles.' + tag.name, 'No name') : tag.name })));
     } catch (error) {
       console.error('Failed to fetch tags:', error);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [ t ]);
 
   useEffect(() => {
     refresh();
@@ -160,6 +163,6 @@ export function useTags() {
     addTag: onAddTag, 
     updateTag: onUpdateTag, 
     deleteTag: onDeleteTag, 
-    refresh 
+    refresh
   };
 }
