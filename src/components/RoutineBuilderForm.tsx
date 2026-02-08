@@ -46,7 +46,7 @@ function ExerciseSerieRow({
 					{index + 1}
 				</button>
 			</div>
-			
+
 			<div className="col-span-4">
 				<input
 					className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
@@ -87,7 +87,7 @@ function ExerciseSerieRow({
 					type="button"
 					onClick={() => onUpdateSet(seriesId, exerciseId, set.id, 'type', set.type === 'failure' ? 'working' : 'failure')}
 					className={cn(
-						"transition-colors", 
+						"transition-colors",
 						set.type === 'failure' ? "text-primary animate-pulse" : "text-gray-300 dark:text-gray-600 hover:text-primary"
 					)}
 				>
@@ -122,7 +122,7 @@ function ExerciseSerie({
 }: ExerciseSerieProps) {
 	const { t } = useTranslation();
 	const { exercises } = useExercises();
-	
+
 	const exerciseDef = exercises.find(e => e.id === exercise.exerciseId);
 	if (!exerciseDef) return null;
 
@@ -143,9 +143,9 @@ function ExerciseSerie({
 					value={String(exercise.trackingType)}
 					onChange={() => onToggleTrackingType(seriesId, exercise.id)}
 				/>
-				<button 
-					type="button" 
-					onClick={() => onRemoveExercise(seriesId, exercise.id)} 
+				<button
+					type="button"
+					onClick={() => onRemoveExercise(seriesId, exercise.id)}
 					className="flex items-center justify-center text-gray-400 hover:text-red-500"
 				>
 					<Icon name="close" />
@@ -248,8 +248,8 @@ function Serie({
 					</span>
 
 					<div className="flex gap-2">
-					
-          	{/* Series Type Selector */}
+
+						{/* Series Type Selector */}
 						<SegmentedControl
 							options={[
 								{ value: 'standard', label: t('routineBuilder.standard') },
@@ -258,8 +258,8 @@ function Serie({
 							value={serie.type}
 							onChange={(newType) => onUpdateSerieType(serie.id, newType as RoutineSeries['type'])}
 						/>
-					
-          	{/* Remove Series Button */}
+
+						{/* Remove Series Button */}
 						{canRemove && (
 							<button
 								type="button"
