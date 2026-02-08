@@ -19,7 +19,7 @@ type FilterStatus = InventoryStatus | 'all';
 export default function InventoryPage() {
   const { t } = useTranslation();
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();
-  const { tags } = useTags();
+  const { tags, formatTagName } = useTags();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [activeTagId, setActiveTagId] = useState<number | null>(null);
@@ -120,7 +120,7 @@ export default function InventoryPage() {
             style={activeTagId === tag.id ? { color: tag.color, borderColor: tag.color, backgroundColor: `${tag.color}15` } : {}}
           >
             <Icon name="sell" size={14} />
-            {tag.name}
+            {formatTagName(tag)}
           </button>
         ))}
       </div>
@@ -169,7 +169,7 @@ export default function InventoryPage() {
                       borderColor: `${tag.color}30`
                     }}
                   >
-                    {tag.name}
+                    {formatTagName(tag)}
                   </span>
               ))}
             </div>

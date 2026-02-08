@@ -124,22 +124,25 @@ const deleteTag = async (tags: Tag[], id: number) => {
   await tx.done;
 };
 
-
 export function useTags() {
   const { t } = useTranslation();
   const [ tags, setTags ] = useState<Tag[]>([]);
   const [ loading, setLoading ] = useState(true);
 
+  const formatTagName = useCallback(
+    (tag: Tag) => tag.system ? t('exercise.muscles.' + tag.name, 'No name') : tag.name,
+  [ t ]);
+
   const refresh = useCallback(async () => {
     try {
       const fetchedTags = await fetchTags();
-      setTags(fetchedTags.map(tag => ({ ...tag, name: tag.system ? t('exercise.muscles.' + tag.name, 'No name') : tag.name })));
+      setTags(fetchedTags.map(tag => ({ ...tag, name: formatTagName(tag) })));
     } catch (error) {
       console.error('Failed to fetch tags:', error);
     } finally {
       setLoading(false);
     }
-  }, [ t ]);
+  }, [formatTagName]);
 
   useEffect(() => {
     refresh();
@@ -166,6 +169,7 @@ export function useTags() {
     addTag: onAddTag, 
     updateTag: onUpdateTag, 
     deleteTag: onDeleteTag, 
-    refresh
+    refresh,
+    formatTagName
   };
 }
