@@ -63,15 +63,12 @@ export default function ExerciseListPage() {
                 <div className="flex-1 min-w-0">
                   <h3 className="text-base font-semibold text-gray-900 dark:text-white truncate">{ex.title}</h3>
                   <div className="flex flex-wrap gap-1 mt-1">
-                    {(ex.tags || []).slice(0, 2).map(tag => (
+                    {(ex.tags || []).map(tag => (
                       <TagBadge key={tag.id}
                         label={formatTagName(tag)}
                         color={tag.color}
                       />
                     ))}
-                    {ex.tags && ex.tags.length > 2 && (
-                      <span className="text-xs text-gray-400 px-1">...</span>
-                    )}
                   </div>
                 </div>
               </div>
