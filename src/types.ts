@@ -138,7 +138,7 @@ export interface WorkoutSet {
 export interface RoutineExercise {
   id: string;
   exerciseId: number; // References Exercise.id in the exercises store
-  trackingType?: TrackingType;
+  trackingType: TrackingType;
   sets: WorkoutSet[];
   restAfter?: number; // seconds
   notes?: string;
