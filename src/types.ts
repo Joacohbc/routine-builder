@@ -139,7 +139,7 @@ export interface RoutineExercise {
   sets: WorkoutSet[];
 
   // Seconds of rest after completing this exercise before the next one starts (for standard series)
-  restAfter: number;
+  restAfterSet: number;
   notes?: string;
 }
 

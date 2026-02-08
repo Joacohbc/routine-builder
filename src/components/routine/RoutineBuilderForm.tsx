@@ -27,8 +27,8 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 			if (s.id !== seriesId) return s;
 
 			const trackingType = exercise.defaultType === 'time' ? 'time' : 'reps';
-			// Set restAfter to 0 for superset, 90 seconds for standard
-			const restAfter = s.type === 'superset' ? 0 : 90;
+			// Set restAfterSet to 0 for superset, 90 seconds for standard
+			const restAfterSet = s.type === 'superset' ? 0 : 90;
 			const newEx: RoutineExercise = {
 				id: crypto.randomUUID(),
 				exerciseId: exercise.id!,
@@ -38,7 +38,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 					{ id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false },
 					{ id: crypto.randomUUID(), type: 'working', weight: 0, reps: 0, time: 0, completed: false }
 				],
-				restAfter
+				restAfterSet
 			};
 			return { ...s, exercises: [...s.exercises, newEx] };
 		});
@@ -169,14 +169,14 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 							}));
 						};
 
-						const updateRestAfter = (seriesId: string, exId: string, restAfter: number) => {
+						const updateRestAfter = (seriesId: string, exId: string, restAfterSet: number) => {
 							updateSeriesList(series.map(s => {
 								if (s.id !== seriesId) return s;
 								return {
 									...s,
 									exercises: s.exercises.map(ex => {
 										if (ex.id !== exId) return ex;
-										return { ...ex, restAfter };
+										return { ...ex, restAfterSet };
 									})
 								};
 							}));
@@ -208,11 +208,11 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 										onUpdateSerieType={(seriesId, newType) => {
 											updateSeriesList(series.map(serie => {
 												if (serie.id !== seriesId) return serie;
-												// When changing to superset, set all restAfter to 0
-												// When changing to standard, set default restAfter to 90 seconds
+												// When changing to superset, set all restAfterSet to 0
+												// When changing to standard, set default restAfterSet to 90 seconds
 												const updatedExercises = serie.exercises.map(ex => ({
 													...ex,
-													restAfter: newType === 'superset' ? 0 : (ex.restAfter || 90)
+													restAfterSet: newType === 'superset' ? 0 : (ex.restAfterSet || 90)
 												}));
 												return { ...serie, type: newType, exercises: updatedExercises };
 											}));

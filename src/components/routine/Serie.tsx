@@ -19,7 +19,7 @@ interface SerieProps {
 	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
 	onAddSet: (seriesId: string, exId: string) => void;
 	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
-	onUpdateRestAfter: (seriesId: string, exId: string, restAfter: number) => void;
+	onUpdateRestAfter: (seriesId: string, exId: string, restAfterSet: number) => void;
 	onUpdateRestAfterSerie: (seriesId: string, restAfterSerie: number) => void;
 }
 export function Serie({
