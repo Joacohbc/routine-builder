@@ -85,10 +85,11 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 							const newSeries: RoutineSeries = {
 								id: crypto.randomUUID(),
 								type: 'standard',
-								exercises: []
-							};
-							updateSeriesList([...series, newSeries]);
+							exercises: [],
+							restAfterSerie: 90
 						};
+						updateSeriesList([...series, newSeries]);
+					};
 
 						const removeSeries = (seriesId: string) => {
 							updateSeriesList(series.filter(s => s.id !== seriesId));
@@ -181,6 +182,13 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 							}));
 						};
 
+						const updateRestAfterSerie = (seriesId: string, restAfterSerie: number) => {
+							updateSeriesList(series.map(s => {
+								if (s.id !== seriesId) return s;
+								return { ...s, restAfterSerie };
+							}));
+						};
+
 						return (
 							<div className="flex flex-col gap-6 py-6">
 								{error && (
@@ -214,7 +222,10 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 										onToggleTrackingType={toggleTrackingType}
 										onUpdateSet={updateSet}
 										onAddSet={addSet}
-										onRemoveSet={removeSet} onUpdateRestAfter={updateRestAfter} />
+									onRemoveSet={removeSet}
+									onUpdateRestAfter={updateRestAfter}
+									onUpdateRestAfterSerie={updateRestAfterSerie}
+								/>
 								))}
 
 								<Button type="button" onClick={addSeries} variant="secondary" className="mt-4">

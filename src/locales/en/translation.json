@@ -92,6 +92,7 @@
     "removeSeries": "Remove Series",
     "seriesType": "Series Type",
     "restTime": "Rest Time",
+    "restAfterSerie": "Rest After Series",
     "supersetNoRest": "No rest between exercises in superset",
     "routineName": "Routine Name"
   },

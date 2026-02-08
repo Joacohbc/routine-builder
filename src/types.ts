@@ -137,7 +137,9 @@ export interface RoutineExercise {
   exerciseId: number; // References Exercise.id in the exercises store
   trackingType: TrackingType;
   sets: WorkoutSet[];
-  restAfter?: number; // seconds
+
+  // Seconds of rest after completing this exercise before the next one starts (for standard series)
+  restAfter: number;
   notes?: string;
 }
 
@@ -146,7 +148,9 @@ export interface RoutineSeries {
   id: string;
   type: SeriesType;
   exercises: RoutineExercise[];
-  restBetweenExercises?: number; // if 0, it's a superset/circuit flow
+  
+  // Seconds of rest after completing this entire series before moving to the next one.
+  restAfterSerie: number;
 }
 
 /** Complete workout plan with multiple series */

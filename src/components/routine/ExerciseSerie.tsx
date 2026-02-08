@@ -116,7 +116,7 @@ export function ExerciseSerie({
 							"w-24 bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold h-9 focus:ring-1 focus:ring-primary",
 							seriesType === 'superset' ? "text-gray-400 cursor-not-allowed" : "text-gray-900 dark:text-white"
 						)}
-						value={seriesType === 'superset' ? 0 : (routineExercise.restAfter || 0)}
+						value={seriesType === 'superset' ? 0 : routineExercise.restAfter}
 						onChange={(val) => onUpdateRestAfter(seriesId, routineExercise.id, val)}
 						disabled={seriesType === 'superset'} />
 				</div>

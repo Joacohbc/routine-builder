@@ -92,6 +92,7 @@
     "removeSeries": "Eliminar Serie",
     "seriesType": "Tipo de Serie",
     "restTime": "Tiempo de Descanso",
+    "restAfterSerie": "Descanso después de la Serie",
     "supersetNoRest": "Sin descanso entre ejercicios en superserie",
     "routineName": "Nombre de Rutina"
   },

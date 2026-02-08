@@ -3,6 +3,7 @@ import type { RoutineSeries, WorkoutSet } from '@/types';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/Icon';
 import { SegmentedControl } from '@/components/ui/SegmentedControl';
+import { FormattedTimeInput } from '@/components/ui/FormattedTimeInput';
 import { ExerciseSerie } from '@/components/routine/ExerciseSerie';
 
 // ==================== Serie Component ====================
@@ -19,9 +20,10 @@ interface SerieProps {
 	onAddSet: (seriesId: string, exId: string) => void;
 	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
 	onUpdateRestAfter: (seriesId: string, exId: string, restAfter: number) => void;
+	onUpdateRestAfterSerie: (seriesId: string, restAfterSerie: number) => void;
 }
 export function Serie({
-	serie, serieIndex, canRemove, onRemoveSeries, onUpdateSerieType, onOpenSelector, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfter
+	serie, serieIndex, canRemove, onRemoveSeries, onUpdateSerieType, onOpenSelector, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfter, onUpdateRestAfterSerie
 }: SerieProps) {
 	const { t } = useTranslation();
 
@@ -96,6 +98,22 @@ export function Serie({
 					<Icon name="add_circle" />
 					<span className="font-medium text-sm">{t('routineBuilder.addExercise')}</span>
 				</button>
+
+				{/* Rest After Serie Control */}
+				{serie.exercises.length > 0 && (
+					<div className="bg-surface p-4 rounded-2xl shadow-sm border border-gray-100 dark:border-surface-highlight">
+						<div className="flex items-center justify-between gap-3">
+							<div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+								<Icon name="schedule" size={18} />
+								<span className="text-sm font-medium">{t('routineBuilder.restAfterSerie')}</span>
+							</div>
+							<FormattedTimeInput
+								className="w-24 bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold h-9 focus:ring-1 focus:ring-primary text-gray-900 dark:text-white"
+								value={serie.restAfterSerie}
+								onChange={(val) => onUpdateRestAfterSerie(serie.id, val)} />
+						</div>
+					</div>
+				)}
 			</div>
 		</div>
 	);
