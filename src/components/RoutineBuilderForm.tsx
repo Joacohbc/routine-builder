@@ -10,13 +10,13 @@ import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { routineValidators } from '@/lib/validations';
 import { cn } from '@/lib/utils';
 import { FormattedTimeInput } from '@/components/ui/FormattedTimeInput';
-import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise } from '@/types';
+import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise, SeriesType, TrackingType } from '@/types';
 
 // ==================== ExerciseSerieRow Component ====================
 interface ExerciseSerieRowProps {
 	set: WorkoutSet;
 	index: number;
-	trackingType: RoutineExercise['trackingType'];
+	trackingType: TrackingType;
 	seriesId: string;
 	exerciseId: string;
 	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
@@ -102,7 +102,7 @@ function ExerciseSerieRow({
 interface ExerciseSerieProps {
 	exercise: RoutineExercise;
 	seriesId: string;
-	seriesType: RoutineSeries['type'];
+	seriesType: SeriesType;
 	onRemoveExercise: (seriesId: string, exId: string) => void;
 	onToggleTrackingType: (seriesId: string, exId: string) => void;
 	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
@@ -256,7 +256,7 @@ function Serie({
 								{ value: 'superset', label: t('routineBuilder.superset') },
 							]}
 							value={serie.type}
-							onChange={(newType) => onUpdateSerieType(serie.id, newType as RoutineSeries['type'])}
+							onChange={(newType) => onUpdateSerieType(serie.id, newType)}
 						/>
 
 						{/* Remove Series Button */}
