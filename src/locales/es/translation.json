@@ -35,6 +35,8 @@
   },
   "inventoryPage": {
     "title": "Inventario",
+    "empty": "No se encontraron items.",
+    "emptyHint": "Toca + para añadir uno.",
     "filters": {
       "all": "Todos",
       "available": "Disponible",

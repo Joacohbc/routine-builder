@@ -127,28 +127,35 @@ export default function InventoryPage() {
         </Button>
       </div>
 
-      <div ref={tagsRef} className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
-        <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">{t('inventoryPage.tagsLabel')}</div>
-        {inventoryTags.map(tag => (
-          <button
-            key={tag.id}
-            onClick={() => setActiveTagId(activeTagId === tag.id ? null : tag.id!)}
-            className={cn(
-              "flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
-              activeTagId === tag.id
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-surface border-gray-200 dark:border-surface-highlight text-gray-500 dark:text-gray-400"
-            )}
-            style={activeTagId === tag.id ? { color: tag.color, borderColor: tag.color, backgroundColor: `${tag.color}15` } : {}}
-          >
-            <Icon name="sell" size={14} />
-            {formatTagName(tag)}
-          </button>
-        ))}
-      </div>
+      {inventoryTags.length > 0 && (
+        <div ref={tagsRef} className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
+          <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">{t('inventoryPage.tagsLabel')}</div>
+          {inventoryTags.map(tag => (
+            <button
+              key={tag.id}
+              onClick={() => setActiveTagId(activeTagId === tag.id ? null : tag.id!)}
+              className={cn(
+                "flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+                activeTagId === tag.id
+                  ? "bg-primary/10 border-primary text-primary"
+                  : "bg-surface border-gray-200 dark:border-surface-highlight text-gray-500 dark:text-gray-400"
+              )}
+              style={activeTagId === tag.id ? { color: tag.color, borderColor: tag.color, backgroundColor: `${tag.color}15` } : {}}
+            >
+              <Icon name="sell" size={14} />
+              {formatTagName(tag)}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
-        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : filteredItems.map((item) => (
+        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : filteredItems.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            <p>{t('inventoryPage.empty')}</p>
+            <p className="text-xs mt-2">{t('inventoryPage.emptyHint')}</p>
+          </div>
+        ) : filteredItems.map((item) => (
           <Card key={item.id} hover className="group" onClick={() => handleEdit(item)}>
             <div className="flex items-start justify-between w-full">
               <div className="flex items-center gap-4 flex-1 min-w-0">

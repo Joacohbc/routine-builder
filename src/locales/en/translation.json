@@ -35,6 +35,8 @@
   },
   "inventoryPage": {
     "title": "Inventory",
+    "empty": "No items found.",
+    "emptyHint": "Tap + to add one.",
     "filters": {
       "all": "All Items",
       "available": "Available",
