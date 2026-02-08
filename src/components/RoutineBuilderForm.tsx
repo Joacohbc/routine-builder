@@ -12,6 +12,297 @@ import { cn } from '@/lib/utils';
 import { FormattedTimeInput } from '@/components/ui/FormattedTimeInput';
 import type { RoutineSeries, RoutineExercise, WorkoutSet, Exercise } from '@/types';
 
+// ==================== ExerciseSerieRow Component ====================
+interface ExerciseSerieRowProps {
+	set: WorkoutSet;
+	index: number;
+	trackingType: RoutineExercise['trackingType'];
+	seriesId: string;
+	exerciseId: string;
+	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
+	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
+}
+
+function ExerciseSerieRow({
+	set,
+	index,
+	trackingType,
+	seriesId,
+	exerciseId,
+	onUpdateSet,
+	onRemoveSet
+}: ExerciseSerieRowProps) {
+	return (
+		<div className="grid grid-cols-12 gap-2 items-center">
+			<div className="col-span-2 flex justify-center">
+				<button
+					type="button"
+					onClick={() => onRemoveSet(seriesId, exerciseId, set.id)}
+					className={cn(
+						"size-6 rounded-full text-xs font-bold flex items-center justify-center transition-colors hover:bg-red-100 hover:text-red-500",
+						set.type === 'failure' ? "bg-primary text-white" : "bg-primary/10 text-primary"
+					)}
+				>
+					{index + 1}
+				</button>
+			</div>
+			
+			<div className="col-span-4">
+				<input
+					className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
+					placeholder="-"
+					type="number"
+					value={set.weight || ''}
+					onChange={(e) => onUpdateSet(seriesId, exerciseId, set.id, 'weight', Number(e.target.value))}
+				/>
+			</div>
+
+			<div className="col-span-4">
+				{set.type === 'failure' ? (
+					<input
+						className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-400 h-9"
+						value="-"
+						placeholder="-"
+						disabled
+					/>
+				) : trackingType === 'time' ? (
+					<FormattedTimeInput
+						className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
+						value={set.time}
+						onChange={(val) => onUpdateSet(seriesId, exerciseId, set.id, 'time', val)}
+					/>
+				) : (
+					<input
+						className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
+						placeholder="-"
+						type="number"
+						value={set.reps || ''}
+						onChange={(e) => onUpdateSet(seriesId, exerciseId, set.id, 'reps', Number(e.target.value))}
+					/>
+				)}
+			</div>
+
+			<div className="col-span-2 flex justify-center">
+				<button
+					type="button"
+					onClick={() => onUpdateSet(seriesId, exerciseId, set.id, 'type', set.type === 'failure' ? 'working' : 'failure')}
+					className={cn(
+						"transition-colors", 
+						set.type === 'failure' ? "text-primary animate-pulse" : "text-gray-300 dark:text-gray-600 hover:text-primary"
+					)}
+				>
+					<Icon name="skull" filled={set.type === 'failure'} />
+				</button>
+			</div>
+		</div>
+	);
+}
+
+// ==================== ExerciseSerie Component ====================
+interface ExerciseSerieProps {
+	exercise: RoutineExercise;
+	seriesId: string;
+	seriesType: RoutineSeries['type'];
+	onRemoveExercise: (seriesId: string, exId: string) => void;
+	onToggleTrackingType: (seriesId: string, exId: string) => void;
+	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
+	onAddSet: (seriesId: string, exId: string) => void;
+	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
+}
+
+function ExerciseSerie({
+	exercise,
+	seriesId,
+	seriesType,
+	onRemoveExercise,
+	onToggleTrackingType,
+	onUpdateSet,
+	onAddSet,
+	onRemoveSet
+}: ExerciseSerieProps) {
+	const { t } = useTranslation();
+	const { exercises } = useExercises();
+	
+	const exerciseDef = exercises.find(e => e.id === exercise.exerciseId);
+	if (!exerciseDef) return null;
+
+	return (
+		<div className={cn(
+			"bg-surface p-4 shadow-sm border border-gray-100 dark:border-surface-highlight relative overflow-hidden",
+			seriesType === 'superset'
+				? "rounded-2xl first:rounded-tl-2xl first:rounded-tr-2xl last:rounded-bl-2xl last:rounded-br-2xl mb-1"
+				: "rounded-2xl"
+		)}>
+			{/* Exercise Header */}
+			<div className="flex items-center justify-center gap-2 mb-4">
+				<SegmentedControl
+					options={[
+						{ value: 'reps', label: t('routineBuilder.switchToReps') },
+						{ value: 'time', label: t('routineBuilder.switchToTime') },
+					]}
+					value={String(exercise.trackingType)}
+					onChange={() => onToggleTrackingType(seriesId, exercise.id)}
+				/>
+				<button 
+					type="button" 
+					onClick={() => onRemoveExercise(seriesId, exercise.id)} 
+					className="flex items-center justify-center text-gray-400 hover:text-red-500"
+				>
+					<Icon name="close" />
+				</button>
+			</div>
+
+			{/* Sets Header */}
+			<div className="grid grid-cols-12 gap-2 mb-2 px-1">
+				<div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+					{t('routineBuilder.set')}
+				</div>
+				<div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+					{t('routineBuilder.kg')}
+				</div>
+				<div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+					{exercise.trackingType === 'time' ? t('routineBuilder.duration') : t('routineBuilder.reps')}
+				</div>
+				<div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
+					{t('routineBuilder.fail')}
+				</div>
+			</div>
+
+			{/* Set Rows */}
+			<div className="space-y-2">
+				{exercise.sets.map((set, index) => (
+					<ExerciseSerieRow
+						key={set.id}
+						set={set}
+						index={index}
+						trackingType={exercise.trackingType}
+						seriesId={seriesId}
+						exerciseId={exercise.id}
+						onUpdateSet={onUpdateSet}
+						onRemoveSet={onRemoveSet}
+					/>
+				))}
+			</div>
+
+			<button
+				type="button"
+				onClick={() => onAddSet(seriesId, exercise.id)}
+				className="w-full mt-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 hover:text-primary transition-colors border border-dashed border-gray-300 dark:border-gray-700"
+			>
+				{t('routineBuilder.addSet')}
+			</button>
+		</div>
+	);
+}
+
+// ==================== Serie Component ====================
+interface SerieProps {
+	serie: RoutineSeries;
+	serieIndex: number;
+	canRemove: boolean;
+	onRemoveSeries: (seriesId: string) => void;
+	onUpdateSerieType: (seriesId: string, newType: RoutineSeries['type']) => void;
+	onOpenSelector: (seriesId: string) => void;
+	onRemoveExercise: (seriesId: string, exId: string) => void;
+	onToggleTrackingType: (seriesId: string, exId: string) => void;
+	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
+	onAddSet: (seriesId: string, exId: string) => void;
+	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
+}
+
+function Serie({
+	serie,
+	serieIndex,
+	canRemove,
+	onRemoveSeries,
+	onUpdateSerieType,
+	onOpenSelector,
+	onRemoveExercise,
+	onToggleTrackingType,
+	onUpdateSet,
+	onAddSet,
+	onRemoveSet
+}: SerieProps) {
+	const { t } = useTranslation();
+
+	return (
+		<div className="relative">
+
+			{/* Superset Connector Line */}
+			{serie.type === 'superset' && (
+				<div className="absolute left-0 top-4 bottom-4 w-1 bg-linear-to-b from-primary via-primary to-primary/50 rounded-full">
+					<div className="absolute -left-10.5 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
+						<span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background px-1">
+							{t('routineBuilder.superset')}
+						</span>
+					</div>
+				</div>
+			)}
+
+			<div className={cn("flex flex-col gap-2", serie.type === 'superset' ? "pl-4" : "")}>
+
+				{/* Series Header / Controls */}
+				<div className="flex justify-between items-center px-1 mb-1">
+					<span className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+						{t('routineBuilder.series', { count: serieIndex + 1 })}
+					</span>
+
+					<div className="flex gap-2">
+					
+          	{/* Series Type Selector */}
+						<SegmentedControl
+							options={[
+								{ value: 'standard', label: t('routineBuilder.standard') },
+								{ value: 'superset', label: t('routineBuilder.superset') },
+							]}
+							value={serie.type}
+							onChange={(newType) => onUpdateSerieType(serie.id, newType as RoutineSeries['type'])}
+						/>
+					
+          	{/* Remove Series Button */}
+						{canRemove && (
+							<button
+								type="button"
+								onClick={() => onRemoveSeries(serie.id)}
+								className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+								title={t('routineBuilder.removeSeries')}
+							>
+								<Icon name="delete" size={18} />
+							</button>
+						)}
+					</div>
+				</div>
+
+				{/* Exercise Rows */}
+				{serie.exercises.map((ex) => (
+					<ExerciseSerie
+						key={ex.id}
+						exercise={ex}
+						seriesId={serie.id}
+						seriesType={serie.type}
+						onRemoveExercise={onRemoveExercise}
+						onToggleTrackingType={onToggleTrackingType}
+						onUpdateSet={onUpdateSet}
+						onAddSet={onAddSet}
+						onRemoveSet={onRemoveSet}
+					/>
+				))}
+
+				{/* Add Exercise Button */}
+				<button
+					type="button"
+					onClick={() => onOpenSelector(serie.id)}
+					className="flex items-center justify-center w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl text-gray-400 hover:text-primary hover:border-primary transition-colors gap-2"
+				>
+					<Icon name="add_circle" />
+					<span className="font-medium text-sm">{t('routineBuilder.addExercise')}</span>
+				</button>
+			</div>
+		</div>
+	);
+}
+
+// ==================== Main Form Component ====================
 export interface RoutineBuilderFormProps {
 	initialValues: FormFieldValues;
 	onSubmit: (values: FormFieldValues) => Promise<void>;
@@ -20,7 +311,6 @@ export interface RoutineBuilderFormProps {
 
 export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: RoutineBuilderFormProps) {
 	const { t } = useTranslation();
-	const { exercises } = useExercises(); // To lookup names
 	const [showSelector, setShowSelector] = useState<{ seriesId: string } | null>(null);
 
 	// Helper to add exercise to form state (used by ExerciseSelector)
@@ -177,173 +467,24 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 								)}
 
 								{series.map((s, sIndex) => (
-									<div key={s.id} className="relative">
-										{/* Superset Connector Line */}
-										{s.type === 'superset' && (
-											<div className="absolute left-0 top-4 bottom-4 w-1 bg-linear-to-b from-primary via-primary to-primary/50 rounded-full">
-												<div className="absolute -left-10.5 top-1/2 -translate-y-1/2 -rotate-90 origin-center">
-													<span className="text-[9px] uppercase font-bold text-primary tracking-widest bg-background px-1">{t('routineBuilder.superset')}</span>
-												</div>
-											</div>
-										)}
-
-										<div className={cn("flex flex-col gap-2", s.type === 'superset' ? "pl-4" : "")}>
-											{/* Series Header / Controls */}
-											<div className="flex justify-between items-center px-1 mb-1">
-												<span className="text-xs font-bold text-gray-500 uppercase tracking-wider">{t('routineBuilder.series', { count: sIndex + 1 })}</span>
-												<div className="flex gap-2">
-													{/* Series Type Selector */}
-													<SegmentedControl
-														options={[
-															{ value: 'standard', label: t('routineBuilder.standard') },
-															{ value: 'superset', label: t('routineBuilder.superset') },
-														]}
-														value={s.type}
-														onChange={(newType) => {
-															updateSeriesList(series.map(serie =>
-																serie.id === s.id ? { ...serie, type: newType } : serie
-															));
-														}}
-													/>
-													{/* Remove Series Button */}
-													{series.length > 1 && (
-														<button
-															type="button"
-															onClick={() => removeSeries(s.id)}
-															className="p-1.5 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
-															title={t('routineBuilder.removeSeries')}
-														>
-															<Icon name="delete" size={18} />
-														</button>
-													)}
-												</div>
-											</div>
-
-											{s.exercises.map((ex) => {
-												const exerciseDef = exercises.find(e => e.id === ex.exerciseId);
-												if (!exerciseDef) return null;
-
-												return (
-													<div key={ex.id} className={cn(
-														"bg-surface p-4 shadow-sm border border-gray-100 dark:border-surface-highlight relative overflow-hidden",
-														s.type === 'superset'
-															? "rounded-2xl first:rounded-tl-2xl first:rounded-tr-2xl last:rounded-bl-2xl last:rounded-br-2xl mb-1" // Stacked look for superset
-															: "rounded-2xl"
-													)}>
-														{/* Exercise Header */}
-														<div className="flex items-center justify-center gap-2 mb-4">
-															<SegmentedControl
-																options={[
-																	{ value: 'reps', label: t('routineBuilder.switchToReps') },
-																	{ value: 'time', label: t('routineBuilder.switchToTime') },
-																]}
-																value={String(ex.trackingType)}
-																onChange={(newTrackingType) => {
-																	{
-																		toggleTrackingType(s.id, ex.id)
-																		ex.trackingType = newTrackingType as 'time' | 'reps';
-																	}
-																}}
-															/>
-															<button type="button" onClick={() => removeExercise(s.id, ex.id)} className="flex items-center justify-center text-gray-400 hover:text-red-500">
-																<Icon name="close" />
-															</button>
-														</div>
-
-														{/* Sets Header */}
-														<div className="grid grid-cols-12 gap-2 mb-2 px-1">
-															<div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">{t('routineBuilder.set')}</div>
-															<div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">{t('routineBuilder.kg')}</div>
-															<div className="col-span-4 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">
-																{ex.trackingType === 'time' ? t('routineBuilder.duration') : t('routineBuilder.reps')}
-															</div>
-															<div className="col-span-2 text-center text-[10px] uppercase font-bold text-gray-500 tracking-wider">{t('routineBuilder.fail')}</div>
-														</div>
-
-														{/* Set Rows */}
-														<div className="space-y-2">
-															{ex.sets.map((set, index) => (
-																<div key={set.id} className="grid grid-cols-12 gap-2 items-center">
-																	<div className="col-span-2 flex justify-center">
-																		<button
-																			type="button"
-																			onClick={() => removeSet(s.id, ex.id, set.id)}
-																			className={cn(
-																				"size-6 rounded-full text-xs font-bold flex items-center justify-center transition-colors hover:bg-red-100 hover:text-red-500",
-																				set.type === 'failure' ? "bg-primary text-white" : "bg-primary/10 text-primary"
-																			)}
-																		>
-																			{index + 1}
-																		</button>
-																	</div>
-																	<div className="col-span-4">
-																		<input
-																			className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
-																			placeholder="-"
-																			type="number"
-																			value={set.weight || ''}
-																			onChange={(e) => updateSet(s.id, ex.id, set.id, 'weight', Number(e.target.value))}
-																		/>
-																	</div>
-																	<div className="col-span-4">
-																		{set.type === 'failure' ? (
-																			<input
-																				className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-400 h-9"
-																				value="-"
-																				placeholder="-"
-																				disabled
-																			/>
-																		) : ex.trackingType === 'time' ? (
-																			<FormattedTimeInput
-																				className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
-																				value={set.time}
-																				onChange={(val) => updateSet(s.id, ex.id, set.id, 'time', val)}
-																			/>
-																		) : (
-																			<input
-																				className="w-full bg-gray-50 dark:bg-surface-input border-none rounded-lg text-center text-sm font-semibold text-gray-900 dark:text-white h-9 focus:ring-1 focus:ring-primary placeholder-gray-400"
-																				placeholder="-"
-																				type="number"
-																				value={set.reps || ''}
-																				onChange={(e) => updateSet(s.id, ex.id, set.id, 'reps', Number(e.target.value))}
-																			/>
-																		)}
-																	</div>
-																	<div className="col-span-2 flex justify-center">
-																		<button
-																			type="button"
-																			onClick={() => updateSet(s.id, ex.id, set.id, 'type', set.type === 'failure' ? 'working' : 'failure')}
-																			className={cn("transition-colors", set.type === 'failure' ? "text-primary animate-pulse" : "text-gray-300 dark:text-gray-600 hover:text-primary")}
-																		>
-																			<Icon name="skull" filled={set.type === 'failure'} />
-																		</button>
-																	</div>
-																</div>
-															))}
-														</div>
-
-														<button
-															type="button"
-															onClick={() => addSet(s.id, ex.id)}
-															className="w-full mt-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide rounded-lg hover:bg-gray-50 dark:hover:bg-white/5 hover:text-primary transition-colors border border-dashed border-gray-300 dark:border-gray-700"
-														>
-															{t('routineBuilder.addSet')}
-														</button>
-													</div>
-												);
-											})}
-
-											{/* Add Exercise Button */}
-											<button
-												type="button"
-												onClick={() => setShowSelector({ seriesId: s.id })}
-												className="flex items-center justify-center w-full py-4 border-2 border-dashed border-gray-300 dark:border-gray-700 rounded-2xl text-gray-400 hover:text-primary hover:border-primary transition-colors gap-2"
-											>
-												<Icon name="add_circle" />
-												<span className="font-medium text-sm">{t('routineBuilder.addExercise')}</span>
-											</button>
-										</div>
-									</div>
+									<Serie
+										key={s.id}
+										serie={s}
+										serieIndex={sIndex}
+										canRemove={series.length > 1}
+										onRemoveSeries={removeSeries}
+										onUpdateSerieType={(seriesId, newType) => {
+											updateSeriesList(series.map(serie =>
+												serie.id === seriesId ? { ...serie, type: newType } : serie
+											));
+										}}
+										onOpenSelector={(seriesId) => setShowSelector({ seriesId })}
+										onRemoveExercise={removeExercise}
+										onToggleTrackingType={toggleTrackingType}
+										onUpdateSet={updateSet}
+										onAddSet={addSet}
+										onRemoveSet={removeSet}
+									/>
 								))}
 
 								<Button type="button" onClick={addSeries} variant="secondary" className="mt-4">
