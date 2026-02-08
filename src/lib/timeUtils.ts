@@ -13,7 +13,8 @@ export function formatTime(seconds: number | undefined | null): string {
 
 export function parseTime(input: string): number {
   if (!input) return 0;
-  const cleaned = input.trim();
+  // Remover sufijos 'm' y 's' si existen
+  const cleaned = input.trim().replace(/[ms]$/i, '');
 
   if (cleaned.includes(':')) {
     const parts = cleaned.split(':');

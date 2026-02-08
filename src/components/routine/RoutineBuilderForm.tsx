@@ -169,7 +169,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 							}));
 						};
 
-						const updateRestAfter = (seriesId: string, exId: string, restAfterSet: number) => {
+						const updateRestAfterSet = (seriesId: string, exId: string, restAfterSet: number) => {
 							updateSeriesList(series.map(s => {
 								if (s.id !== seriesId) return s;
 								return {
@@ -223,7 +223,7 @@ export function RoutineBuilderForm({ initialValues, onSubmit, onCancel }: Routin
 										onUpdateSet={updateSet}
 										onAddSet={addSet}
 									onRemoveSet={removeSet}
-									onUpdateRestAfter={updateRestAfter}
+									onUpdateRestAfterSet={updateRestAfterSet}
 									onUpdateRestAfterSerie={updateRestAfterSerie}
 								/>
 								))}

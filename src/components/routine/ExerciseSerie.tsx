@@ -18,11 +18,11 @@ export interface ExerciseSerieProps {
     onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
     onAddSet: (seriesId: string, exId: string) => void;
     onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
-    onUpdateRestAfter: (seriesId: string, exId: string, restAfterSet: number) => void;
+    onUpdateRestAfterSet: (seriesId: string, exId: string, restAfterSet: number) => void;
 }
 
 export function ExerciseSerie({
-	routineExercise, seriesId, seriesType, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfter
+	routineExercise, seriesId, seriesType, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfterSet
 }: ExerciseSerieProps) {
 	const { t } = useTranslation();
 	const { exercises } = useExercises();
@@ -117,7 +117,7 @@ export function ExerciseSerie({
 							seriesType === 'superset' ? "text-gray-400 cursor-not-allowed" : "text-gray-900 dark:text-white"
 						)}
 						value={seriesType === 'superset' ? 0 : routineExercise.restAfterSet}
-						onChange={(val) => onUpdateRestAfter(seriesId, routineExercise.id, val)}
+						onChange={(val) => onUpdateRestAfterSet(seriesId, routineExercise.id, val)}
 						disabled={seriesType === 'superset'} />
 				</div>
 				{seriesType === 'superset' && (

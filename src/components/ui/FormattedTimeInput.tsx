@@ -10,9 +10,12 @@ interface FormattedTimeInputProps {
 
 function formatTimeWithSuffix(seconds: number) {
     const formatted = formatTime(seconds);
-    const suffix = formatted.includes(':') ? 'm' : 's';
-    const displayValue = formatted.replace(/:\d{2}$/, '') + suffix;
-    return displayValue;
+    if (formatted.includes(':')) {
+        // For times with minutes, keep the full format: "1:30m"
+        return formatted + 'm';
+    }
+    // For times in seconds only: "30s"
+    return formatted + 's';
 }
 
 export function FormattedTimeInput({ value, onChange, disabled, className }: FormattedTimeInputProps) {

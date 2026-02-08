@@ -19,11 +19,11 @@ interface SerieProps {
 	onUpdateSet: (seriesId: string, exId: string, setId: string, field: keyof WorkoutSet, val: string | number | boolean) => void;
 	onAddSet: (seriesId: string, exId: string) => void;
 	onRemoveSet: (seriesId: string, exId: string, setId: string) => void;
-	onUpdateRestAfter: (seriesId: string, exId: string, restAfterSet: number) => void;
+	onUpdateRestAfterSet: (seriesId: string, exId: string, restAfterSet: number) => void;
 	onUpdateRestAfterSerie: (seriesId: string, restAfterSerie: number) => void;
 }
 export function Serie({
-	serie, serieIndex, canRemove, onRemoveSeries, onUpdateSerieType, onOpenSelector, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfter, onUpdateRestAfterSerie
+	serie, serieIndex, canRemove, onRemoveSeries, onUpdateSerieType, onOpenSelector, onRemoveExercise, onToggleTrackingType, onUpdateSet, onAddSet, onRemoveSet, onUpdateRestAfterSet, onUpdateRestAfterSerie
 }: SerieProps) {
 	const { t } = useTranslation();
 
@@ -86,7 +86,7 @@ export function Serie({
 						onUpdateSet={onUpdateSet}
 						onAddSet={onAddSet}
 						onRemoveSet={onRemoveSet}
-						onUpdateRestAfter={onUpdateRestAfter} />
+						onUpdateRestAfterSet={onUpdateRestAfterSet} />
 				))}
 
 				{/* Add Exercise Button */}
