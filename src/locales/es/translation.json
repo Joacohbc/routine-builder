@@ -122,6 +122,7 @@
     "name": "Nombre",
     "namePlaceholder": "ej., Empuje, Pesado",
     "color": "Color",
+    "selectColor": "Seleccionar color {{color}}",
     "noTags": "No se encontraron etiquetas. Crea una para empezar.",
     "addPlaceholder": "Añadir etiqueta personalizada..."
   },

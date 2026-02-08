@@ -32,7 +32,8 @@ const fetchTags = async (): Promise<Tag[]> => {
   }
 }
 
-const addTag = async (tags: Tag[], tag: Tag) => {
+type TagCreation = Omit<Tag, 'id' | 'system' | 'type'>
+const addTag = async (tags: Tag[], tag: TagCreation) => {
 
   // User-created tags are never system tags
   const userTag: Omit<Tag, 'id'> = { ...tag, system: false, type: 'custom' };
@@ -57,7 +58,8 @@ const addTag = async (tags: Tag[], tag: Tag) => {
   return id;
 };
 
-const updateTag = async (tags: Tag[], tag: Tag) => {
+type TagUpdate = Omit<Tag, 'system' | 'type'>;
+const updateTag = async (tags: Tag[], tag: TagUpdate) => {
   if (!tag.id) return;
 
   // System tags cannot be modified by the user
@@ -78,7 +80,8 @@ const updateTag = async (tags: Tag[], tag: Tag) => {
   };
 
   const db = await dbPromise;
-  await db.put(DB_TABLES.TAGS, tag);};
+  await db.put(DB_TABLES.TAGS, { ...existing, name: tag.name, color: tag.color } as Tag);
+};
 
 const deleteTag = async (tags: Tag[], id: number) => {
   // System tags cannot be deleted
@@ -142,12 +145,12 @@ export function useTags() {
     refresh();
   }, [refresh]);
 
-  const onAddTag = useCallback(async (tag: Tag) => {
+  const onAddTag = useCallback(async (tag: TagCreation) => {
     await addTag(tags, tag);
     await refresh();
   }, [tags, refresh]);
 
-  const onUpdateTag = useCallback(async (tag: Tag) => {
+  const onUpdateTag = useCallback(async (tag: TagUpdate) => {
     await updateTag(tags, tag);
     await refresh();
   }, [tags, refresh]);
