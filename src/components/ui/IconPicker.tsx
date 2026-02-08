@@ -4,7 +4,6 @@ import { Modal } from '@/components/ui/Modal';
 import { Icon } from '@/components/ui/Icon';
 import { Input } from '@/components/ui/Input';
 import { cn } from '@/lib/utils';
-import { COMMON_ICONS } from '@/lib/iconList';
 
 // Global cache to avoid re-fetching the large icons.json file multiple times
 let cachedAllIcons: string[] | null = null;
@@ -20,12 +19,14 @@ async function fetchAllIcons(): Promise<string[]> {
       return res.json();
     })
     .then(names => {
-      cachedAllIcons = names as string[];
+      // Remove duplicates just in case and ensure it's an array of strings
+      const uniqueNames = Array.from(new Set(names));
+      cachedAllIcons = uniqueNames as string[];
       return cachedAllIcons;
     })
     .catch(err => {
       console.error('Error loading icon_names.json:', err);
-      return COMMON_ICONS;
+      return [];
     });
 
   return isFetchingPromise;
@@ -54,7 +55,7 @@ export function IconPicker({
   const displayPlaceholder = placeholder || t('iconPicker.selectPlaceholder', 'Select an icon...');
   const [isOpen, setIsOpen] = useState(false);
   const [search, setSearch] = useState('');
-  const [fullIconList, setFullIconList] = useState<string[]>(COMMON_ICONS);
+  const [fullIconList, setFullIconList] = useState<string[]>([]);
   const [displayCount, setDisplayCount] = useState(120);
   const observerTarget = useRef<HTMLDivElement>(null);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -107,9 +108,9 @@ export function IconPicker({
   }, [filteredIcons.length, displayCount]);
 
   useEffect(() => {
-    if (isOpen && fullIconList.length <= COMMON_ICONS.length) {
+    if (isOpen && fullIconList.length === 0) {
       fetchAllIcons().then(icons => {
-        setFullIconList([COMMON_ICONS, ...icons.filter(icon => !COMMON_ICONS.includes(icon))].flat() );
+        setFullIconList(icons);
       });
     }
   }, [isOpen, fullIconList.length]);
