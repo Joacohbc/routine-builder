@@ -26,7 +26,8 @@ export default function RoutineBuilderPage() {
 			series: [{
 				id: crypto.randomUUID(),
 				type: 'standard',
-				exercises: []
+				exercises: [],
+				restAfterSerie: 120
 			}]
 		};
 	}, [id, routines, routinesLoading, t]);
