@@ -153,7 +153,6 @@ export function Form({ children, onSubmit, className, defaultValues, submitLabel
 // --- Form.Field ---
 interface FormFieldProps {
   name: string;
-  defaultValue?: unknown;
   validator?: (value: unknown) => ValidationResult;
   children: (field: {
     value: unknown;
@@ -164,17 +163,17 @@ interface FormFieldProps {
   }) => ReactNode;
 }
 
-function FormField({ name, defaultValue, validator, children }: FormFieldProps) {
+function FormField({ name, validator, children }: FormFieldProps) {
   const { values, errors, touched, setFieldValue, setFieldError, setFieldTouched, registerField, unregisterField } = useFormContext();
   const { t } = useTranslation();
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
-  const value = values[name] !== undefined ? values[name] : (defaultValue ?? '');
+  const value = values[name] !== undefined ? values[name] : undefined;
 
   useEffect(() => {
-    registerField(name, defaultValue);
+    registerField(name);
     return () => unregisterField(name);
-  }, [name, registerField, unregisterField, defaultValue]);
+  }, [name, registerField, unregisterField]);
 
   useEffect(() => {
     if (validator) {
@@ -216,11 +215,10 @@ interface FormInputProps extends Omit<ComponentProps<typeof Input>, 'value' | 'o
   validator?: (value: string) => ValidationResult;
 }
 
-function FormInput({ name, validator, defaultValue, ...props }: FormInputProps) {
+function FormInput({ name, validator, ...props }: FormInputProps) {
   return (
     <FormField 
 			name={name} 
-			defaultValue={defaultValue} 
 			validator={validator ? (v) => validator(String(v)) : undefined}>
       {({ onChange, setValue, error, value, onBlur }) => (
         <Input
@@ -245,11 +243,10 @@ interface FormTextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> 
   validator?: (value: string) => ValidationResult;
 }
 
-function FormTextarea({ name, validator, label, className, defaultValue, ...props }: FormTextareaProps) {
+function FormTextarea({ name, validator, label, className, ...props }: FormTextareaProps) {
   return (
     <FormField
       name={name}
-      defaultValue={defaultValue}
       validator={validator ? (v) => validator(String(v)) : undefined}
     >
       {({ onChange, setValue, error, value, onBlur }) => (
@@ -302,8 +299,7 @@ interface FormSelectProps extends Omit<ComponentProps<typeof Select>, 'value' | 
 function FormSelect({ name, validator, ...props }: FormSelectProps) {
   return (
     <FormField 
-			name={name} 
-			defaultValue={props.defaultValue} 
+			name={name}
 			validator={validator ? (v) => validator(String(v)) : undefined}>
       {({ onChange, setValue, error, value, onBlur }) => (
         <Select
@@ -324,15 +320,13 @@ function FormSelect({ name, validator, ...props }: FormSelectProps) {
 // --- Form.IconPicker ---
 interface FormIconPickerProps extends Omit<ComponentProps<typeof IconPicker>, 'value' | 'onChange' | 'error'> {
   name: string;
-  defaultValue?: string;
   validator?: (value: string) => ValidationResult;
 }
 
-function FormIconPicker({ name, validator, defaultValue, ...props }: FormIconPickerProps) {
+function FormIconPicker({ name, validator, ...props }: FormIconPickerProps) {
   return (
     <FormField
       name={name}
-      defaultValue={defaultValue}
       validator={validator ? (v) => validator(String(v)) : undefined}
     >
       {({ setValue, error, value, onBlur }) => (
@@ -351,16 +345,14 @@ function FormIconPicker({ name, validator, defaultValue, ...props }: FormIconPic
 // --- Form.Media ---
 interface FormMediaProps {
   name: string;
-  defaultValue?: MediaItem[];
   className?: string;
   validator?: (value: MediaItem[]) => ValidationResult;
 }
 
-function FormMedia({ name, defaultValue, validator, className }: FormMediaProps) {
+function FormMedia({ name, validator, className }: FormMediaProps) {
   return (
     <FormField
       name={name}
-      defaultValue={defaultValue}
       validator={validator ? (v) => validator(v as MediaItem[]) : undefined}
     >
       {({ setValue, value }) => (
@@ -417,14 +409,12 @@ interface FormRadioButtonGroupProps {
   options: RadioOption[];
   validator?: (value: unknown) => ValidationResult;
   className?: string;
-  defaultValue?: string | number | boolean;
 }
 
-function FormRadioButtonGroup({ name, options, validator, className, defaultValue }: FormRadioButtonGroupProps) {
+function FormRadioButtonGroup({ name, options, validator, className }: FormRadioButtonGroupProps) {
   return (
     <FormField
       name={name}
-      defaultValue={defaultValue}
       validator={validator}
     >
       {({ value, setValue, error, onBlur }) => (

@@ -7,8 +7,10 @@ import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
 import { TagItem } from '@/components/ui/TagItem';
 import { Input } from '@/components/ui/Input';
+import { ColorPicker } from '@/components/ui/ColorPicker';
 import { Modal } from '@/components/ui/Modal';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
+import { SegmentedControl } from '@/components/ui/SegmentedControl';
 import { Form, type FormFieldValues } from '@/components/ui/Form';
 import { tagValidators, validators } from '@/lib/validations';
 import type { Tag } from '@/types';
@@ -21,6 +23,11 @@ export default function ManageTagsPage() {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
+  const [filter, setFilter] = useState<'custom' | 'all'>('custom');
+
+  const filteredTags = filter === 'custom' 
+    ? tags.filter(tag => !tag.system) 
+    : tags;
 
   const handleOpenForm = (tag?: Tag) => {
     if (tag) {
@@ -61,7 +68,7 @@ export default function ManageTagsPage() {
     <Layout
       header={
         <div className="flex items-center p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800/50">
-           <button
+          <button
             onClick={() => navigate(-1)}
             className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
           >
@@ -79,20 +86,34 @@ export default function ManageTagsPage() {
           {t('tags.addNew', 'Add New Tag')}
         </Button>
 
+        <div className="flex justify-end">
+          <SegmentedControl
+            options={[
+              { value: 'custom', label: t('tags.filterCustom', 'Custom') },
+              { value: 'all', label: t('tags.filterAll', 'All') },
+            ]}
+            value={filter}
+            onChange={setFilter}
+            variant="primary"
+          />
+        </div>
+
         <div className="flex flex-col gap-2">
-          {tags.map((tag) => (
+          {filteredTags.map((tag) => (
             <TagItem
               key={tag.id}
               tag={tag}
-              showActions
+              showActions={!tag.system}
               onEdit={handleOpenForm}
               onDelete={setTagToDelete}
             />
           ))}
           
-          {tags.length === 0 && (
+          {filteredTags.length === 0 && (
             <div className="text-center py-10 text-slate-500 dark:text-slate-400">
-              {t('tags.noTags', 'No tags found. Create one to get started.')}
+              {filter === 'custom'
+                ? t('tags.noCustomTags', 'No custom tags found. Create one to get started.')
+                : t('tags.noTags', 'No tags found.')}
             </div>
           )}
         </div>
@@ -121,7 +142,7 @@ export default function ManageTagsPage() {
               validator={tagValidators.name}
             >
               {({ value, onChange, error }) => (
-                 <Input
+                <Input
                     label={t('tags.name', 'Name')}
                     placeholder={t('tags.namePlaceholder', 'e.g., Pull, Heavy')}
                     value={String(value || '')}
@@ -136,33 +157,13 @@ export default function ManageTagsPage() {
               validator={validators.required}
             >
               {({ value, onChange, error }) => (
-                <div className="space-y-2">
-                  <label className="text-sm font-medium text-slate-700 dark:text-slate-300">
-                    {t('tags.color', 'Color')}
-                  </label>
-                  <div className="flex flex-wrap gap-3">
-                    {TAG_COLORS.map((color) => (
-                      <button
-                        key={color}
-                        type="button"
-                        onClick={() => onChange(color)}
-                        className={`w-8 h-8 rounded-full border-2 transition-transform ${
-                          value === color 
-                            ? 'border-slate-900 dark:border-white scale-110' 
-                            : 'border-transparent hover:scale-105'
-                        }`}
-                        style={{ backgroundColor: color }}
-                        aria-label={`Select color ${color}`}
-                      />
-                    ))}
-                  </div>
-                  <div 
-                    className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden mt-2"
-                  >
-                     <div className="h-full transition-all duration-300" style={{ width: '100%', backgroundColor: String(value) }} />
-                  </div>
-                  {error && <p className="text-sm text-red-500">{t(error)}</p>}
-                </div>
+                <ColorPicker
+                  label={t('tags.color', 'Color')}
+                  value={String(value || TAG_COLORS[0])}
+                  onChange={onChange}
+                  colors={TAG_COLORS}
+                  error={error}
+                />
               )}
             </Form.Field>
           </Form>

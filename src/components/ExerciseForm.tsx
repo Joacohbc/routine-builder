@@ -7,6 +7,7 @@ import { TagSelector } from '@/components/ui/TagSelector';
 import { InventorySelector } from '@/components/ui/InventorySelector';
 import { Form, type FormFieldValues } from '@/components/ui/Form';
 import { exerciseValidators } from '@/lib/validations';
+import type { Tag, InventoryItem } from '@/types';
 
 interface ExerciseFormProps {
     initialValues: FormFieldValues;
@@ -56,23 +57,23 @@ export function ExerciseForm({ initialValues, onSubmit, isEditing }: ExerciseFor
                     <Form.Media name="media" />
 
                     {/* Required Equipment */}
-                    <Form.Field name="primaryEquipmentIds">
+                    <Form.Field name="primaryEquipment">
                         {({ value, setValue }) => (
                             <InventorySelector
-                                selectedItemIds={(value as number[]) || []}
+                                selectedItems={(value as InventoryItem[]) || []}
                                 onChange={setValue}
                             />
                         )}
                     </Form.Field>
 
                     {/* Tags */}
-                    <Form.Field name="tagIds" validator={exerciseValidators.tagIds}>
+                    <Form.Field name="tags" validator={exerciseValidators.tags}>
                         {({ value, setValue, error }) => (
                             <div className="flex flex-col gap-1">
                                 <TagSelector
                                     label={t('exercise.tags')}
                                     type="exercise"
-                                    selectedTagIds={(value as number[]) || []}
+                                    activeTags={(value as Tag[]) || []}
                                     onChange={setValue}
                                 />
                                 {error && <span className="text-xs text-red-500 pl-1">{error}</span>}

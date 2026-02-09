@@ -2,7 +2,7 @@ import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useRoutines } from '@/hooks/useRoutines';
-import { RoutineBuilderForm } from '@/components/RoutineBuilderForm';
+import { RoutineBuilderForm } from '@/components/routine/RoutineBuilderForm';
 import type { Routine, RoutineSeries } from '@/types';
 import type { FormFieldValues } from '@/components/ui/Form';
 
@@ -26,7 +26,8 @@ export default function RoutineBuilderPage() {
 			series: [{
 				id: crypto.randomUUID(),
 				type: 'standard',
-				exercises: []
+				exercises: [],
+				restAfterSerie: 120
 			}]
 		};
 	}, [id, routines, routinesLoading, t]);

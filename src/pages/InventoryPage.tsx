@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
+import { TagBadge } from '@/components/ui/TagBadge';
 import { InventoryForm } from '@/components/InventoryForm';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { cn } from '@/lib/utils';
@@ -16,15 +17,24 @@ import type { InventoryItem, InventoryStatus } from '@/types';
 
 type FilterStatus = InventoryStatus | 'all';
 
+const emptyItem: InventoryItem = {
+  name: '',
+  status: 'available',
+  condition: 'good',
+  icon: '',
+  quantity: 0,
+  tags: []
+};
+
 export default function InventoryPage() {
   const { t } = useTranslation();
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();
-  const { tags } = useTags();
+  const { tags, formatTagName } = useTags();
   const [search, setSearch] = useState('');
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [activeTagId, setActiveTagId] = useState<number | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+  const [editingItem, setEditingItem] = useState<InventoryItem>(emptyItem);
   const [itemToDelete, setItemToDelete] = useState<number | null>(null);
 
   const tagsRef = useHorizontalScroll();
@@ -32,7 +42,7 @@ export default function InventoryPage() {
   // Derived state for tags present in current inventory
   const inventoryTags = useMemo(() => {
     const ids = new Set<number>();
-    items.forEach(item => item.tagIds?.forEach(id => ids.add(id)));
+    items.forEach(item => item.tags?.forEach(tag => tag.id && ids.add(tag.id)));
     return tags.filter(t => ids.has(t.id!));
   }, [items, tags]);
 
@@ -43,7 +53,7 @@ export default function InventoryPage() {
       : filterStatus === 'available'
         ? item.status === 'available'
         : item.status !== 'available'; // Simplified logic
-    const matchesTag = activeTagId ? item.tagIds?.includes(activeTagId) : true;
+    const matchesTag = activeTagId ? item.tags?.some(tag => tag.id === activeTagId) : true;
     return matchesSearch && matchesStatus && matchesTag;
   });
 
@@ -55,6 +65,27 @@ export default function InventoryPage() {
   const handleDelete = (id: number) => {
     setItemToDelete(id);
   };
+
+  if (isFormOpen) {
+    return (
+      <InventoryForm
+        item={editingItem}
+        onClose={() => {
+          setIsFormOpen(false);
+          setEditingItem(emptyItem);
+        }}
+        onSave={async (item) => {
+          if (editingItem && editingItem.id) {
+            await updateItem({ ...item, id: editingItem.id });
+          } else {
+            await addItem(item);
+          }
+          setIsFormOpen(false);
+          setEditingItem(emptyItem);
+        }}
+      />
+    );
+  }
 
   return (
     <Layout
@@ -105,28 +136,35 @@ export default function InventoryPage() {
         </Button>
       </div>
 
-      <div ref={tagsRef} className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
-        <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">{t('inventoryPage.tagsLabel')}</div>
-        {inventoryTags.map(tag => (
-          <button
-            key={tag.id}
-            onClick={() => setActiveTagId(activeTagId === tag.id ? null : tag.id!)}
-            className={cn(
-              "flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
-              activeTagId === tag.id
-                ? "bg-primary/10 border-primary text-primary"
-                : "bg-surface border-gray-200 dark:border-surface-highlight text-gray-500 dark:text-gray-400"
-            )}
-            style={activeTagId === tag.id ? { color: tag.color, borderColor: tag.color, backgroundColor: `${tag.color}15` } : {}}
-          >
-            <Icon name="sell" size={14} />
-            {tag.name}
-          </button>
-        ))}
-      </div>
+      {inventoryTags.length > 0 && (
+        <div ref={tagsRef} className="flex gap-2 mb-6 overflow-x-auto no-scrollbar pb-2 pt-1 border-t border-gray-200 dark:border-surface-highlight/50">
+          <div className="flex items-center pr-2 text-gray-400 dark:text-gray-500 text-xs font-semibold uppercase tracking-wider shrink-0">{t('inventoryPage.tagsLabel')}</div>
+          {inventoryTags.map(tag => (
+            <button
+              key={tag.id}
+              onClick={() => setActiveTagId(activeTagId === tag.id ? null : tag.id!)}
+              className={cn(
+                "flex-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all border",
+                activeTagId === tag.id
+                  ? "bg-primary/10 border-primary text-primary"
+                  : "bg-surface border-gray-200 dark:border-surface-highlight text-gray-500 dark:text-gray-400"
+              )}
+              style={activeTagId === tag.id ? { color: tag.color, borderColor: tag.color, backgroundColor: `${tag.color}15` } : {}}
+            >
+              <Icon name="sell" size={14} />
+              {formatTagName(tag)}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
-        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : filteredItems.map((item) => (
+        {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : filteredItems.length === 0 ? (
+          <div className="text-center py-10 text-gray-500">
+            <p>{t('inventoryPage.empty')}</p>
+            <p className="text-xs mt-2">{t('inventoryPage.emptyHint')}</p>
+          </div>
+        ) : filteredItems.map((item) => (
           <Card key={item.id} hover className="group" onClick={() => handleEdit(item)}>
             <div className="flex items-start justify-between w-full">
               <div className="flex items-center gap-4 flex-1 min-w-0">
@@ -159,23 +197,12 @@ export default function InventoryPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2 mt-3 pl-16">
-              {(item.tagIds || []).map(tagId => {
-                const tag = tags.find(t => t.id === tagId);
-                if (!tag) return null;
-                return (
-                  <span
-                    key={tagId}
-                    className="px-2 py-0.5 rounded-md text-[10px] font-medium border"
-                    style={{
-                      backgroundColor: `${tag.color}15`,
-                      color: tag.color,
-                      borderColor: `${tag.color}30`
-                    }}
-                  >
-                    {tag.name}
-                  </span>
-                );
-              })}
+              {(item.tags || []).map(tag => (
+                  <TagBadge key={tag.id} 
+                    label={formatTagName(tag)}
+                    color={tag.color}
+                  />
+              ))}
             </div>
           </Card>
         ))}
@@ -183,25 +210,13 @@ export default function InventoryPage() {
 
       <Button
         variant="floating"
-        onClick={() => { setEditingItem(null); setIsFormOpen(true); }}
+        onClick={() => { 
+          setEditingItem(emptyItem); 
+          setIsFormOpen(true); 
+        }}
       >
         <Icon name="add" size={32} />
       </Button>
-
-      {isFormOpen && (
-        <InventoryForm
-          item={editingItem}
-          onClose={() => setIsFormOpen(false)}
-          onSave={async (item) => {
-            if (editingItem && editingItem.id) {
-              await updateItem({ ...item, id: editingItem.id });
-            } else {
-              await addItem(item);
-            }
-            setIsFormOpen(false);
-          }}
-        />
-      )}
 
       <ConfirmationDialog
         isOpen={!!itemToDelete}

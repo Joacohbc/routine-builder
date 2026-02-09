@@ -1,272 +1,220 @@
-import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import { useRoutines } from '@/hooks/useRoutines';
+import { useState, useEffect, useMemo } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
-import { Layout } from '@/components/ui/Layout';
+import { useMultiTimer } from '@/hooks/useTimers';
 import { Button } from '@/components/ui/Button';
-import { TimerInput } from '@/components/ui/TimerInput';
 import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
+import { RestingStep } from '@/components/routine/RestingStep';
+import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
+import { formatTimeMMSS } from '@/lib/timeUtils';
 import { cn } from '@/lib/utils';
-import type { Routine, WorkoutSet } from '@/types';
+import type { Routine } from '@/types';
+import type { WorkoutStep, ExerciseStep, RestStep as RestStepType } from '@/pages/WorkoutPageContainer';
 
-interface WorkoutStep {
-  seriesId: string;
-  exerciseId: number;
-  setId: string;
-  setIndex: number;
-  totalSets: number;
-  targetWeight: number;
-  targetReps: number;
-  targetTime: number;
-  trackingType: 'reps' | 'time';
-  type: WorkoutSet['type'];
-  isSuperset: boolean;
+interface ActiveWorkoutPageProps {
+  routine: Routine;
+  steps: WorkoutStep[];
 }
 
-export default function ActiveWorkoutPage() {
-  const { id } = useParams();
+function isExerciseStep(step: WorkoutStep): step is ExerciseStep {
+  return step.type === 'exercise';
+}
+
+function isRestStep(step: WorkoutStep): step is RestStepType {
+  return step.type === 'exercise_rest' || step.type === 'serie_rest';
+}
+
+export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
   const navigate = useNavigate();
-  const { routines } = useRoutines();
+  const { t } = useTranslation();
   const { exercises } = useExercises();
+  const { timers, start, pause, reset } = useMultiTimer();
 
-  const [routine, setRoutine] = useState<Routine | null>(null);
-  const [steps, setSteps] = useState<WorkoutStep[]>([]);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [timer, setTimer] = useState(0);
-  const [isResting, setIsResting] = useState(false);
-  const [restTimer, setRestTimer] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
-  // Inputs for the current set
-  const [actualWeight, setActualWeight] = useState<number>(0);
-  const [actualReps, setActualReps] = useState<number>(0);
-  const [actualTime, setActualTime] = useState<number>(0);
+  const currentStep = steps[currentStepIndex];
 
+  // Map RoutineExercise.id → Exercise DB id for lookup
+  const routineExerciseMap = useMemo(() => {
+    const map = new Map<string, number>();
+    routine.series.forEach(s => {
+      s.exercises.forEach(ex => {
+        map.set(ex.id, ex.exerciseId);
+      });
+    });
+    return map;
+  }, [routine]);
 
+  // Find the actual Exercise from DB
+  const currentExercise = useMemo(() => {
+    const dbId = routineExerciseMap.get(currentStep.exerciseId);
+    return exercises.find(e => e.id === dbId);
+  }, [exercises, currentStep.exerciseId, routineExerciseMap]);
+
+  // For exercise steps: compute set position within its exercise in this series
+  const setProgress = useMemo(() => {
+    if (!isExerciseStep(currentStep)) return null;
+    const sameExerciseSteps = steps.filter(
+      (s): s is ExerciseStep =>
+        isExerciseStep(s) &&
+        s.exerciseId === currentStep.exerciseId &&
+        s.seriesId === currentStep.seriesId
+    );
+    const setIndex = sameExerciseSteps.findIndex(s => s.stepIndex === currentStep.stepIndex);
+    return { current: setIndex + 1, total: sameExerciseSteps.length };
+  }, [currentStep, steps]);
+
+  // Count remaining exercise steps (excluding rest steps from the count)
+  const stepsRemaining = useMemo(() => {
+    const exerciseSteps = steps.filter(isExerciseStep);
+    const currentExIdx = exerciseSteps.findIndex(s => s.stepIndex >= currentStep.stepIndex);
+    const completed = currentExIdx !== -1 ? currentExIdx : exerciseSteps.length;
+    return exerciseSteps.length - completed - (isExerciseStep(currentStep) ? 1 : 0);
+  }, [currentStep, steps]);
+
+  // Start totalTime timer on mount
   useEffect(() => {
-    if (id && routines.length > 0) {
-      const r = routines.find(r => r.id === Number(id));
-      if (r) {
-        setRoutine(r);
-        // Flatten routine into steps
-        const flatSteps: WorkoutStep[] = [];
-        r.series.forEach(series => {
-          if (series.type === 'standard') {
-            series.exercises.forEach(ex => {
-              ex.sets.forEach((set, idx) => {
-                flatSteps.push({
-                  seriesId: series.id,
-                  exerciseId: ex.exerciseId,
-                  setId: set.id,
-                  setIndex: idx,
-                  totalSets: ex.sets.length,
-                  targetWeight: set.weight || 0,
-                  targetReps: set.reps || 0,
-                  targetTime: set.time || 0,
-                  trackingType: ex.trackingType || 'reps',
-                  type: set.type,
-                  isSuperset: false
-                });
-              });
-            });
-          } else {
-            const maxSets = Math.max(...series.exercises.map(e => e.sets.length));
-            for (let i = 0; i < maxSets; i++) {
-              series.exercises.forEach(ex => {
-                if (ex.sets[i]) {
-                  flatSteps.push({
-                    seriesId: series.id,
-                    exerciseId: ex.exerciseId,
-                    setId: ex.sets[i].id,
-                    setIndex: i,
-                    totalSets: ex.sets.length,
-                    targetWeight: ex.sets[i].weight || 0,
-                    targetReps: ex.sets[i].reps || 0,
-                    targetTime: ex.sets[i].time || 0,
-                    trackingType: ex.trackingType || 'reps',
-                    type: ex.sets[i].type,
-                    isSuperset: true
-                  });
-                }
-              });
-            }
-          }
-        });
-        setSteps(flatSteps);
+    start('totalTime');
+  }, [start]);
+
+  // Handle timers based on current step type
+  useEffect(() => {
+    if (isRestStep(currentStep)) {
+      pause('exercise');
+      reset('rest');
+      start('rest');
+    } else if (isExerciseStep(currentStep)) {
+      pause('rest');
+      reset('exercise');
+      if (currentStep.trackingType === 'time') {
+        start('exercise');
       }
     }
-  }, [id, routines]);
-
-  // Global Timer
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTimer(t => t + 1);
-    }, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  // Rest Timer
-  useEffect(() => {
-    let interval: ReturnType<typeof setInterval> | undefined;
-    if (isResting) {
-      interval = setInterval(() => {
-        setRestTimer(t => t + 1);
-      }, 1000);
-    }
-    return () => clearInterval(interval);
-  }, [isResting]);
-
-
-  useEffect(() => {
-    if (steps[currentStepIndex]) {
-      setActualWeight(steps[currentStepIndex].targetWeight);
-      setActualReps(steps[currentStepIndex].targetReps);
-      setActualTime(0);
-    }
-  }, [currentStepIndex, steps]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
+  }, [currentStepIndex, currentStep, start, pause, reset]);
 
   const handleNext = () => {
-    if (isResting) {
-      setIsResting(false);
-      setRestTimer(0);
+    setIsFading(true);
+    setTimeout(() => {
       if (currentStepIndex < steps.length - 1) {
         setCurrentStepIndex(prev => prev + 1);
       } else {
-        // Finish
         navigate('/builder');
       }
-    } else {
-      // Finished set
-      const currentStep = steps[currentStepIndex];
-      const nextStep = steps[currentStepIndex + 1];
+      setIsFading(false);
+    }, 150);
+  };
 
-      let shouldRest = true;
-      if (currentStep.isSuperset) {
-        if (nextStep && nextStep.seriesId === currentStep.seriesId && nextStep.exerciseId !== currentStep.exerciseId) {
-          shouldRest = false;
-        }
-      }
-
-      if (!nextStep) shouldRest = false; // Finished workout
-
-      if (shouldRest && nextStep) {
-        setIsResting(true);
-      } else {
-        if (currentStepIndex < steps.length - 1) {
-          setCurrentStepIndex(prev => prev + 1);
-        } else {
-          // Finish
-          navigate('/builder');
-        }
-      }
+  const handlePrevious = () => {
+    if (currentStepIndex > 0) {
+      setIsFading(true);
+      setTimeout(() => {
+        setCurrentStepIndex(prev => prev - 1);
+        setIsFading(false);
+      }, 350);
     }
   };
 
-  if (!routine || steps.length === 0) return <Layout><div className="p-6 text-center">Loading...</div></Layout>;
-
-  const currentStep = steps[currentStepIndex];
-  const currentExercise = exercises.find(e => e.id === currentStep.exerciseId);
+  const isLastStep = currentStepIndex === steps.length - 1;
+  const isFirstStep = currentStepIndex === 0;
 
   return (
-    <div className="flex flex-col h-screen bg-background text-gray-900 dark:text-white">
+    <div className="flex flex-col h-screen bg-background text-text-main">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 pt-safe-top">
-        <button onClick={() => navigate(-1)} className="text-gray-500">
+        <button onClick={() => navigate(-1)} className="text-text-muted">
           <Icon name="close" />
         </button>
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-sm">{routine.name}</h2>
-          <span className="text-xs font-mono text-primary">{formatTime(timer)}</span>
+          <span className="text-xs font-mono text-primary">{formatTimeMMSS(timers['totalTime']?.elapsed)}</span>
         </div>
-        <button onClick={() => setShowMedia(true)} className={cn("text-gray-500", !currentExercise?.media.length && "opacity-20")}>
+        <button onClick={() => setShowMedia(true)} className={cn("text-text-muted", !currentExercise?.media.length && "opacity-20")}>
           <Icon name="movie" />
         </button>
       </div>
 
       {/* Progress */}
-      <div className="px-6 mb-6">
+      <div className={cn(
+        "px-6 mb-6 transition-opacity duration-150"
+      )}>
         <Stepper
           currentStep={currentStepIndex + 1}
           totalSteps={steps.length}
-          leftLabel={`Set ${currentStep.setIndex + 1} of ${currentStep.totalSets}`}
-          rightLabel={`${(steps.length - currentStepIndex - 1)} remaining`}
+          leftLabel={
+            isExerciseStep(currentStep) && setProgress
+              ? t('activeWorkout.setProgress', { current: setProgress.current, total: setProgress.total })
+              : isRestStep(currentStep)
+                ? currentStep.type === 'serie_rest'
+                  ? t('activeWorkout.seriesRest')
+                  : t('activeWorkout.exerciseRest')
+                : ''
+          }
+          rightLabel={t('activeWorkout.stepsRemaining', { count: stepsRemaining })}
         />
       </div>
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
-        <div className="text-center z-10">
-          <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || 'Unknown Exercise'}</h1>
-          <p className="text-lg text-gray-500">{currentExercise?.muscleGroup}</p>
-          {currentStep.isSuperset && (
+        { !isRestStep(currentStep) &&         
+        <div className={cn(
+          "text-center z-10 transition-opacity duration-150",
+          isFading ? "opacity-0" : "opacity-100"
+        )}>
+          <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || t('activeWorkout.unknownExercise')}</h1>
+          {isExerciseStep(currentStep) && currentStep.isSuperset && (
             <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
-              SUPERSET FLOW
+              {t('activeWorkout.supersetFlow')}
             </span>
           )}
-        </div>
+        </div>}
 
-        {/* Inputs */}
-        {isResting ? (
-          <div className="flex flex-col items-center justify-center py-10 animate-fade-in">
-            <span className="text-gray-400 text-sm uppercase tracking-widest font-bold mb-4">Resting</span>
-            <div className="text-6xl font-mono font-bold text-primary mb-8">{formatTime(restTimer)}</div>
-            <Button onClick={handleNext} variant="secondary">Skip Rest</Button>
-          </div>
-        ) : (
-          <div className="w-full max-w-xs flex flex-col gap-6">
-            <div className="grid grid-cols-2 gap-6">
-              <div className="flex flex-col gap-2">
-                <label className="text-center text-xs font-bold text-gray-400 uppercase">KG</label>
-                <div className="relative">
-                  <input
-                    type="number"
-                    value={actualWeight}
-                    onChange={e => setActualWeight(Number(e.target.value))}
-                    className="w-full text-center text-4xl font-bold bg-transparent border-b-2 border-gray-200 dark:border-gray-700 focus:border-primary focus:outline-none py-2"
-                  />
-                  <div className="text-xs text-center text-gray-400 mt-1">Target: {currentStep.targetWeight}</div>
-                </div>
-              </div>
-              {currentStep.trackingType === 'time' ? (
-                <TimerInput
-                  value={actualTime}
-                  onChange={setActualTime}
-                  target={currentStep.targetTime}
-                />
-              ) : (
-                <div className="flex flex-col gap-2">
-                  <label className="text-center text-xs font-bold text-gray-400 uppercase">Reps</label>
-                  <div className="relative">
-                    <input
-                      type="number"
-                      value={actualReps}
-                      onChange={e => setActualReps(Number(e.target.value))}
-                      className="w-full text-center text-4xl font-bold bg-transparent border-b-2 border-gray-200 dark:border-gray-700 focus:border-primary focus:outline-none py-2"
-                    />
-                    <div className="text-xs text-center text-gray-400 mt-1">Target: {currentStep.targetReps}</div>
-                  </div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Step Content */}
+        <div className={cn(
+          "transition-opacity duration-150",
+          isFading ? "opacity-0" : "opacity-100"
+        )}>
+          {isRestStep(currentStep) ? (
+            <RestingStep
+              restTimer={timers['rest']?.elapsed || 0}
+              targetRestTime={currentStep.restTime}
+              restType={currentStep.type}
+            />
+          ) : isExerciseStep(currentStep) ? (
+            <WorkoutSetDisplay
+              targetWeight={currentStep.targetWeight}
+              targetReps={currentStep.setType === 'failure' ? Infinity : currentStep.targetReps}
+              time={timers['exercise']?.elapsed || 0}
+              targetTime={currentStep.targetTime}
+              trackingType={currentStep.trackingType}
+            />
+          ) : null}
+        </div>
       </div>
 
       {/* Footer Action */}
       <div className="p-6 pb-safe-bottom">
-        {!isResting && (
-          <Button onClick={handleNext} className="w-full h-14 text-lg">
-            {currentStepIndex === steps.length - 1 ? 'Finish Workout' : 'Next Set'}
+        <div className="flex gap-3">
+          <Button
+            onClick={handlePrevious}
+            disabled={isFirstStep}
+            variant="secondary"
+            className="h-14 w-14 p-0 flex items-center justify-center"
+          >
+            <Icon name="arrow_back" size={24} />
           </Button>
-        )}
+          <Button onClick={handleNext} className="h-14 text-lg flex-1">
+            {isRestStep(currentStep)
+              ? t('activeWorkout.skipRest')
+              : isLastStep
+                ? t('activeWorkout.finishWorkout')
+                : t('activeWorkout.nextStep')}
+          </Button>
+        </div>
       </div>
 
       {/* Media Modal */}
@@ -285,7 +233,7 @@ export default function ActiveWorkoutPage() {
                 return null;
               })()
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-500">No Media</div>
+              <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
             )}
           </div>
         </div>

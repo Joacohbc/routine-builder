@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { ExerciseForm } from '@/components/ExerciseForm';
-import type { MediaItem, Exercise } from '@/types';
+import type { MediaItem, Exercise, Tag, InventoryItem } from '@/types';
 import type { FormFieldValues } from '@/components/ui/Form';
 
 export default function ExerciseFormPage() {
@@ -25,9 +25,9 @@ export default function ExerciseFormPage() {
             title: '',
             description: '',
             muscleGroup: '',
-            tagIds: [],
+            tags: [],
             media: [],
-            primaryEquipmentIds: [],
+            primaryEquipment: [],
             defaultType: 'weight_reps'
         };
     }, [id, exercises, exercisesLoading]);
@@ -43,10 +43,9 @@ export default function ExerciseFormPage() {
             id: id ? Number(id) : undefined,
             title: values.title as string,
             description: values.description as string,
-            muscleGroup: (values.muscleGroup as string) || '', // Preserve if exists
-            tagIds: values.tagIds as number[],
+            tags: values.tags as Tag[],
             media: values.media as MediaItem[],
-            primaryEquipmentIds: values.primaryEquipmentIds as number[],
+            primaryEquipment: values.primaryEquipment as InventoryItem[],
             defaultType: values.defaultType as Exercise['defaultType']
         };
 

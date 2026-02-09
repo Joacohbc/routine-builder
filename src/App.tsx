@@ -4,7 +4,7 @@ import ExerciseListPage from '@/pages/ExerciseListPage';
 import ExerciseFormPage from '@/pages/ExerciseFormPage';
 import RoutineListPage from '@/pages/RoutineListPage';
 import RoutineBuilderPage from '@/pages/RoutineBuilderPage';
-import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
+import WorkoutPageContainer from '@/pages/WorkoutPageContainer';
 import SettingsPage from '@/pages/SettingsPage';
 import ManageTagsPage from '@/pages/ManageTagsPage';
 import SpeechTestPage from '@/pages/SpeechTestPage';
@@ -28,7 +28,7 @@ function App() {
         <Route path="/builder/:id" element={<RoutineBuilderPage />} />
         
         {/* Workout Player */}
-        <Route path="/play/:id" element={<ActiveWorkoutPage />} />
+        <Route path="/play/:id" element={<WorkoutPageContainer />} />
 
         {/* Placeholders */}
         <Route path="/train" element={<RoutineListPage />} /> 

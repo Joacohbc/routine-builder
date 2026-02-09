@@ -164,7 +164,7 @@ export const exerciseValidators = {
         validators.minLength(1),
         validators.maxLength(100)
     ),
-    tagIds: composeValidators(
+    tags: composeValidators(
         validators.required,
         validators.minArrayLength(1)
     )

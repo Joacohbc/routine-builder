@@ -23,10 +23,10 @@ export default function RoutineListPage() {
     >
       <div className="flex flex-col gap-4 mt-2">
         {loading ? <p className="text-center text-gray-500">{t('common.loading')}</p> : routines.length === 0 ? (
-           <div className="text-center py-10 text-gray-500">
-             <p>{t('routineList.empty')}</p>
-             <p className="text-xs mt-2">{t('routineList.emptyHint')}</p>
-           </div>
+          <div className="text-center py-10 text-gray-500">
+            <p>{t('routineList.empty')}</p>
+            <p className="text-xs mt-2">{t('routineList.emptyHint')}</p>
+          </div>
         ) : routines.map((routine) => (
           <Card key={routine.id} hover className="group" onClick={() => navigate(`/builder/${routine.id}`)}>
             <div className="flex items-start justify-between w-full">
@@ -37,13 +37,13 @@ export default function RoutineListPage() {
                 </p>
               </div>
               <div className="flex gap-2">
-                 <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); navigate(`/play/${routine.id}`); }}
                   className="p-2 text-primary hover:text-primary-dark"
                 >
                   <Icon name="play_arrow" size={24} filled />
                 </button>
-                 <button 
+                <button
                   onClick={(e) => { e.stopPropagation(); deleteRoutine(routine.id!); }}
                   className="p-2 text-gray-400 hover:text-red-400"
                 >

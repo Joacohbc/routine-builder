@@ -4,22 +4,26 @@ import { useInventory } from '@/hooks/useInventory';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
 
+import type { InventoryItem } from '@/types';
+
 interface InventorySelectorProps {
-    selectedItemIds: number[];
-    onChange: (ids: number[]) => void;
+    selectedItems: InventoryItem[];
+    onChange: (items: InventoryItem[]) => void;
     label?: string;
 }
 
-export function InventorySelector({ selectedItemIds, onChange, label }: InventorySelectorProps) {
+export function InventorySelector({ selectedItems = [], onChange, label }: InventorySelectorProps) {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { items: inventoryItems } = useInventory();
 
-    const toggleEquipment = (eqId: number) => {
-        if (selectedItemIds.includes(eqId)) {
-            onChange(selectedItemIds.filter(id => id !== eqId));
+    const selectedItemIds = selectedItems.map(i => i.id).filter(Boolean);
+
+    const toggleEquipment = (item: InventoryItem) => {
+        if (selectedItemIds.includes(item.id!)) {
+            onChange(selectedItems.filter(i => i.id !== item.id));
         } else {
-            onChange([...selectedItemIds, eqId]);
+            onChange([...selectedItems, item]);
         }
     };
 
@@ -40,7 +44,7 @@ export function InventorySelector({ selectedItemIds, onChange, label }: Inventor
                     return (
                         <div
                             key={item.id}
-                            onClick={() => toggleEquipment(item.id!)}
+                            onClick={() => toggleEquipment(item)}
                             className={cn(
                                 "flex items-center p-3 rounded-xl border transition-all cursor-pointer relative overflow-hidden",
                                 isSelected

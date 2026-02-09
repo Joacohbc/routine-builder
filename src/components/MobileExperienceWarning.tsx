@@ -5,7 +5,7 @@ export function MobileExperienceWarning() {
   const { t } = useTranslation();
 
   return (
-    <div className="fixed inset-0 z-[100] bg-background hidden lg:flex flex-col items-center justify-center p-8 text-center">
+    <div className="fixed inset-0 z-100 bg-background hidden lg:flex flex-col items-center justify-center p-8 text-center">
       <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
         <Icon name="smartphone" size={40} className="text-primary" />
       </div>
