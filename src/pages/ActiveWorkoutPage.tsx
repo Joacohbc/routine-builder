@@ -114,7 +114,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       setTimeout(() => {
         setCurrentStepIndex(prev => prev - 1);
         setIsFading(false);
-      }, 150);
+      }, 350);
     }
   };
 
