@@ -160,6 +160,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
+        { !isRestStep(currentStep) &&         
         <div className={cn(
           "text-center z-10 transition-opacity duration-150",
           isFading ? "opacity-0" : "opacity-100"
@@ -170,7 +171,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
               {t('activeWorkout.supersetFlow')}
             </span>
           )}
-        </div>
+        </div>}
 
         {/* Step Content */}
         <div className={cn(
