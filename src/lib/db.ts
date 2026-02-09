@@ -3,6 +3,10 @@ import type { InventoryItem, Exercise, Routine, Tag } from '@/types';
 import type { Muscle, MuscleGroup } from '@/types';
 import { MUSCLES_BY_GROUP, MUSCLE_GROUP_COLORS } from '@/lib/typesMuscle';
 
+// Dehydrated types (as stored in IndexedDB)
+export type DehydratedInventoryItem = Omit<InventoryItem, 'tags'> & { tagIds?: number[] };
+export type DehydratedExercise = Omit<Exercise, 'tags' | 'primaryEquipment'> & { tagIds?: number[]; primaryEquipmentIds?: number[] };
+
 /**
  * Build the full list of system muscle tags to seed into the DB.
  * Each Muscle gets a tag whose `type` is its parent MuscleGroup,
@@ -34,12 +38,12 @@ function buildMuscleSystemTags(): Omit<Tag, 'id'>[] {
 interface RoutineDB extends DBSchema {
   inventory: {
     key: number;
-    value: InventoryItem;
+    value: DehydratedInventoryItem;
     indexes: { 'by-status': string };
   };
   exercises: {
     key: number;
-    value: Exercise;
+    value: DehydratedExercise;
   };
   routines: {
     key: number;

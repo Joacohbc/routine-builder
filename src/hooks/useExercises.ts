@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES } from '@/lib/db';
+import { dbPromise, DB_TABLES, type DehydratedExercise, type DehydratedInventoryItem } from '@/lib/db';
 import { validateSchema, exerciseValidators } from '@/lib/validations';
 import type { Exercise, Tag, InventoryItem } from '@/types';
 
@@ -13,10 +13,10 @@ const fetchExercises = async (): Promise<Exercise[]> => {
     ]);
     
     // Hydrate tags and equipment
-    const hydratedExercises = allExercises.map((ex: any) => ({
+    const hydratedExercises = allExercises.map((ex: DehydratedExercise) => ({
       ...ex,
-      tags: ex.tags || (ex.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[],
-      primaryEquipment: ex.primaryEquipment || (ex.primaryEquipmentIds || []).map((id: number) => allInventory.find((i: InventoryItem) => i.id === id)).filter(Boolean) as InventoryItem[]
+      tags: (ex.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[],
+      primaryEquipment: (ex.primaryEquipmentIds || []).map((id: number) => allInventory.find((i: DehydratedInventoryItem) => i.id === id)).filter(Boolean) as InventoryItem[]
     }));
 
     return hydratedExercises;
@@ -32,17 +32,14 @@ const addExercise = async (exercise: Omit<Exercise, 'id'>) => {
 
   const db = await dbPromise;
   // Dehydrate for storage
+  const { tags, primaryEquipment, ...exWithoutRelations } = exercise;
   const exToSave = {
-      ...exercise,
-      tagIds: (exercise.tags || []).map(t => t.id).filter(Boolean) as number[],
-      primaryEquipmentIds: (exercise.primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
+    ...exWithoutRelations,
+    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[],
+    primaryEquipmentIds: (primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
   };
-  // @ts-ignore
-  delete exToSave.tags;
-  // @ts-ignore
-  delete exToSave.primaryEquipment;
 
-  const id = await db.add(DB_TABLES.EXERCISES, exToSave as any);
+  const id = await db.add(DB_TABLES.EXERCISES, exToSave);
   return id;
 };
 
@@ -54,17 +51,14 @@ const updateExercise = async (exercise: Exercise) => {
 
   const db = await dbPromise;
   // Dehydrate for storage
+  const { tags, primaryEquipment, ...exWithoutRelations } = exercise;
   const exToSave = {
-      ...exercise,
-      tagIds: (exercise.tags || []).map(t => t.id).filter(Boolean) as number[],
-      primaryEquipmentIds: (exercise.primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
+    ...exWithoutRelations,
+    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[],
+    primaryEquipmentIds: (primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
   };
-  // @ts-ignore
-  delete exToSave.tags;
-  // @ts-ignore
-  delete exToSave.primaryEquipment;
 
-  await db.put(DB_TABLES.EXERCISES, exToSave as any);
+  await db.put(DB_TABLES.EXERCISES, exToSave);
 };
 
 const deleteExercise = async (id: number) => {

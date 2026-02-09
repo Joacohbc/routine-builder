@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES } from '@/lib/db';
+import { dbPromise, DB_TABLES, type DehydratedInventoryItem, type DehydratedExercise } from '@/lib/db';
 import { validateSchema, tagValidators } from '@/lib/validations';
 import type { Tag } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -99,11 +99,10 @@ const deleteTag = async (tags: Tag[], id: number) => {
   // 2. Remove tagId from Inventory Items
   let cursor = await tx.objectStore(DB_TABLES.INVENTORY).openCursor();
   while (cursor) {
-    const item = cursor.value;
-    const tagsIds = item.tags.map((t: Tag) => t.id);
-
-    if (item.tags.length > 0 && tagsIds.includes(id)) {
-      item.tags = item.tags.filter((t: Tag) => t.id !== id);
+    const item = cursor.value as DehydratedInventoryItem;
+    
+    if (item.tagIds && item.tagIds.includes(id)) {
+      item.tagIds = item.tagIds.filter((tid: number) => tid !== id);
       await cursor.update(item);
     }
     cursor = await cursor.continue();
@@ -112,10 +111,10 @@ const deleteTag = async (tags: Tag[], id: number) => {
   // 3. Remove tagId from Exercises
   let exCursor = await tx.objectStore(DB_TABLES.EXERCISES).openCursor();
   while (exCursor) {
-    const exercise = exCursor.value;
-    const tagsIds = exercise.tags.map((t: Tag) => t.id);
-    if (exercise.tags && tagsIds.includes(id)) {
-      exercise.tags = exercise.tags.filter((t: Tag) => t.id !== id);
+    const exercise = exCursor.value as DehydratedExercise;
+    
+    if (exercise.tagIds && exercise.tagIds.includes(id)) {
+      exercise.tagIds = exercise.tagIds.filter((tid: number) => tid !== id);
       await exCursor.update(exercise);
     }
     exCursor = await exCursor.continue();

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES } from '@/lib/db';
+import { dbPromise, DB_TABLES, type DehydratedInventoryItem } from '@/lib/db';
 import { validateSchema, inventoryValidators } from '@/lib/validations';
 import type { InventoryItem, Tag } from '@/types';
 
@@ -11,8 +11,8 @@ const fetchItems = async (): Promise<InventoryItem[]> => {
       db.getAll(DB_TABLES.TAGS)
     ]);
 
-    // Hydrate tags - support both old tagIds and new embedded tags structure if any
-    const hydratedItems = allItems.map((item: Omit<InventoryItem, 'tags'> & { tagIds?: number[] }) => ({
+    // Hydrate tags
+    const hydratedItems = allItems.map((item: DehydratedInventoryItem) => ({
       ...item,
       tags: (item.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[]
     }));
@@ -36,7 +36,7 @@ const addItem = async (item: Omit<InventoryItem, 'id'>) => {
     tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[]
   };
 
-  const id = await db.add(DB_TABLES.INVENTORY, itemToSave as unknown as InventoryItem);
+  const id = await db.add(DB_TABLES.INVENTORY, itemToSave);
   return id;
 };
 
@@ -54,7 +54,7 @@ const updateItem = async (item: InventoryItem) => {
     tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[]
   };
 
-  await db.put(DB_TABLES.INVENTORY, itemToSave as unknown as InventoryItem);
+  await db.put(DB_TABLES.INVENTORY, itemToSave);
 };
 
 const deleteItem = async (id: number) => {
