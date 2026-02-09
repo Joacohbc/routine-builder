@@ -1,4 +1,6 @@
 import type { TrackingType } from '@/types';
+import { Icon } from '@/components/ui/Icon';
+import { t } from 'i18next';
 
 interface WorkoutSetDisplayProps {
   targetWeight: number;
@@ -50,10 +52,12 @@ export function WorkoutSetDisplay({
           </div>
         ) : (
           <div className="flex flex-col gap-2">
-            <label className="text-center text-xs font-bold text-text-muted uppercase">Reps</label>
+            <label className="text-center text-xs font-bold text-text-muted uppercase">
+              {targetReps === Infinity ? t('routineBuilder.fail', 'Fail') : 'Reps'}
+            </label>
             <div className="relative">
               <div className="w-full text-center text-4xl font-bold text-text-main py-2">
-                {targetReps}
+                {targetReps === Infinity ? <Icon name="skull" size={45} /> : targetReps}
               </div>
             </div>
           </div>
