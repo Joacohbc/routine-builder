@@ -34,6 +34,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
+  const [isFading, setIsFading] = useState(false);
 
   const currentStep = steps[currentStepIndex];
 
@@ -96,16 +97,24 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
   const handleNext = () => {
-    if (currentStepIndex < steps.length - 1) {
-      setCurrentStepIndex(prev => prev + 1);
-    } else {
-      navigate('/builder');
-    }
+    setIsFading(true);
+    setTimeout(() => {
+      if (currentStepIndex < steps.length - 1) {
+        setCurrentStepIndex(prev => prev + 1);
+      } else {
+        navigate('/builder');
+      }
+      setIsFading(false);
+    }, 150);
   };
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
-      setCurrentStepIndex(prev => prev - 1);
+      setIsFading(true);
+      setTimeout(() => {
+        setCurrentStepIndex(prev => prev - 1);
+        setIsFading(false);
+      }, 150);
     }
   };
 
@@ -129,7 +138,9 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       </div>
 
       {/* Progress */}
-      <div className="px-6 mb-6">
+      <div className={cn(
+        "px-6 mb-6 transition-opacity duration-150"
+      )}>
         <Stepper
           currentStep={currentStepIndex + 1}
           totalSteps={steps.length}
@@ -149,7 +160,10 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
-        <div className="text-center z-10">
+        <div className={cn(
+          "text-center z-10 transition-opacity duration-150",
+          isFading ? "opacity-0" : "opacity-100"
+        )}>
           <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || t('activeWorkout.unknownExercise')}</h1>
           {isExerciseStep(currentStep) && currentStep.isSuperset && (
             <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
@@ -159,21 +173,26 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         </div>
 
         {/* Step Content */}
-        {isRestStep(currentStep) ? (
-          <RestingStep
-            restTimer={timers['rest']?.elapsed || 0}
-            targetRestTime={currentStep.restTime}
-            restType={currentStep.type}
-          />
-        ) : isExerciseStep(currentStep) ? (
-          <WorkoutSetDisplay
-            targetWeight={currentStep.targetWeight}
-            targetReps={currentStep.setType === 'failure' ? Infinity : currentStep.targetReps}
-            time={timers['exercise']?.elapsed || 0}
-            targetTime={currentStep.targetTime}
-            trackingType={currentStep.trackingType}
-          />
-        ) : null}
+        <div className={cn(
+          "transition-opacity duration-150",
+          isFading ? "opacity-0" : "opacity-100"
+        )}>
+          {isRestStep(currentStep) ? (
+            <RestingStep
+              restTimer={timers['rest']?.elapsed || 0}
+              targetRestTime={currentStep.restTime}
+              restType={currentStep.type}
+            />
+          ) : isExerciseStep(currentStep) ? (
+            <WorkoutSetDisplay
+              targetWeight={currentStep.targetWeight}
+              targetReps={currentStep.setType === 'failure' ? Infinity : currentStep.targetReps}
+              time={timers['exercise']?.elapsed || 0}
+              targetTime={currentStep.targetTime}
+              trackingType={currentStep.trackingType}
+            />
+          ) : null}
+        </div>
       </div>
 
       {/* Footer Action */}
