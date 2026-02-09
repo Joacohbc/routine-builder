@@ -1,24 +1,24 @@
 import { useState, useRef, useCallback, useEffect } from 'react';
 
-// Definimos la estructura de un timer individual
+// Define the structure of an individual timer
 interface TimerState {
-  elapsed: number; // Tiempo en segundos (o milisegundos si prefieres)
+  elapsed: number; // Time in seconds (or milliseconds if you prefer)
   isRunning: boolean;
 }
 
-// El tipo para nuestro mapa de timers
+// The type for our timers map
 type TimersMap = Record<string, TimerState>;
 
 export const useMultiTimer = () => {
-  // Estado visual: lo que React necesita para renderizar
+  // Visual state: what React needs to render
   const [timers, setTimers] = useState<TimersMap>({});
 
-  // Referencias: Para guardar los IDs de los intervalos sin provocar re-renders
+  // References: To store interval IDs without triggering re-renders
   const intervalIds = useRef<Record<string, NodeJS.Timeout>>({});
 
-  // Función interna para iniciar el intervalo
+  // Internal function to start the interval
   const startInterval = (name: string) => {
-    // Si ya existe un intervalo corriendo para este nombre, no hacer nada
+    // If an interval is already running for this name, do nothing
     if (intervalIds.current[name]) return;
 
     intervalIds.current[name] = setInterval(() => {
@@ -28,15 +28,15 @@ export const useMultiTimer = () => {
           ...prev,
           [name]: {
             ...currentTimer,
-            elapsed: currentTimer.elapsed + 1, // Sumamos 1 segundo
+            elapsed: currentTimer.elapsed + 1, // Add 1 second
             isRunning: true,
           },
         };
       });
-    }, 1000); // Actualización cada 1 segundo
+    }, 1000); // Update every 1 second
   };
 
-  // 1. START: Iniciar o reanudar un timer
+  // 1. START: Start or resume a timer
   const start = useCallback((name: string) => {
     setTimers((prev) => ({
       ...prev,
@@ -48,7 +48,7 @@ export const useMultiTimer = () => {
     startInterval(name);
   }, []);
 
-  // 2. PAUSE: Detener el intervalo pero mantener el tiempo
+  // 2. PAUSE: Stop the interval but keep the time
   const pause = useCallback((name: string) => {
     if (intervalIds.current[name]) {
       clearInterval(intervalIds.current[name]);
@@ -61,7 +61,7 @@ export const useMultiTimer = () => {
     }));
   }, []);
 
-  // 3. RESET: Detener y volver a cero
+  // 3. RESET: Stop and return to zero
   const reset = useCallback((name: string) => {
     if (intervalIds.current[name]) {
       clearInterval(intervalIds.current[name]);
@@ -74,7 +74,7 @@ export const useMultiTimer = () => {
     }));
   }, []);
 
-  // 4. DELETE: Eliminar el timer del estado completamente
+  // 4. DELETE: Remove the timer from state completely
   const remove = useCallback((name: string) => {
     if (intervalIds.current[name]) {
       clearInterval(intervalIds.current[name]);
@@ -88,7 +88,7 @@ export const useMultiTimer = () => {
     });
   }, []);
 
-  // Limpieza al desmontar el componente que usa el hook
+  // Cleanup when unmounting the component that uses the hook
   useEffect(() => {
     return () => {
       Object.values(intervalIds.current).forEach(clearInterval);
