@@ -243,7 +243,16 @@
   "activeWorkout": {
     "resting": "Descansando",
     "skipRest": "Saltar Descanso",
-    "targetRestTime": "Objetivo: {{time}}"
+    "targetRestTime": "Objetivo: {{time}}",
+    "exerciseRest": "Descanso entre Sets",
+    "seriesRest": "Descanso de Serie",
+    "setProgress": "Set {{current}} de {{total}}",
+    "stepsRemaining": "{{count}} restantes",
+    "finishWorkout": "Terminar Entrenamiento",
+    "nextStep": "Siguiente Set",
+    "supersetFlow": "SUPERSERIE",
+    "unknownExercise": "Ejercicio Desconocido",
+    "noMedia": "Sin Multimedia"
   },
   "speechTest": {
     "title": "Prueba Web Speech API",

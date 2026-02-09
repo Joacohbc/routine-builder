@@ -243,7 +243,16 @@
   "activeWorkout": {
     "resting": "Resting",
     "skipRest": "Skip Rest",
-    "targetRestTime": "Target: {{time}}"
+    "targetRestTime": "Target: {{time}}",
+    "exerciseRest": "Set Rest",
+    "seriesRest": "Series Rest",
+    "setProgress": "Set {{current}} of {{total}}",
+    "stepsRemaining": "{{count}} remaining",
+    "finishWorkout": "Finish Workout",
+    "nextStep": "Next Set",
+    "supersetFlow": "SUPERSET FLOW",
+    "unknownExercise": "Unknown Exercise",
+    "noMedia": "No Media"
   },
   "speechTest": {
     "title": "Web Speech API Test",

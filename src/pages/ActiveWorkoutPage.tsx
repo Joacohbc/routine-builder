@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
 import { Button } from '@/components/ui/Button';
@@ -9,51 +10,89 @@ import { RestingStep } from '@/components/routine/RestingStep';
 import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
 import { cn } from '@/lib/utils';
 import type { Routine } from '@/types';
-import type { WorkoutStep } from '@/pages/WorkoutPageContainer';
+import type { WorkoutStep, ExerciseStep, RestStep as RestStepType } from '@/pages/WorkoutPageContainer';
 
 interface ActiveWorkoutPageProps {
   routine: Routine;
   steps: WorkoutStep[];
 }
 
+function isExerciseStep(step: WorkoutStep): step is ExerciseStep {
+  return step.type === 'exercise';
+}
+
+function isRestStep(step: WorkoutStep): step is RestStepType {
+  return step.type === 'exercise_rest' || step.type === 'serie_rest';
+}
+
 export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { exercises } = useExercises();
   const { timers, start, pause, reset } = useMultiTimer();
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
-  const [isResting, setIsResting] = useState(false);
   const [showMedia, setShowMedia] = useState(false);
+
+  const currentStep = steps[currentStepIndex];
+
+  // Map RoutineExercise.id → Exercise DB id for lookup
+  const routineExerciseMap = useMemo(() => {
+    const map = new Map<string, number>();
+    routine.series.forEach(s => {
+      s.exercises.forEach(ex => {
+        map.set(ex.id, ex.exerciseId);
+      });
+    });
+    return map;
+  }, [routine]);
+
+  // Find the actual Exercise from DB
+  const currentExercise = useMemo(() => {
+    const dbId = routineExerciseMap.get(currentStep.exerciseId);
+    return exercises.find(e => e.id === dbId);
+  }, [exercises, currentStep.exerciseId, routineExerciseMap]);
+
+  // For exercise steps: compute set position within its exercise in this series
+  const setProgress = useMemo(() => {
+    if (!isExerciseStep(currentStep)) return null;
+    const sameExerciseSteps = steps.filter(
+      (s): s is ExerciseStep =>
+        isExerciseStep(s) &&
+        s.exerciseId === currentStep.exerciseId &&
+        s.seriesId === currentStep.seriesId
+    );
+    const setIndex = sameExerciseSteps.findIndex(s => s.stepIndex === currentStep.stepIndex);
+    return { current: setIndex + 1, total: sameExerciseSteps.length };
+  }, [currentStep, steps]);
+
+  // Count remaining exercise steps (excluding rest steps from the count)
+  const stepsRemaining = useMemo(() => {
+    const exerciseSteps = steps.filter(isExerciseStep);
+    const currentExIdx = exerciseSteps.findIndex(s => s.stepIndex >= currentStep.stepIndex);
+    const completed = currentExIdx !== -1 ? currentExIdx : exerciseSteps.length;
+    return exerciseSteps.length - completed - (isExerciseStep(currentStep) ? 1 : 0);
+  }, [currentStep, steps]);
 
   // Start global timer on mount
   useEffect(() => {
     start('global');
   }, [start]);
 
-  // Manage rest timer
+  // Handle timers based on current step type
   useEffect(() => {
-    if (isResting) {
-      start('rest');
-    } else {
-      reset('rest');
-    }
-  }, [isResting, start, reset]);
-
-  // Manage exercise timer for time-tracking exercises
-  useEffect(() => {
-    if (!isResting && steps[currentStepIndex]?.trackingType === 'time') {
-      start('exercise');
-    } else {
+    if (isRestStep(currentStep)) {
       pause('exercise');
-    }
-  }, [isResting, currentStepIndex, steps, start, pause]);
-
-  // Reset exercise timer when changing steps
-  useEffect(() => {
-    if (steps[currentStepIndex]) {
+      reset('rest');
+      start('rest');
+    } else if (isExerciseStep(currentStep)) {
+      pause('rest');
       reset('exercise');
+      if (currentStep.trackingType === 'time') {
+        start('exercise');
+      }
     }
-  }, [currentStepIndex, steps, reset]);
+  }, [currentStepIndex, currentStep, start, pause, reset]);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
@@ -62,56 +101,27 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   };
 
   const handleNext = () => {
-    if (isResting) {
-      setIsResting(false);
-      if (currentStepIndex < steps.length - 1) {
-        setCurrentStepIndex(prev => prev + 1);
-      } else {
-        // Finish
-        navigate('/builder');
-      }
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(prev => prev + 1);
     } else {
-      // Finished set
-      const currentStep = steps[currentStepIndex];
-      const nextStep = steps[currentStepIndex + 1];
-
-      let shouldRest = true;
-      if (currentStep.isSuperset) {
-        if (nextStep && nextStep.seriesId === currentStep.seriesId && nextStep.exerciseId !== currentStep.exerciseId) {
-          shouldRest = false;
-        }
-      }
-
-      if (!nextStep) shouldRest = false; // Finished workout
-
-      if (shouldRest && nextStep) {
-        setIsResting(true);
-      } else {
-        if (currentStepIndex < steps.length - 1) {
-          setCurrentStepIndex(prev => prev + 1);
-        } else {
-          // Finish
-          navigate('/builder');
-        }
-      }
+      navigate('/builder');
     }
   };
 
-  const currentStep = steps[currentStepIndex];
-  const currentExercise = exercises.find(e => e.id === currentStep.exerciseId);
+  const isLastStep = currentStepIndex === steps.length - 1;
 
   return (
-    <div className="flex flex-col h-screen bg-background text-gray-900 dark:text-white">
+    <div className="flex flex-col h-screen bg-background text-text-main">
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 pt-safe-top">
-        <button onClick={() => navigate(-1)} className="text-gray-500">
+        <button onClick={() => navigate(-1)} className="text-text-muted">
           <Icon name="close" />
         </button>
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-sm">{routine.name}</h2>
           <span className="text-xs font-mono text-primary">{formatTime(timers['global']?.elapsed || 0)}</span>
         </div>
-        <button onClick={() => setShowMedia(true)} className={cn("text-gray-500", !currentExercise?.media.length && "opacity-20")}>
+        <button onClick={() => setShowMedia(true)} className={cn("text-text-muted", !currentExercise?.media.length && "opacity-20")}>
           <Icon name="movie" />
         </button>
       </div>
@@ -121,8 +131,16 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         <Stepper
           currentStep={currentStepIndex + 1}
           totalSteps={steps.length}
-          leftLabel={`Set ${currentStep.setIndex + 1} of ${currentStep.totalSets}`}
-          rightLabel={`${(steps.length - currentStepIndex - 1)} remaining`}
+          leftLabel={
+            isExerciseStep(currentStep) && setProgress
+              ? t('activeWorkout.setProgress', { current: setProgress.current, total: setProgress.total })
+              : isRestStep(currentStep)
+                ? currentStep.type === 'serie_rest'
+                  ? t('activeWorkout.seriesRest')
+                  : t('activeWorkout.exerciseRest')
+                : ''
+          }
+          rightLabel={t('activeWorkout.stepsRemaining', { count: stepsRemaining })}
         />
       </div>
 
@@ -130,37 +148,38 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
         <div className="text-center z-10">
-          <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || 'Unknown Exercise'}</h1>
-          {currentStep.isSuperset && (
+          <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || t('activeWorkout.unknownExercise')}</h1>
+          {isExerciseStep(currentStep) && currentStep.isSuperset && (
             <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
-              SUPERSET FLOW
+              {t('activeWorkout.supersetFlow')}
             </span>
           )}
         </div>
 
-        {/* Inputs */}
-        {isResting ? (
-          <RestingStep 
-            restTimer={timers['rest']?.elapsed || 0} 
-            targetRestTime={steps[currentStepIndex + 1]?.restTime}
-            onSkip={handleNext} 
+        {/* Step Content */}
+        {isRestStep(currentStep) ? (
+          <RestingStep
+            restTimer={timers['rest']?.elapsed || 0}
+            targetRestTime={currentStep.restTime}
+            restType={currentStep.type}
+            onSkip={handleNext}
           />
-        ) : (
+        ) : isExerciseStep(currentStep) ? (
           <WorkoutSetDisplay
             targetWeight={currentStep.targetWeight}
-            targetReps={currentStep.setType == 'failure' ? Infinity : currentStep.targetReps}
+            targetReps={currentStep.setType === 'failure' ? Infinity : currentStep.targetReps}
             time={timers['exercise']?.elapsed || 0}
             targetTime={currentStep.targetTime}
             trackingType={currentStep.trackingType}
           />
-        )}
+        ) : null}
       </div>
 
       {/* Footer Action */}
       <div className="p-6 pb-safe-bottom">
-        {!isResting && (
+        {isExerciseStep(currentStep) && (
           <Button onClick={handleNext} className="w-full h-14 text-lg">
-            {currentStepIndex === steps.length - 1 ? 'Finish Workout' : 'Next Set'}
+            {isLastStep ? t('activeWorkout.finishWorkout') : t('activeWorkout.nextStep')}
           </Button>
         )}
       </div>
@@ -181,7 +200,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
                 return null;
               })()
             ) : (
-              <div className="w-full h-full flex items-center justify-center text-gray-500">No Media</div>
+              <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
             )}
           </div>
         </div>

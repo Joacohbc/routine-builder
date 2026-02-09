@@ -19,6 +19,7 @@ export interface WorkoutStep {
 }
 
 export interface ExerciseStep extends WorkoutStep {
+  type: 'exercise';
   targetWeight: number;
   targetReps?: number;
   targetTime?: number;
@@ -29,6 +30,7 @@ export interface ExerciseStep extends WorkoutStep {
 }
 
 export interface RestStep extends WorkoutStep {
+  type: 'exercise_rest' | 'serie_rest';
   restTime: number;
 }
 
@@ -38,7 +40,8 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
   // Routine (only 1) -> Series (at least 1) -> Exercise (at least 1) -> Set (at least 1)
   routine.series.forEach((series) => {
     series.exercises.forEach((ex, exIdx) => {
-      ex.sets.forEach((set) => {
+      ex.sets.forEach((set, setIdx) => {
+        
         // All exercise steps are added first, then rest steps are added after each exercise (except the last one)
         const exerciseStep: ExerciseStep = {
           type: 'exercise',
@@ -59,21 +62,28 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
 
         flatSteps.push(exerciseStep);
 
-        const restStep: RestStep = {
-          type: 'exercise_rest',
+        const isLastSetFromExercise = setIdx === ex.sets.length - 1;
+        const isLastExerciseFromSeries = exIdx === series.exercises.length - 1;
 
-          seriesId: series.id,
-          exerciseId: ex.id,
-          setId: set.id,
-          stepIndex: flatSteps.length,
+        if(ex.restAfterSet > 0 && !isLastSetFromExercise) {
+          const restStep: RestStep = {
+            type: 'exercise_rest',
 
-          restTime: ex.restAfterSet
-        };
+            seriesId: series.id,
+            exerciseId: ex.id,
+            setId: set.id,
+            stepIndex: flatSteps.length,
 
-        flatSteps.push(restStep);
+            restTime: ex.restAfterSet
+          };
+
+          flatSteps.push(restStep);
+        }
 
         // If is the last exercise in the series, add rest step
-        if(series.exercises.length === exIdx + 1) {
+        if(series.restAfterSerie > 0 
+            && isLastExerciseFromSeries
+            && isLastSetFromExercise) {
           const finalRestStep: RestStep = {
             type: 'serie_rest',
 
@@ -91,6 +101,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
     });
   });
 
+  console.log('Generated workout steps:', flatSteps);
   return flatSteps;
 }
 

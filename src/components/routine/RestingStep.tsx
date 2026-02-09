@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/Button';
 interface RestingStepProps {
   restTimer: number;
   targetRestTime?: number;
+  restType: 'exercise_rest' | 'serie_rest';
   onSkip: () => void;
 }
 
-export function RestingStep({ restTimer, targetRestTime, onSkip }: RestingStepProps) {
+export function RestingStep({ restTimer, targetRestTime, restType, onSkip }: RestingStepProps) {
   const { t } = useTranslation();
 
   const formatTime = (seconds: number) => {
@@ -16,10 +17,17 @@ export function RestingStep({ restTimer, targetRestTime, onSkip }: RestingStepPr
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const restLabel = restType === 'serie_rest'
+    ? t('activeWorkout.seriesRest')
+    : t('activeWorkout.exerciseRest');
+
   return (
     <div className="flex flex-col items-center justify-center py-10 animate-fade-in">
-      <span className="text-text-secondary text-sm uppercase tracking-widest font-bold mb-4">
+      <span className="text-text-secondary text-sm uppercase tracking-widest font-bold mb-2">
         {t('activeWorkout.resting')}
+      </span>
+      <span className="text-xs text-text-muted mb-4 px-3 py-1 bg-surface-highlight rounded-full">
+        {restLabel}
       </span>
       <div className="text-6xl font-mono font-bold text-primary mb-2">
         {formatTime(restTimer)}
