@@ -12,9 +12,9 @@ const fetchItems = async (): Promise<InventoryItem[]> => {
     ]);
 
     // Hydrate tags - support both old tagIds and new embedded tags structure if any
-    const hydratedItems = allItems.map((item: any) => ({
+    const hydratedItems = allItems.map((item: Omit<InventoryItem, 'tags'> & { tagIds?: number[] }) => ({
       ...item,
-      tags: item.tags || (item.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[]
+      tags: (item.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[]
     }));
 
     return hydratedItems;
@@ -30,14 +30,13 @@ const addItem = async (item: Omit<InventoryItem, 'id'>) => {
 
   const db = await dbPromise;
   // Dehydrate for storage to keep DB normalized
+  const { tags, ...itemWithoutTags } = item;
   const itemToSave = {
-      ...item,
-      tagIds: (item.tags || []).map(t => t.id).filter(Boolean) as number[]
+    ...itemWithoutTags,
+    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[]
   };
-  // @ts-ignore - tags is not in the DB version of the object
-  delete itemToSave.tags;
 
-  const id = await db.add(DB_TABLES.INVENTORY, itemToSave as any);
+  const id = await db.add(DB_TABLES.INVENTORY, itemToSave as unknown as InventoryItem);
   return id;
 };
 
@@ -49,14 +48,13 @@ const updateItem = async (item: InventoryItem) => {
 
   const db = await dbPromise;
   // Dehydrate for storage
+  const { tags, ...itemWithoutTags } = item;
   const itemToSave = {
-      ...item,
-      tagIds: (item.tags || []).map(t => t.id).filter(Boolean) as number[]
+    ...itemWithoutTags,
+    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[]
   };
-  // @ts-ignore
-  delete itemToSave.tags;
 
-  await db.put(DB_TABLES.INVENTORY, itemToSave as any);
+  await db.put(DB_TABLES.INVENTORY, itemToSave as unknown as InventoryItem);
 };
 
 const deleteItem = async (id: number) => {
