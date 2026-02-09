@@ -148,7 +148,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         ) : (
           <WorkoutSetDisplay
             targetWeight={currentStep.targetWeight}
-            targetReps={currentStep.type == 'failure' ? Infinity : currentStep.targetReps}
+            targetReps={currentStep.setType == 'failure' ? Infinity : currentStep.targetReps}
             time={timers['exercise']?.elapsed || 0}
             targetTime={currentStep.targetTime}
             trackingType={currentStep.trackingType}

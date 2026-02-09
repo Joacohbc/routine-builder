@@ -143,7 +143,7 @@ export interface RoutineExercise {
   notes?: string;
 }
 
-/** Group of exercises (standard, superset, or circuit) */
+/** Group of exercises (standard, superset) */
 export interface RoutineSeries {
   id: string;
   type: SeriesType;
