@@ -11,6 +11,12 @@ export function formatTime(seconds: number | undefined | null): string {
   return `${m}:${s.toString().padStart(2, '0')}`;
 }
 
+export function formatTimeMMSS(seconds: number): string {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+}
+
 export function parseTime(input: string): number {
   if (!input) return 0;
   // Remover sufijos 'm' y 's' si existen

@@ -1,21 +1,14 @@
 import { useTranslation } from 'react-i18next';
-import { Button } from '@/components/ui/Button';
+import { formatTimeMMSS } from '@/lib/timeUtils';
 
 interface RestingStepProps {
   restTimer: number;
   targetRestTime?: number;
   restType: 'exercise_rest' | 'serie_rest';
-  onSkip: () => void;
 }
 
-export function RestingStep({ restTimer, targetRestTime, restType, onSkip }: RestingStepProps) {
+export function RestingStep({ restTimer, targetRestTime, restType }: RestingStepProps) {
   const { t } = useTranslation();
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   const restLabel = restType === 'serie_rest'
     ? t('activeWorkout.seriesRest')
@@ -30,16 +23,13 @@ export function RestingStep({ restTimer, targetRestTime, restType, onSkip }: Res
         {restLabel}
       </span>
       <div className="text-6xl font-mono font-bold text-primary mb-2">
-        {formatTime(restTimer)}
+        {formatTimeMMSS(restTimer)}
       </div>
       {targetRestTime !== undefined && (
         <div className="text-sm text-text-secondary mb-6">
-          {t('activeWorkout.targetRestTime', { time: formatTime(targetRestTime) })}
+          {t('activeWorkout.targetRestTime', { time: formatTimeMMSS(targetRestTime) })}
         </div>
       )}
-      <Button onClick={onSkip} variant="secondary">
-        {t('activeWorkout.skipRest')}
-      </Button>
     </div>
   );
 }

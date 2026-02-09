@@ -8,6 +8,7 @@ import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
 import { RestingStep } from '@/components/routine/RestingStep';
 import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
+import { formatTimeMMSS } from '@/lib/timeUtils';
 import { cn } from '@/lib/utils';
 import type { Routine } from '@/types';
 import type { WorkoutStep, ExerciseStep, RestStep as RestStepType } from '@/pages/WorkoutPageContainer';
@@ -94,12 +95,6 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     }
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
-
   const handleNext = () => {
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex(prev => prev + 1);
@@ -108,7 +103,14 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     }
   };
 
+  const handlePrevious = () => {
+    if (currentStepIndex > 0) {
+      setCurrentStepIndex(prev => prev - 1);
+    }
+  };
+
   const isLastStep = currentStepIndex === steps.length - 1;
+  const isFirstStep = currentStepIndex === 0;
 
   return (
     <div className="flex flex-col h-screen bg-background text-text-main">
@@ -119,7 +121,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         </button>
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-sm">{routine.name}</h2>
-          <span className="text-xs font-mono text-primary">{formatTime(timers['global']?.elapsed || 0)}</span>
+          <span className="text-xs font-mono text-primary">{formatTimeMMSS(timers['global']?.elapsed || 0)}</span>
         </div>
         <button onClick={() => setShowMedia(true)} className={cn("text-text-muted", !currentExercise?.media.length && "opacity-20")}>
           <Icon name="movie" />
@@ -162,7 +164,6 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
             restTimer={timers['rest']?.elapsed || 0}
             targetRestTime={currentStep.restTime}
             restType={currentStep.type}
-            onSkip={handleNext}
           />
         ) : isExerciseStep(currentStep) ? (
           <WorkoutSetDisplay
@@ -177,11 +178,23 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
 
       {/* Footer Action */}
       <div className="p-6 pb-safe-bottom">
-        {isExerciseStep(currentStep) && (
-          <Button onClick={handleNext} className="w-full h-14 text-lg">
-            {isLastStep ? t('activeWorkout.finishWorkout') : t('activeWorkout.nextStep')}
+        <div className="flex gap-3">
+          <Button
+            onClick={handlePrevious}
+            disabled={isFirstStep}
+            variant="secondary"
+            className="h-14 w-14 p-0 flex items-center justify-center"
+          >
+            <Icon name="arrow_back" size={24} />
           </Button>
-        )}
+          <Button onClick={handleNext} className="h-14 text-lg flex-1">
+            {isRestStep(currentStep)
+              ? t('activeWorkout.skipRest')
+              : isLastStep
+                ? t('activeWorkout.finishWorkout')
+                : t('activeWorkout.nextStep')}
+          </Button>
+        </div>
       </div>
 
       {/* Media Modal */}
