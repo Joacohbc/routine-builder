@@ -238,6 +238,10 @@
       "composite": "Composite (Full Body)"
     }
   },
+  "activeWorkout": {
+    "resting": "Resting",
+    "skipRest": "Skip Rest"
+  },
   "speechTest": {
     "title": "Web Speech API Test",
     "speechToText": "Speech to Text",

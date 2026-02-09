@@ -238,6 +238,10 @@
       "composite": "Compuesto (Cuerpo Completo)"
     }
   },
+  "activeWorkout": {
+    "resting": "Descansando",
+    "skipRest": "Saltar Descanso"
+  },
   "speechTest": {
     "title": "Prueba Web Speech API",
     "speechToText": "Voz a Texto",
