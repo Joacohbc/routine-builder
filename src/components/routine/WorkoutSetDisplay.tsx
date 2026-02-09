@@ -40,20 +40,20 @@ export function WorkoutSetDisplay({
         {/* Reps or Time Display */}
         {trackingType === 'time' ? (
           <div className="flex flex-col gap-2">
-            <label className="text-center text-xs font-bold text-text-muted uppercase">Time</label>
+            <label className="text-center text-xs font-bold text-text-muted uppercase">{t('routineBuilder.time')}</label>
             <div className="relative">
               <div className="w-full text-center text-4xl font-bold font-mono text-text-main py-2">
                 {formatTime(time || 0)}
               </div>
               <div className="text-xs text-center text-text-secondary mt-1">
-                Target: {formatTime(targetTime || 0)}
+                {t('routineBuilder.target')}: {formatTime(targetTime || 0)}
               </div>
             </div>
           </div>
         ) : (
           <div className="flex flex-col gap-2">
             <label className="text-center text-xs font-bold text-text-muted uppercase">
-              {targetReps === Infinity ? t('routineBuilder.fail', 'Fail') : 'Reps'}
+              {targetReps === Infinity ? t('routineBuilder.fail', 'Fail') : t('routineBuilder.reps')}
             </label>
             <div className="relative">
               <div className="w-full text-center text-4xl font-bold text-text-main py-2">
