@@ -140,7 +140,11 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
 
         {/* Inputs */}
         {isResting ? (
-          <RestingStep restTimer={timers['rest']?.elapsed || 0} onSkip={handleNext} />
+          <RestingStep 
+            restTimer={timers['rest']?.elapsed || 0} 
+            targetRestTime={steps[currentStepIndex + 1]?.restTime}
+            onSkip={handleNext} 
+          />
         ) : (
           <WorkoutSetDisplay
             targetWeight={currentStep.targetWeight}

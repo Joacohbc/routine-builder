@@ -242,7 +242,8 @@
   },
   "activeWorkout": {
     "resting": "Resting",
-    "skipRest": "Skip Rest"
+    "skipRest": "Skip Rest",
+    "targetRestTime": "Target: {{time}}"
   },
   "speechTest": {
     "title": "Web Speech API Test",

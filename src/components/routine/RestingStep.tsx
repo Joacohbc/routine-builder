@@ -3,10 +3,11 @@ import { Button } from '@/components/ui/Button';
 
 interface RestingStepProps {
   restTimer: number;
+  targetRestTime?: number;
   onSkip: () => void;
 }
 
-export function RestingStep({ restTimer, onSkip }: RestingStepProps) {
+export function RestingStep({ restTimer, targetRestTime, onSkip }: RestingStepProps) {
   const { t } = useTranslation();
 
   const formatTime = (seconds: number) => {
@@ -20,9 +21,14 @@ export function RestingStep({ restTimer, onSkip }: RestingStepProps) {
       <span className="text-text-secondary text-sm uppercase tracking-widest font-bold mb-4">
         {t('activeWorkout.resting')}
       </span>
-      <div className="text-6xl font-mono font-bold text-primary mb-8">
+      <div className="text-6xl font-mono font-bold text-primary mb-2">
         {formatTime(restTimer)}
       </div>
+      {targetRestTime !== undefined && (
+        <div className="text-sm text-text-secondary mb-6">
+          {t('activeWorkout.targetRestTime', { time: formatTime(targetRestTime) })}
+        </div>
+      )}
       <Button onClick={onSkip} variant="secondary">
         {t('activeWorkout.skipRest')}
       </Button>
