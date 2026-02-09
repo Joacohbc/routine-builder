@@ -76,9 +76,9 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     return exerciseSteps.length - completed - (isExerciseStep(currentStep) ? 1 : 0);
   }, [currentStep, steps]);
 
-  // Start global timer on mount
+  // Start totalTime timer on mount
   useEffect(() => {
-    start('global');
+    start('totalTime');
   }, [start]);
 
   // Handle timers based on current step type
@@ -130,7 +130,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         </button>
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-sm">{routine.name}</h2>
-          <span className="text-xs font-mono text-primary">{formatTimeMMSS(timers['global']?.elapsed || 0)}</span>
+          <span className="text-xs font-mono text-primary">{formatTimeMMSS(timers['totalTime']?.elapsed)}</span>
         </div>
         <button onClick={() => setShowMedia(true)} className={cn("text-text-muted", !currentExercise?.media.length && "opacity-20")}>
           <Icon name="movie" />

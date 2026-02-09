@@ -1,6 +1,7 @@
 import type { TrackingType } from '@/types';
 import { Icon } from '@/components/ui/Icon';
 import { t } from 'i18next';
+import { formatTimeMMSS } from '@/lib/timeUtils';
 
 interface WorkoutSetDisplayProps {
   targetWeight: number;
@@ -17,11 +18,6 @@ export function WorkoutSetDisplay({
   targetTime,
   trackingType
 }: WorkoutSetDisplayProps) {
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className="w-full max-w-xs flex flex-col gap-6">
@@ -43,10 +39,10 @@ export function WorkoutSetDisplay({
             <label className="text-center text-xs font-bold text-text-muted uppercase">{t('routineBuilder.time')}</label>
             <div className="relative">
               <div className="w-full text-center text-4xl font-bold font-mono text-text-main py-2">
-                {formatTime(time || 0)}
+                {formatTimeMMSS(time || 0)}
               </div>
               <div className="text-xs text-center text-text-secondary mt-1">
-                {t('routineBuilder.target')}: {formatTime(targetTime || 0)}
+                {t('routineBuilder.target')}: {formatTimeMMSS(targetTime || 0)}
               </div>
             </div>
           </div>
