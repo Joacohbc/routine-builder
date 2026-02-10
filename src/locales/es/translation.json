@@ -15,6 +15,8 @@
     "tags": "Etiquetas",
     "settings": "Ajustes",
     "exercises": "Ejercicios",
+    "enabled": "Activado",
+    "disabled": "Desactivado",
     "tagTypes": {
       "muscle": "Músculo",
       "custom": "Etiqueta Personalizada"
@@ -154,8 +156,10 @@
     "workout": "Entrenamiento",
     "autoNext": "Avance Automático",
     "autoNextDesc": "Avanzar automáticamente al alcanzar el tiempo objetivo",
+    "selectAutoNext": "Seleccionar Avance Automático",
     "timerSound": "Sonido del Temporizador",
     "timerSoundDesc": "Reproducir sonido al alcanzar el tiempo objetivo",
+    "selectTimerSound": "Seleccionar Sonido del Temporizador",
     "soundType": "Tipo de Sonido",
     "customSound": "Personalizado",
     "selectSound": "Seleccionar Sonido",

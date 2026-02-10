@@ -15,6 +15,8 @@
     "tags": "Tags",
     "settings": "Settings",
     "exercises": "Exercises",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "tagTypes": {
       "muscle": "Muscle",
       "custom": "Custom Tag"
@@ -154,8 +156,10 @@
     "workout": "Workout",
     "autoNext": "Auto-Next",
     "autoNextDesc": "Automatically advance when target time is reached",
+    "selectAutoNext": "Select Auto-Next",
     "timerSound": "Timer Sound",
     "timerSoundDesc": "Play sound when target time is reached",
+    "selectTimerSound": "Select Timer Sound",
     "soundType": "Sound Type",
     "customSound": "Custom",
     "selectSound": "Select Sound",

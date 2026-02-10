@@ -7,7 +7,6 @@ import { useSettings } from '@/hooks/useSettings';
 import { TIMER_SOUNDS, useAudio } from '@/hooks/useAudio';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
-import { ListItemToggle } from '@/components/ui/ListItemToggle';
 import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
 
 export default function SettingsPage() {
@@ -108,25 +107,40 @@ export default function SettingsPage() {
         {/* Section: Workout */}
         <section>
           {/* SectionHeader */}
+
           <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3 pt-2">{t('settings.workout', 'Workout')}</h3>
+          
           {/* Grouped List Items Background */}
           <div className="bg-surface rounded-xl overflow-hidden shadow-sm border border-border">
+          
             {/* ListItem: Auto-Next */}
-            <ListItemToggle
+            <ListItemSelect
               icon="skip_next"
               label={t('settings.autoNext', 'Auto-Next')}
+              valueLabel={settings.autoNext ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
+              value={settings.autoNext ? 'enabled' : 'disabled'}
+              options={[
+                { label: t('common.enabled', 'Enabled'), value: 'enabled' },
+                { label: t('common.disabled', 'Disabled'), value: 'disabled' },
+              ]}
+              onSelect={(value) => updateSettings({ autoNext: value === 'enabled' })}
+              title={t('settings.selectAutoNext', 'Select Auto-Next')}
               description={t('settings.autoNextDesc', 'Automatically advance when target time is reached')}
-              value={settings.autoNext}
-              onChange={(value) => updateSettings({ autoNext: value })}
             />
 
             {/* ListItem: Timer Sound Enabled */}
-            <ListItemToggle
+            <ListItemSelect
               icon="notifications_active"
               label={t('settings.timerSound', 'Timer Sound')}
+              valueLabel={settings.timerSoundEnabled ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
+              value={settings.timerSoundEnabled ? 'enabled' : 'disabled'}
+              options={[
+                { label: t('common.enabled', 'Enabled'), value: 'enabled' },
+                { label: t('common.disabled', 'Disabled'), value: 'disabled' },
+              ]}
+              onSelect={(value) => updateSettings({ timerSoundEnabled: value === 'enabled' })}
+              title={t('settings.selectTimerSound', 'Select Timer Sound')}
               description={t('settings.timerSoundDesc', 'Play sound when target time is reached')}
-              value={settings.timerSoundEnabled}
-              onChange={(value) => updateSettings({ timerSoundEnabled: value })}
             />
 
             {/* ListItem: Sound Selection (only if timer sound is enabled) */}
