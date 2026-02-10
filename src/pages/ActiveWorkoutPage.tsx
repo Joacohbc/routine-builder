@@ -56,14 +56,21 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     return exercises.find(e => e.id === Number(currentStep.exerciseId));
   }, [exercises, currentStep.exerciseId]);
 
-  // For exercise steps: compute set position within its exercise in this series
+  // For exercise steps:
+  // Obtain the count of sets for the current exercise and which set we're on (for display "Set 2 of 4" etc)
   const setProgress = useMemo(() => {
     if (!isExerciseStep(currentStep)) return null;
     const sameExerciseSteps = steps.filter(
       (s): s is ExerciseStep =>
         isExerciseStep(s) &&
-        s.exerciseId === currentStep.exerciseId &&
-        s.seriesId === currentStep.seriesId
+        
+        // Same exercise
+        s.exerciseId === currentStep.exerciseId && 
+        // Same series
+        s.seriesId === currentStep.seriesId && 
+
+        // Same exercise index inside the exercise (to differentiate if the same exercise is repeated in the same series)
+        s.setIndexInsideExercise === currentStep.setIndexInsideExercise 
     );
     const setIndex = sameExerciseSteps.findIndex(s => s.stepIndex === currentStep.stepIndex);
     return { current: setIndex + 1, total: sameExerciseSteps.length };

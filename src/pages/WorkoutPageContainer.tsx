@@ -13,12 +13,19 @@ export interface WorkoutStep {
   seriesId: string;
   exerciseId: string;
   setId: string;
-
   stepIndex: number;
   type: WorkoutStepType;
 }
 
 export interface ExerciseStep extends WorkoutStep {
+
+  /**
+   * 0-based index of the set within the exercise.
+   * This must to be filled with the index of the Exercise inside the Serie because 
+   * if the same Exercise is repeated in the same Serie, we need to differentiate them from the
+   * previous or next one.
+  **/
+  setIndexInsideExercise: number; 
   type: 'exercise';
   targetWeight: number;
   targetReps?: number;
@@ -50,6 +57,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
           exerciseId: ex.exerciseId.toString(),
           setId: set.id,
           stepIndex: flatSteps.length,
+          setIndexInsideExercise: exIdx,
           
           targetWeight: set.weight || 0,
           targetReps: set.reps,
@@ -84,6 +92,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
         if(series.restAfterSerie > 0 
             && isLastExerciseFromSeries
             && isLastSetFromExercise) {
+
           const finalRestStep: RestStep = {
             type: 'serie_rest',
 
@@ -91,7 +100,6 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
             exerciseId: ex.exerciseId.toString(),
             setId: set.id,
             stepIndex: flatSteps.length,
-
             restTime: series.restAfterSerie
           };
 
