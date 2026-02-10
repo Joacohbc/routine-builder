@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
-import { useSettings } from '@/hooks/useSettings';
 import { useAudio } from '@/hooks/useAudio';
+import type { Settings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
+import { Toast, type ToastRef } from '@/components/ui/Toast';
 import { RestingStep } from '@/components/routine/RestingStep';
 import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
 import { formatTimeMMSS } from '@/lib/timeUtils';
@@ -19,6 +20,7 @@ import type { WorkoutStep, ExerciseStep, RestStep as RestStepType } from '@/page
 interface ActiveWorkoutPageProps {
   routine: Routine;
   steps: WorkoutStep[];
+  settings: Settings;
 }
 
 function isExerciseStep(step: WorkoutStep): step is ExerciseStep {
@@ -29,7 +31,7 @@ function isRestStep(step: WorkoutStep): step is RestStepType {
   return step.type === 'set_rest' || step.type === 'exercise_rest' || step.type === 'serie_rest';
 }
 
-export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
+export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWorkoutPageProps) {
   
   // Utilities
   const navigate = useNavigate();
@@ -39,12 +41,17 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   
   // Data
   const { exercises } = useExercises();
-  const { settings } = useSettings();
 
   // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  
+  // Local auto-next state (initialized from settings, can be toggled during workout)
+  const [localAutoNext, setLocalAutoNext] = useState(settings.autoNext);
+  
+  // Toast ref for auto-next notifications
+  const toastRef = useRef<ToastRef>(null);
   
   // Track if we've already triggered sound/auto-next for current step
   const hasTriggeredTargetRef = useRef(false);
@@ -172,6 +179,11 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     }
   };
 
+  const handleToggleAutoNext = () => {
+    setLocalAutoNext(!localAutoNext);
+    toastRef.current?.show(2000);
+  };
+
   // Handle target time reached: play sound and auto-next
   useEffect(() => {
     // Don't trigger if already done for this step
@@ -205,8 +217,8 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         playTimerSound(settings.timerSoundId, settings.customTimerSound);
       }
 
-      // Auto-next if enabled
-      if (settings.autoNext) {
+      // Auto-next if enabled (using local state)
+      if (localAutoNext) {
         // Small delay to let sound play
         setTimeout(() => {
           handleNext();
@@ -216,7 +228,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   }, [
     currentStep, 
     timers, 
-    settings.autoNext, 
+    localAutoNext, 
     settings.timerSoundEnabled, 
     settings.timerSoundId, 
     settings.customTimerSound,
@@ -229,6 +241,13 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
 
   return (
     <div className="flex flex-col h-screen bg-background text-text-main">
+      {/* Auto-Next Toast */}
+      <Toast ref={toastRef} position="bottom">
+        <span className="text-sm font-medium">
+          {localAutoNext ? t('activeWorkout.autoNextEnabled') : t('activeWorkout.autoNextDisabled')}
+        </span>
+      </Toast>
+
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 pt-safe-top">
         <button onClick={() => navigate(-1)} className="text-text-muted">
@@ -329,6 +348,18 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
                 ? t('activeWorkout.finishWorkout')
                 : t('activeWorkout.nextStep')}
           </Button>
+          <button
+            onClick={handleToggleAutoNext}
+            className={cn(
+              "h-14 w-14 rounded-2xl flex items-center justify-center transition-colors",
+              localAutoNext
+                ? "bg-primary/20 text-primary"
+                : "bg-surface-highlight text-text-muted"
+            )}
+            aria-label={localAutoNext ? t('activeWorkout.autoNextEnabled') : t('activeWorkout.autoNextDisabled')}
+          >
+            <Icon name="skip_next" size={24} />
+          </button>
         </div>
       </div>
 

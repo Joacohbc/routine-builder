@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
 import { useParams } from 'react-router-dom';
 import { useRoutines } from '@/hooks/useRoutines';
+import { useSettings } from '@/hooks/useSettings';
 import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
 import { Layout } from '@/components/ui/Layout';
 import type { Routine } from '@/types';
@@ -145,6 +146,7 @@ export default function WorkoutPageContainer() {
   const { id } = useParams();
   const { t } = useTranslation();
   const { routines } = useRoutines();
+  const { settings } = useSettings();
 
   const routine = useMemo(() => {
     if (!id) return null;
@@ -164,5 +166,5 @@ export default function WorkoutPageContainer() {
     );
   }
 
-  return <ActiveWorkoutPage routine={routine} steps={steps} />;
+  return <ActiveWorkoutPage routine={routine} steps={steps} settings={settings} />;
 }

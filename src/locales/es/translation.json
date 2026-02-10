@@ -282,7 +282,9 @@
     "nextStep": "Siguiente Set",
     "supersetFlow": "SUPERSERIE",
     "unknownExercise": "Ejercicio Desconocido",
-    "noMedia": "Sin Multimedia"
+    "noMedia": "Sin Multimedia",
+    "autoNextEnabled": "Auto-Avanzar: ON",
+    "autoNextDisabled": "Auto-Avanzar: OFF"
   },
   "speechTest": {
     "title": "Prueba Web Speech API",
