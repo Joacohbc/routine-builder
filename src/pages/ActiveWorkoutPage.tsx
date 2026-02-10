@@ -358,7 +358,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
             )}
             aria-label={localAutoNext ? t('activeWorkout.autoNextEnabled') : t('activeWorkout.autoNextDisabled')}
           >
-            <Icon name="skip_next" size={24} />
+            <Icon name="bolt" size={24} />
           </button>
         </div>
       </div>

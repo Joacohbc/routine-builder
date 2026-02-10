@@ -157,7 +157,7 @@ export default function SettingsPage() {
           
             {/* ListItem: Auto-Next */}
             <ListItemSelect
-              icon="skip_next"
+              icon="bolt"
               label={t('settings.autoNext', 'Auto-Next')}
               valueLabel={settings.autoNext ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
               value={settings.autoNext ? 'enabled' : 'disabled'}
