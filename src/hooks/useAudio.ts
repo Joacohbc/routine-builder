@@ -2,18 +2,13 @@ import { useCallback, useRef } from 'react';
 
 /**
  * Predefined timer sounds.
- * These are simple base64-encoded audio files (very short beeps/chimes)
- * to keep the app lightweight and offline-capable.
+ * These are audio files stored in the public/audios folder.
  */
 export const TIMER_SOUNDS: Record<string, string> = {
-  // Default: Simple beep (440 Hz tone)
-  default: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFgH11dXZ7gIWKjoqFgHx3c3Jzd32Ci4eFgnt2cnBvcXR5fYKGiYaBfXh0cG9vb3F1eX2Ch4uGgX15dHBub25vcHJ2e3+EiYiEgHx4dHFubm5vcXV5foKHi4+OioaAfHh0cHBwcHJ1eH2Bh4uJhYGAfHh1cnBub29xdHh8gYWJjYiEgX57d3RybnBwcXN2eX6Dh4yJhYJ+end0cXBwcnR3e36DiYyIhIGAfHl2dHJxcXJ0d3p+gotOioeBfoB8eXd1c3N0dnh7foGFi46JhoOAfXp4dnV0dHV3ent+g4eKi4eEgn98eXh2dXZ3eHt+gYSIjYqHhIF/fHp4d3d3eXp8f4KGiYyIhYKAf3x7eXh4eHl7fYCEh4qNioeFg4F+fHp5eHl6fH+ChYiLjImGhIKAf319fH19foGDhYiLjIqHhYOBgH9+fX1+f4GDhYiKi4mHhYSCgYCAfn5/gIKEhomLjIqIhoSCgYB/f39/gIGDhYeJi4uJh4WEg4KBgIB/f4CBg4WGiImKiomHhoWEg4KBgICAgIGChIWHiImKiYiHhoWEg4KBgYCAgICBgoSFhoeIiYmIh4aFhIOCgoGAgICAgYKDhIWGh4iJiIiHhoWEhIOCgYGAgICAgYKDhIWGh4iIiIeGhYSEg4KBgYCAgICBgoOEhYaHiIiIh4aGhYSEg4KBgYCAgICBgoOEhYaHh4eHhoWFhISDgoGBgICAgIGCg4SFhoeHh4aGhYWEg4OCgYGAgICBgoOEhYaGhoeGhoWFhISDgoGBgICAgIGCg4SFhoaGhoWFhIODgoGBgICAgYKDhISFhoaGhoWEhIODgoGBgICAgYKDhISFhYaGhYWEhIODgoGBgICAgYKDhISFhYWFhYSEg4OCgoGAgICBgoOEhIWFhYWFhYSEg4OCgoGBgICAgYKDhISFhYWFhISDgoCCgoGBgICAgIGCg4SEhISEhISDgoKCgYGAgICAgYGDg4SEhISEg4OCgoKBgYCAgICBgoODhISEhISDg4KCgoGBgICAgIGCg4OEhISEg4OCgoKCgYGAgICAgYKDg4SEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYA=',
-  
-  // Beep: Short high-pitched beep (800 Hz)
-  beep: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFgH11dXZ7gIWKjoqFgHx3c3Jzd32Ci4eFgnt2cnBvcXR5fYKGiYaBfXh0cG9vb3F1eX2Ch4uGgX15dHBub25vcHJ2e3+EiYiEgHx4dHFubm5vcXV5foKHi4+OioaAfHh0cHBwcHJ1eH2Bh4uJhYGAfHh1cnBub29xdHh8gYWJjYiEgX57d3RybnBwcXN2eX6Dh4yJhYJ+end0cXBwcnR3e36DiYyIhIGAfHl2dHJxcXJ0d3p+gotOioeBfoB8eXd1c3N0dnh7foGFi46JhoOAfXp4dnV0dHV3ent+g4eKi4eEgn98eXh2dXZ3eHt+gYSIjYqHhIF/fHp4d3d3eXp8f4KGiYyIhYKAf3x7eXh4eHl7fYCEh4qNioeFg4F+fHp5eHl6fH+ChYiLjImGhIKAf319fH19foGDhYiLjIqHhYOBgH9+fX1+f4GDhYiKi4mHhYSCgYCAfn5/gIKEhomLjIqIhoSCgYB/f39/gIGDhYeJi4uJh4WEg4KBgIB/f4CBg4WGiImKiomHhoWEg4KBgYCAgICBgoSFhoeIiYmIh4aFhIOCgoGAgICAgYKDhIWGh4iJiIiHhoWEhIOCgYGAgICAgYKDhIWGh4iIiIeGhYSEg4KBgYCAgICBgoOEhYaHiIiIh4aGhYSEg4KBgYCAgICBgoOEhYaHh4eHhoWFhISDgoGBgICAgIGCg4SFhoeHh4aGhYWEg4OCgYGAgICBgoOEhYaGhoeGhoWFhISDgoGBgICAgIGCg4SFhoaGhoWFhIODgoGBgICAgYKDhISFhoaGhoWEhIODgoGBgICAgYKDhISFhYaGhYWEhIODgoGBgICAgYKDhISFhYWFhYSEg4OCgoGAgICBgoOEhIWFhYWFhYSEg4OCgoGBgICAgYKDhISFhYWFhISDgoCCgoGBgICAgIGCg4SEhISEhISDgoKCgYGAgICAgYGDg4SEhISEg4OCgoKBgYCAgICBgoODhISEhISDg4KCgoGBgICAgIGCg4OEhISEg4OCgoKCgYGAgICAgYKDg4SEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYA=',
-  
-  // Chime: Pleasant ding (C major chord simulation)
-  chime: 'data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFgH11dXZ7gIWKjoqFgHx3c3Jzd32Ci4eFgnt2cnBvcXR5fYKGiYaBfXh0cG9vb3F1eX2Ch4uGgX15dHBub25vcHJ2e3+EiYiEgHx4dHFubm5vcXV5foKHi4+OioaAfHh0cHBwcHJ1eH2Bh4uJhYGAfHh1cnBub29xdHh8gYWJjYiEgX57d3RybnBwcXN2eX6Dh4yJhYJ+end0cXBwcnR3e36DiYyIhIGAfHl2dHJxcXJ0d3p+gotOioeBfoB8eXd1c3N0dnh7foGFi46JhoOAfXp4dnV0dHV3ent+g4eKi4eEgn98eXh2dXZ3eHt+gYSIjYqHhIF/fHp4d3d3eXp8f4KGiYyIhYKAf3x7eXh4eHl7fYCEh4qNioeFg4F+fHp5eHl6fH+ChYiLjImGhIKAf319fH19foGDhYiLjIqHhYOBgH9+fX1+f4GDhYiKi4mHhYSCgYCAfn5/gIKEhomLjIqIhoSCgYB/f39/gIGDhYeJi4uJh4WEg4KBgIB/f4CBg4WGiImKiomHhoWEg4KBgYCAgICBgoSFhoeIiYmIh4aFhIOCgoGAgICAgYKDhIWGh4iJiIiHhoWEhIOCgYGAgICAgYKDhIWGh4iIiIeGhYSEg4KBgYCAgICBgoOEhYaHiIiIh4aGhYSEg4KBgYCAgICBgoOEhYaHh4eHhoWFhISDgoGBgICAgIGCg4SFhoeHh4aGhYWEg4OCgYGAgICBgoOEhYaGhoeGhoWFhISDgoGBgICAgIGCg4SFhoaGhoWFhIODgoGBgICAgYKDhISFhoaGhoWEhIODgoGBgICAgYKDhISFhYaGhYWEhIODgoGBgICAgYKDhISFhYWFhYSEg4OCgoGAgICBgoOEhIWFhYWFhYSEg4OCgoGBgICAgYKDhISFhYWFhISDgoCCgoGBgICAgIGCg4SEhISEhISDgoKCgYGAgICAgYGDg4SEhISEg4OCgoKBgYCAgICBgoODhISEhISDg4KCgoGBgICAgIGCg4OEhISEg4OCgoKCgYGAgICAgYKDg4SEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYCAgICBgoODhISEhISDg4KCgoGBgYA=',
+  ring: 'audios/bell-www.mp3',
+  level: 'audios/next-level.mp3',
+  next: 'audios/simple-next.mp3',
+  bell: 'audios/simplebell-ring.mp3',
 };
 
 /**
@@ -25,7 +20,7 @@ export const useAudio = () => {
 
   /**
    * Play a timer sound.
-   * @param soundId - The ID of the sound ('default', 'beep', 'chime', 'custom')
+   * @param soundId - The ID of the sound ('bell', 'level', 'next', 'ring', 'custom')
    * @param customSound - Base64 Data URI for custom audio (required if soundId is 'custom')
    */
   const playTimerSound = useCallback((soundId: string, customSound?: string) => {
@@ -38,8 +33,8 @@ export const useAudio = () => {
       } else if (TIMER_SOUNDS[soundId]) {
         audioSrc = TIMER_SOUNDS[soundId];
       } else {
-        // Fallback to default if invalid soundId
-        audioSrc = TIMER_SOUNDS.default;
+        // Fallback to bell if invalid soundId
+        audioSrc = TIMER_SOUNDS.bell;
       }
 
       if (!audioSrc) return;

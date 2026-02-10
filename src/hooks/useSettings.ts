@@ -3,14 +3,14 @@ import { useState, useEffect, useCallback } from 'react';
 export interface Settings {
   autoNext: boolean;
   timerSoundEnabled: boolean;
-  timerSoundId: string; // 'default', 'beep', 'chime', 'custom'
+  timerSoundId: string; // 'bell', 'level', 'next', 'ring', 'custom'
   customTimerSound?: string; // Base64 Data URI for custom audio
 }
 
 const DEFAULT_SETTINGS: Settings = {
   autoNext: false,
   timerSoundEnabled: true,
-  timerSoundId: 'default',
+  timerSoundId: 'bell',
 };
 
 const STORAGE_KEY = 'app-settings';

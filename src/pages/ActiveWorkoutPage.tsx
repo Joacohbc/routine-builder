@@ -128,7 +128,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     }
   };
 
-    // Handle target time reached: play sound and auto-next
+  // Handle target time reached: play sound and auto-next
   useEffect(() => {
     // Don't trigger if already done for this step
     if (hasTriggeredTargetRef.current) return;

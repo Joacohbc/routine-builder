@@ -4,7 +4,7 @@ import { Layout } from '@/components/ui/Layout';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 import { useSettings } from '@/hooks/useSettings';
-import { TIMER_SOUNDS } from '@/hooks/useAudio';
+import { TIMER_SOUNDS, useAudio } from '@/hooks/useAudio';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
 import { ListItemToggle } from '@/components/ui/ListItemToggle';
@@ -14,6 +14,7 @@ export default function SettingsPage() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
   const { settings, updateSettings } = useSettings();
+  const { playTimerSound } = useAudio();
   const { t, i18n } = useTranslation();
 
   // Get current language code (first two letters)
@@ -150,6 +151,31 @@ export default function SettingsPage() {
                   onSelect={(value) => updateSettings({ timerSoundId: value })}
                   title={t('settings.selectSound', 'Select Sound')}
                 />
+
+                {/* Sound Preview (for predefined sounds) */}
+                {settings.timerSoundId !== 'custom' && (
+                  <div className="px-4 py-3 border-t border-border">
+                    <div className="flex items-center gap-3 p-3 bg-surface-highlight rounded-xl border border-border">
+                      <div className="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary">
+                        <Icon name="audiotrack" size={20} />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-text-main text-sm font-medium">
+                          {settings.timerSoundId.charAt(0).toUpperCase() + settings.timerSoundId.slice(1)}
+                        </p>
+                        <p className="text-text-secondary text-xs">
+                          {t('settings.tapToPreview', 'Tap play to preview')}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => playTimerSound(settings.timerSoundId, settings.customTimerSound)}
+                        className="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+                      >
+                        <Icon name="play_arrow" size={20} />
+                      </button>
+                    </div>
+                  </div>
+                )}
 
                 {/* Custom Audio Upload (only if custom is selected) */}
                 {settings.timerSoundId === 'custom' && (
