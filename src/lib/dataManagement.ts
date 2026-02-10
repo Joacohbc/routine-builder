@@ -1,6 +1,6 @@
-import { dbPromise, DB_TABLES } from './db';
+import { dbPromise, DB_TABLES } from '@/lib/db';
 import type { Routine, Tag } from '@/types';
-import type { DehydratedInventoryItem, DehydratedExercise } from './db';
+import type { DehydratedInventoryItem, DehydratedExercise } from '@/lib/db';
 
 // This interface matches the "dehydrated" structure stored in the database.
 // Application code normally hydrates these, but for backup/restore we need
