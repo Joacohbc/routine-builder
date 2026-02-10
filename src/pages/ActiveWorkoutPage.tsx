@@ -8,6 +8,7 @@ import { useAudio } from '@/hooks/useAudio';
 import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
+import { Modal } from '@/components/ui/Modal';
 import { RestingStep } from '@/components/routine/RestingStep';
 import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
 import { formatTimeMMSS } from '@/lib/timeUtils';
@@ -29,13 +30,18 @@ function isRestStep(step: WorkoutStep): step is RestStepType {
 }
 
 export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
+  
+  // Utilities
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { exercises } = useExercises();
   const { timers, start, pause, reset } = useMultiTimer();
-  const { settings } = useSettings();
   const { playTimerSound } = useAudio();
+  const { t } = useTranslation();
+  
+  // Data
+  const { exercises } = useExercises();
+  const { settings } = useSettings();
 
+  // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
   const [isFading, setIsFading] = useState(false);
@@ -280,26 +286,25 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       </div>
 
       {/* Media Modal */}
-      {showMedia && currentExercise && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
-          <button onClick={() => setShowMedia(false)} className="absolute top-4 right-4 text-white">
-            <Icon name="close" size={32} />
-          </button>
-          <div className="w-full max-w-md aspect-square bg-black rounded-2xl overflow-hidden relative">
-            {currentExercise.media.length > 0 ? (
-              (() => {
-                const m = currentExercise.media[0];
-                if (m.type === 'image') return <img src={m.url} className="w-full h-full object-contain" />;
-                if (m.type === 'video') return <video src={m.url} controls className="w-full h-full object-contain" />;
-                if (m.type === 'youtube') return <iframe src={`https://www.youtube.com/embed/${m.url}`} className="w-full h-full" allowFullScreen />;
-                return null;
-              })()
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
-            )}
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={showMedia && !!currentExercise}
+        onClose={() => setShowMedia(false)}
+        variant="centered"
+        showCloseButton={true}
+        className="bg-black rounded-2xl max-w-md aspect-square overflow-hidden p-0"
+      >
+        {currentExercise && currentExercise.media.length > 0 ? (
+          (() => {
+            const m = currentExercise.media[0];
+            if (m.type === 'image') return <img src={m.url} className="w-full h-full object-contain" alt={currentExercise.title} />;
+            if (m.type === 'video') return <video src={m.url} controls className="w-full h-full object-contain" />;
+            if (m.type === 'youtube') return <iframe src={`https://www.youtube.com/embed/${m.url}`} className="w-full h-full" allowFullScreen title={currentExercise.title} />;
+            return null;
+          })()
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
+        )}
+      </Modal>
     </div>
   );
 }
