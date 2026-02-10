@@ -1,3 +1,4 @@
+import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/ui/Layout';
@@ -8,6 +9,8 @@ import { TIMER_SOUNDS, useAudio } from '@/hooks/useAudio';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
 import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
+import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
+import { exportData, importData } from '@/lib/dataManagement';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -15,6 +18,10 @@ export default function SettingsPage() {
   const { settings, updateSettings } = useSettings();
   const { playTimerSound } = useAudio();
   const { t, i18n } = useTranslation();
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const [importConfirmationOpen, setImportConfirmationOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
   // Get current language code (first two letters)
   const currentLangCode = i18n.language.split('-')[0];
@@ -28,6 +35,41 @@ export default function SettingsPage() {
   const handleLanguageChange = async (langCode: string) => {
     await i18n.changeLanguage(langCode);
     localStorage.setItem('i18nextLng', langCode);
+  };
+
+  const handleExport = async () => {
+    try {
+      await exportData();
+    } catch (error) {
+      console.error('Export failed:', error);
+      // Ideally show a toast/notification
+    }
+  };
+
+  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setSelectedFile(file);
+      setImportConfirmationOpen(true);
+    }
+    // Reset input so same file can be selected again if needed
+    e.target.value = '';
+  };
+
+  const handleImportConfirm = async () => {
+    if (!selectedFile) return;
+
+    try {
+      await importData(selectedFile);
+      alert(t('settings.importSuccess', 'Data imported successfully'));
+      window.location.reload();
+    } catch (error) {
+      console.error('Import failed:', error);
+      alert(t('settings.importError', 'Failed to import data'));
+    } finally {
+      setImportConfirmationOpen(false);
+      setSelectedFile(null);
+    }
   };
 
   return (
@@ -231,6 +273,69 @@ export default function SettingsPage() {
           </Form>
         </section>
 
+        {/* Section: Data Management */}
+        <section>
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3">{t('settings.dataManagement', 'Data Management')}</h3>
+          <div className="bg-surface rounded-xl overflow-hidden shadow-sm border border-border">
+            {/* Export Data */}
+            <div className="relative flex flex-col w-full">
+              <button
+                onClick={handleExport}
+                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                    <Icon name="download" size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-text-main text-base font-medium leading-normal">
+                      {t('settings.exportData', 'Export Data')}
+                    </p>
+                    <p className="text-text-secondary text-xs">
+                      {t('settings.exportDataDesc', 'Download a backup of your data')}
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2 text-text-secondary">
+                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+            </div>
+
+            {/* Import Data */}
+            <div className="relative flex flex-col w-full border-t border-border">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                    <Icon name="upload" size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-text-main text-base font-medium leading-normal">
+                      {t('settings.importData', 'Import Data')}
+                    </p>
+                    <p className="text-text-secondary text-xs">
+                      {t('settings.importDataDesc', 'Restore data from a backup file')}
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2 text-text-secondary">
+                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
+                onChange={handleFileSelect}
+              />
+            </div>
+          </div>
+        </section>
+
         {/* Footer Info */}
         <div className="mt-auto pt-8 pb-6 flex flex-col items-center justify-center opacity-40">
           <div className="size-10 rounded-xl bg-primary mb-3 flex items-center justify-center shadow-lg shadow-primary/40">
@@ -251,6 +356,20 @@ export default function SettingsPage() {
           </p>
         </div>
       </div>
+
+      <ConfirmationDialog
+        isOpen={importConfirmationOpen}
+        onClose={() => {
+          setImportConfirmationOpen(false);
+          setSelectedFile(null);
+        }}
+        onConfirm={handleImportConfirm}
+        title={t('settings.importWarningTitle', 'Import Data')}
+        description={t('settings.importWarningDesc', 'This will overwrite all existing data with the content of the backup file. This action cannot be undone. Are you sure?')}
+        confirmText={t('common.confirm', 'Confirm')}
+        cancelText={t('common.cancel', 'Cancel')}
+        variant="danger"
+      />
     </Layout>
   );
 }

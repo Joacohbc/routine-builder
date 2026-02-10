@@ -167,7 +167,16 @@
     "customAudioUploaded": "Audio Personalizado Subido",
     "tapToPreview": "Toca reproducir para previsualizar",
     "audioHint": "Formatos soportados: MP3, WAV, OGG. Tamaño máximo: 1MB",
-    "soundsFrom": "Sonidos de"
+    "soundsFrom": "Sonidos de",
+    "dataManagement": "Gestión de Datos",
+    "exportData": "Exportar Datos",
+    "exportDataDesc": "Descargar una copia de seguridad de tus datos",
+    "importData": "Importar Datos",
+    "importDataDesc": "Restaurar datos desde un archivo de copia de seguridad",
+    "importWarningTitle": "Importar Datos",
+    "importWarningDesc": "Esto sobrescribirá todos los datos existentes con el contenido del archivo de copia de seguridad. Esta acción no se puede deshacer. ¿Estás seguro?",
+    "importSuccess": "Datos importados exitosamente",
+    "importError": "Error al importar datos"
   },
   "iconPicker": {
     "title": "Seleccionar Icono",
