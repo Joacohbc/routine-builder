@@ -77,6 +77,7 @@ The database logic is centralized in `src/lib/db.ts`.
 2.  **Data Safety:** Never implement logic that deletes user data (clearing DB) without an explicit, user-confirmed action (e.g., using `ConfirmationDialog`).
 3.  **Mobile Performance:** Prioritize performance on low-end mobile devices. Avoid heavy computations on the main thread during render.
 4.  **Component Reuse:** Strictly use existing UI components located in `src/components/ui/` whenever possible. Do not create new components or use raw HTML elements if an existing UI component can serve the purpose.
+5.  **Asset Handling (Base URL):** The application is served from a subdirectory (`/routine-builder/`). **Never** use absolute paths (e.g., `/img/logo.png`) as they will break in production. Always import assets (e.g., `import logo from '@/assets/logo.png'`) or use relative paths.
 
 ### 🌍 Internationalization (i18n)
 *   **Strict Requirement:** All user-facing text **MUST** be internationalized.
@@ -102,6 +103,18 @@ The database logic is centralized in `src/lib/db.ts`.
 Located in `src/lib/validations.ts`.
 *   Returns standardized `ValidationResult` objects.
 *   Error messages are returned as translation keys (e.g., `validations.required`), not raw strings.
+
+### Custom Form System
+The project uses a specialized form system located in `src/components/ui/Form.tsx`.
+*   **Directive:** **DO NOT** install external libraries like `react-hook-form` or `formik`.
+*   **Usage:** Use the `<Form>` component and its children (`Form.Input`, `Form.Select`, `Form.IconPicker`, etc.).
+*   **Validation:** Integrate strictly with `src/lib/validations.ts`.
+
+### Icon Management
+Icons are managed via `public/icon_names.json`, which feeds the `IconPicker`.
+*   **Source:** The JSON file contains a list of available Material Symbols.
+*   **Updates:** If new icons are needed, update `public/icon_names.json`.
+*   **Tool:** Use `extract_icon_names.py` to regenerate the list if you have the source `icons.json`.
 
 ### Theming & Colors (Semantic Tokens)
 The app uses a **Semantic Token System** to ensure consistency and contrast across Light and Dark modes.
