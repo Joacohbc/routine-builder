@@ -198,6 +198,17 @@ export default function SettingsPage() {
           </div>
           <p className="text-xs font-medium text-text-secondary">{t('settings.version', 'Lavender Focus v1.0.4')}</p>
           <p className="text-[10px] text-text-muted mt-1">{t('settings.localData', 'Local Data Storage Active')}</p>
+          <p className="text-[9px] text-text-muted mt-2">
+            {t('settings.soundsFrom', 'Sounds from')}{' '}
+            <a 
+              href="https://pixabay.com/" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="underline hover:text-text-secondary transition-colors"
+            >
+              Pixabay
+            </a>
+          </p>
         </div>
       </div>
     </Layout>

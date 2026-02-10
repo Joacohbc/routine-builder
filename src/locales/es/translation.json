@@ -162,7 +162,8 @@
     "uploadCustomAudio": "Subir Audio Personalizado",
     "customAudioUploaded": "Audio Personalizado Subido",
     "tapToPreview": "Toca reproducir para previsualizar",
-    "audioHint": "Formatos soportados: MP3, WAV, OGG. Tamaño máximo: 1MB"
+    "audioHint": "Formatos soportados: MP3, WAV, OGG. Tamaño máximo: 1MB",
+    "soundsFrom": "Sonidos de"
   },
   "iconPicker": {
     "title": "Seleccionar Icono",
