@@ -262,6 +262,7 @@
     "exerciseRest": "Descanso entre Sets",
     "seriesRest": "Descanso de Serie",
     "setProgress": "Set {{current}} de {{total}}",
+    "seriesAndSetProgress": "Serie {{seriesCurrent}} de {{seriesTotal}} - Set {{setCurrent}} de {{setTotal}}",
     "stepsRemaining": "{{count}} restantes",
     "finishWorkout": "Terminar Entrenamiento",
     "nextStep": "Siguiente Set",

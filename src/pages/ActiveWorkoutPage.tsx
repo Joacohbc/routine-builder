@@ -56,6 +56,22 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     return exercises.find(e => e.id === Number(currentStep.exerciseId));
   }, [exercises, currentStep.exerciseId]);
 
+  // Calculate series progress (which series we're on out of total)
+  const seriesProgress = useMemo(() => {
+    // Get all unique series IDs in order of appearance
+    const uniqueSeriesIds: string[] = [];
+    steps.forEach(step => {
+      if (!uniqueSeriesIds.includes(step.seriesId)) {
+        uniqueSeriesIds.push(step.seriesId);
+      }
+    });
+    const currentSeriesIndex = uniqueSeriesIds.indexOf(currentStep.seriesId);
+    return {
+      current: currentSeriesIndex + 1,
+      total: uniqueSeriesIds.length
+    };
+  }, [currentStep.seriesId, steps]);
+
   // For exercise steps:
   // Obtain the count of sets for the current exercise and which set we're on (for display "Set 2 of 4" etc)
   const setProgress = useMemo(() => {
@@ -209,7 +225,12 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
           totalSteps={steps.length}
           leftLabel={
             isExerciseStep(currentStep) && setProgress
-              ? t('activeWorkout.setProgress', { current: setProgress.current, total: setProgress.total })
+              ? t('activeWorkout.seriesAndSetProgress', { 
+                  seriesCurrent: seriesProgress.current, 
+                  seriesTotal: seriesProgress.total,
+                  setCurrent: setProgress.current, 
+                  setTotal: setProgress.total 
+                })
               : isRestStep(currentStep)
                 ? currentStep.type === 'serie_rest'
                   ? t('activeWorkout.seriesRest')

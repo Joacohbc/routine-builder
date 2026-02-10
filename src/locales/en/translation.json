@@ -262,6 +262,7 @@
     "exerciseRest": "Set Rest",
     "seriesRest": "Series Rest",
     "setProgress": "Set {{current}} of {{total}}",
+    "seriesAndSetProgress": "Serie {{seriesCurrent}} of {{seriesTotal}} - Set {{setCurrent}} of {{setTotal}}",
     "stepsRemaining": "{{count}} remaining",
     "finishWorkout": "Finish Workout",
     "nextStep": "Next Set",
