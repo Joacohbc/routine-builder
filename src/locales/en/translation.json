@@ -167,7 +167,16 @@
     "customAudioUploaded": "Custom Audio Uploaded",
     "tapToPreview": "Tap play to preview",
     "audioHint": "Supported formats: MP3, WAV, OGG. Max size: 1MB",
-    "soundsFrom": "Sounds from"
+    "soundsFrom": "Sounds from",
+    "dataManagement": "Data Management",
+    "exportData": "Export Data",
+    "exportDataDesc": "Download a backup of your data",
+    "importData": "Import Data",
+    "importDataDesc": "Restore data from a backup file",
+    "importWarningTitle": "Import Data",
+    "importWarningDesc": "This will overwrite all existing data with the content of the backup file. This action cannot be undone. Are you sure?",
+    "importSuccess": "Data imported successfully",
+    "importError": "Failed to import data"
   },
   "iconPicker": {
     "title": "Select Icon",
