@@ -1,10 +1,11 @@
 import { useTranslation } from 'react-i18next';
 import { formatTimeMMSS } from '@/lib/timeUtils';
+import type { RestType } from '@/pages/WorkoutPageContainer';
 
 interface RestingStepProps {
   restTimer: number;
   targetRestTime?: number;
-  restType: 'exercise_rest' | 'serie_rest';
+  restType: RestType;
 }
 
 export function RestingStep({ restTimer, targetRestTime, restType }: RestingStepProps) {
@@ -12,7 +13,9 @@ export function RestingStep({ restTimer, targetRestTime, restType }: RestingStep
 
   const restLabel = restType === 'serie_rest'
     ? t('activeWorkout.seriesRest')
-    : t('activeWorkout.exerciseRest');
+    : restType === 'exercise_rest'
+      ? t('activeWorkout.exerciseRest')
+      : t('activeWorkout.setRest');
 
   return (
     <div className="flex flex-col items-center justify-center py-10 animate-fade-in">

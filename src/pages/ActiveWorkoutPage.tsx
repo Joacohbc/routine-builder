@@ -26,7 +26,7 @@ function isExerciseStep(step: WorkoutStep): step is ExerciseStep {
 }
 
 function isRestStep(step: WorkoutStep): step is RestStepType {
-  return step.type === 'exercise_rest' || step.type === 'serie_rest';
+  return step.type === 'set_rest' || step.type === 'exercise_rest' || step.type === 'serie_rest';
 }
 
 export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
@@ -263,7 +263,9 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
               : isRestStep(currentStep)
                 ? currentStep.type === 'serie_rest'
                   ? t('activeWorkout.seriesRest')
-                  : t('activeWorkout.exerciseRest')
+                  : currentStep.type === 'exercise_rest'
+                    ? t('activeWorkout.exerciseRest')
+                    : t('activeWorkout.setRest')
                 : ''
           }
           rightLabel={t('activeWorkout.stepsRemaining', { count: stepsRemaining })}
