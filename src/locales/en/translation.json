@@ -71,7 +71,9 @@
     "uniqueName": "Name must be unique",
     "mediaType": "Only images and videos are supported.",
     "invalidYoutubeUrl": "Invalid YouTube URL",
-    "systemTagProtected": "System tags cannot be modified or deleted"
+    "systemTagProtected": "System tags cannot be modified or deleted",
+    "audioType": "Please select a valid audio file",
+    "audioSize": "Audio file must be smaller than 1MB"
   },
   "routineBuilder": {
     "newRoutine": "New Routine",
@@ -148,7 +150,19 @@
     "systemDefault": "System Default",
     "selectLanguage": "Select Language",
     "version": "Lavender Focus v1.0.4",
-    "localData": "Local Data Storage Active"
+    "localData": "Local Data Storage Active",
+    "workout": "Workout",
+    "autoNext": "Auto-Next",
+    "autoNextDesc": "Automatically advance when target time is reached",
+    "timerSound": "Timer Sound",
+    "timerSoundDesc": "Play sound when target time is reached",
+    "soundType": "Sound Type",
+    "customSound": "Custom",
+    "selectSound": "Select Sound",
+    "uploadCustomAudio": "Upload Custom Audio",
+    "customAudioUploaded": "Custom Audio Uploaded",
+    "tapToPreview": "Tap play to preview",
+    "audioHint": "Supported formats: MP3, WAV, OGG. Max size: 1MB"
   },
   "iconPicker": {
     "title": "Select Icon",

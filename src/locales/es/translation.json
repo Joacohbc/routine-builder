@@ -71,7 +71,9 @@
     "uniqueName": "El nombre debe ser único",
     "mediaType": "Solo se soportan imágenes y videos.",
     "invalidYoutubeUrl": "URL de YouTube inválida",
-    "systemTagProtected": "Las etiquetas del sistema no pueden ser modificadas ni eliminadas"
+    "systemTagProtected": "Las etiquetas del sistema no pueden ser modificadas ni eliminadas",
+    "audioType": "Por favor selecciona un archivo de audio válido",
+    "audioSize": "El archivo de audio debe ser menor a 1MB"
   },
   "routineBuilder": {
     "newRoutine": "Nueva Rutina",
@@ -148,7 +150,19 @@
     "systemDefault": "Sistema",
     "selectLanguage": "Seleccionar Idioma",
     "version": "Lavender Focus v1.0.4",
-    "localData": "Almacenamiento Local Activo"
+    "localData": "Almacenamiento Local Activo",
+    "workout": "Entrenamiento",
+    "autoNext": "Avance Automático",
+    "autoNextDesc": "Avanzar automáticamente al alcanzar el tiempo objetivo",
+    "timerSound": "Sonido del Temporizador",
+    "timerSoundDesc": "Reproducir sonido al alcanzar el tiempo objetivo",
+    "soundType": "Tipo de Sonido",
+    "customSound": "Personalizado",
+    "selectSound": "Seleccionar Sonido",
+    "uploadCustomAudio": "Subir Audio Personalizado",
+    "customAudioUploaded": "Audio Personalizado Subido",
+    "tapToPreview": "Toca reproducir para previsualizar",
+    "audioHint": "Formatos soportados: MP3, WAV, OGG. Tamaño máximo: 1MB"
   },
   "iconPicker": {
     "title": "Seleccionar Icono",

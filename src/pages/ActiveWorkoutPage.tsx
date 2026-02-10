@@ -1,8 +1,10 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
+import { useSettings } from '@/hooks/useSettings';
+import { useAudio } from '@/hooks/useAudio';
 import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
@@ -31,10 +33,15 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   const { t } = useTranslation();
   const { exercises } = useExercises();
   const { timers, start, pause, reset } = useMultiTimer();
+  const { settings } = useSettings();
+  const { playTimerSound } = useAudio();
 
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  
+  // Track if we've already triggered sound/auto-next for current step
+  const hasTriggeredTargetRef = useRef(false);
 
   const currentStep = steps[currentStepIndex];
 
@@ -94,9 +101,12 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         start('exercise');
       }
     }
+    
+    // Reset the trigger flag when step changes
+    hasTriggeredTargetRef.current = false;
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setIsFading(true);
     setTimeout(() => {
       if (currentStepIndex < steps.length - 1) {
@@ -106,7 +116,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       }
       setIsFading(false);
     }, 150);
-  };
+  }, [currentStepIndex, steps.length, navigate]);
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
@@ -117,6 +127,58 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       }, 350);
     }
   };
+
+    // Handle target time reached: play sound and auto-next
+  useEffect(() => {
+    // Don't trigger if already done for this step
+    if (hasTriggeredTargetRef.current) return;
+
+    let targetReached = false;
+    let targetTime: number | undefined;
+
+    // Check if target time is reached for rest steps
+    if (isRestStep(currentStep)) {
+      const restTime = timers['rest']?.elapsed || 0;
+      targetTime = currentStep.restTime;
+      if (restTime >= targetTime) {
+        targetReached = true;
+      }
+    }
+    // Check if target time is reached for exercise time steps
+    else if (isExerciseStep(currentStep) && currentStep.trackingType === 'time') {
+      const exerciseTime = timers['exercise']?.elapsed || 0;
+      targetTime = currentStep.targetTime;
+      if (targetTime && exerciseTime >= targetTime) {
+        targetReached = true;
+      }
+    }
+
+    if (targetReached && targetTime) {
+      hasTriggeredTargetRef.current = true;
+
+      // Play sound if enabled
+      if (settings.timerSoundEnabled) {
+        playTimerSound(settings.timerSoundId, settings.customTimerSound);
+      }
+
+      // Auto-next if enabled
+      if (settings.autoNext) {
+        // Small delay to let sound play
+        setTimeout(() => {
+          handleNext();
+        }, 500);
+      }
+    }
+  }, [
+    currentStep, 
+    timers, 
+    settings.autoNext, 
+    settings.timerSoundEnabled, 
+    settings.timerSoundId, 
+    settings.customTimerSound,
+    playTimerSound,
+    handleNext,
+  ]);
 
   const isLastStep = currentStepIndex === steps.length - 1;
   const isFirstStep = currentStepIndex === 0;

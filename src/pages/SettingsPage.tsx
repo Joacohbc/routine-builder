@@ -3,12 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { Layout } from '@/components/ui/Layout';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme, type Theme } from '@/hooks/useTheme';
+import { useSettings } from '@/hooks/useSettings';
+import { TIMER_SOUNDS } from '@/hooks/useAudio';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
+import { ListItemToggle } from '@/components/ui/ListItemToggle';
+import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
   const { theme, setTheme } = useTheme();
+  const { settings, updateSettings } = useSettings();
   const { t, i18n } = useTranslation();
 
   // Get current language code (first two letters)
@@ -61,7 +66,7 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full border-t border-border">
               <button
                 onClick={() => navigate('/settings/tags')}
-                className="flex items-center gap-4 px-4 min-h-[60px] justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
@@ -81,7 +86,7 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full border-t border-border">
               <button
                 onClick={() => navigate('/speech-test')}
-                className="flex items-center gap-4 px-4 min-h-[60px] justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
                   <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
@@ -96,6 +101,67 @@ export default function SettingsPage() {
                 </div>
               </button>
             </div>
+          </div>
+        </section>
+
+        {/* Section: Workout */}
+        <section>
+          {/* SectionHeader */}
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3 pt-2">{t('settings.workout', 'Workout')}</h3>
+          {/* Grouped List Items Background */}
+          <div className="bg-surface rounded-xl overflow-hidden shadow-sm border border-border">
+            {/* ListItem: Auto-Next */}
+            <ListItemToggle
+              icon="skip_next"
+              label={t('settings.autoNext', 'Auto-Next')}
+              description={t('settings.autoNextDesc', 'Automatically advance when target time is reached')}
+              value={settings.autoNext}
+              onChange={(value) => updateSettings({ autoNext: value })}
+            />
+
+            {/* ListItem: Timer Sound Enabled */}
+            <ListItemToggle
+              icon="notifications_active"
+              label={t('settings.timerSound', 'Timer Sound')}
+              description={t('settings.timerSoundDesc', 'Play sound when target time is reached')}
+              value={settings.timerSoundEnabled}
+              onChange={(value) => updateSettings({ timerSoundEnabled: value })}
+            />
+
+            {/* ListItem: Sound Selection (only if timer sound is enabled) */}
+            {settings.timerSoundEnabled && (
+              <>
+                <ListItemSelect
+                  icon="volume_up"
+                  label={t('settings.soundType', 'Sound Type')}
+                  valueLabel={
+                    settings.timerSoundId === 'custom'
+                      ? t('settings.customSound', 'Custom')
+                      : settings.timerSoundId.charAt(0).toUpperCase() + settings.timerSoundId.slice(1)
+                  }
+                  value={settings.timerSoundId}
+                  options={[
+                    ...Object.keys(TIMER_SOUNDS).map(key => ({
+                      label: key.charAt(0).toUpperCase() + key.slice(1),
+                      value: key,
+                    })),
+                    { label: t('settings.customSound', 'Custom'), value: 'custom' },
+                  ]}
+                  onSelect={(value) => updateSettings({ timerSoundId: value })}
+                  title={t('settings.selectSound', 'Select Sound')}
+                />
+
+                {/* Custom Audio Upload (only if custom is selected) */}
+                {settings.timerSoundId === 'custom' && (
+                  <div className="px-4 py-3 border-t border-border">
+                    <AudioUploadInput
+                      value={settings.customTimerSound}
+                      onChange={(value) => updateSettings({ customTimerSound: value })}
+                    />
+                  </div>
+                )}
+              </>
+            )}
           </div>
         </section>
 

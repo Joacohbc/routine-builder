@@ -42,7 +42,7 @@ export function ListItemSelect({
         <button
           onClick={() => setIsOpen(true)}
           type="button"
-          className="flex items-center gap-4 px-4 min-h-[60px] justify-between w-full hover:bg-surface-highlight transition-colors group"
+          className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
         >
           <div className="flex items-center gap-3">
             <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
