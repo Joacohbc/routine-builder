@@ -1,11 +1,14 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
+import { useSettings } from '@/hooks/useSettings';
+import { useAudio } from '@/hooks/useAudio';
 import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
+import { Modal } from '@/components/ui/Modal';
 import { RestingStep } from '@/components/routine/RestingStep';
 import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
 import { formatTimeMMSS } from '@/lib/timeUtils';
@@ -27,42 +30,63 @@ function isRestStep(step: WorkoutStep): step is RestStepType {
 }
 
 export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
+  
+  // Utilities
   const navigate = useNavigate();
-  const { t } = useTranslation();
-  const { exercises } = useExercises();
   const { timers, start, pause, reset } = useMultiTimer();
+  const { playTimerSound } = useAudio();
+  const { t } = useTranslation();
+  
+  // Data
+  const { exercises } = useExercises();
+  const { settings } = useSettings();
 
+  // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
   const [isFading, setIsFading] = useState(false);
+  
+  // Track if we've already triggered sound/auto-next for current step
+  const hasTriggeredTargetRef = useRef(false);
 
   const currentStep = steps[currentStepIndex];
 
-  // Map RoutineExercise.id → Exercise DB id for lookup
-  const routineExerciseMap = useMemo(() => {
-    const map = new Map<string, number>();
-    routine.series.forEach(s => {
-      s.exercises.forEach(ex => {
-        map.set(ex.id, ex.exerciseId);
-      });
-    });
-    return map;
-  }, [routine]);
-
   // Find the actual Exercise from DB
   const currentExercise = useMemo(() => {
-    const dbId = routineExerciseMap.get(currentStep.exerciseId);
-    return exercises.find(e => e.id === dbId);
-  }, [exercises, currentStep.exerciseId, routineExerciseMap]);
+    return exercises.find(e => e.id === Number(currentStep.exerciseId));
+  }, [exercises, currentStep.exerciseId]);
 
-  // For exercise steps: compute set position within its exercise in this series
+  // Calculate series progress (which series we're on out of total)
+  const seriesProgress = useMemo(() => {
+    // Get all unique series IDs in order of appearance
+    const uniqueSeriesIds: string[] = [];
+    steps.forEach(step => {
+      if (!uniqueSeriesIds.includes(step.seriesId)) {
+        uniqueSeriesIds.push(step.seriesId);
+      }
+    });
+    const currentSeriesIndex = uniqueSeriesIds.indexOf(currentStep.seriesId);
+    return {
+      current: currentSeriesIndex + 1,
+      total: uniqueSeriesIds.length
+    };
+  }, [currentStep.seriesId, steps]);
+
+  // For exercise steps:
+  // Obtain the count of sets for the current exercise and which set we're on (for display "Set 2 of 4" etc)
   const setProgress = useMemo(() => {
     if (!isExerciseStep(currentStep)) return null;
     const sameExerciseSteps = steps.filter(
       (s): s is ExerciseStep =>
         isExerciseStep(s) &&
-        s.exerciseId === currentStep.exerciseId &&
-        s.seriesId === currentStep.seriesId
+        
+        // Same exercise
+        s.exerciseId === currentStep.exerciseId && 
+        // Same series
+        s.seriesId === currentStep.seriesId && 
+
+        // Same exercise index inside the exercise (to differentiate if the same exercise is repeated in the same series)
+        s.setIndexInsideExercise === currentStep.setIndexInsideExercise 
     );
     const setIndex = sameExerciseSteps.findIndex(s => s.stepIndex === currentStep.stepIndex);
     return { current: setIndex + 1, total: sameExerciseSteps.length };
@@ -94,9 +118,12 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         start('exercise');
       }
     }
+    
+    // Reset the trigger flag when step changes
+    hasTriggeredTargetRef.current = false;
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     setIsFading(true);
     setTimeout(() => {
       if (currentStepIndex < steps.length - 1) {
@@ -106,7 +133,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       }
       setIsFading(false);
     }, 150);
-  };
+  }, [currentStepIndex, steps.length, navigate]);
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
@@ -117,6 +144,58 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       }, 350);
     }
   };
+
+  // Handle target time reached: play sound and auto-next
+  useEffect(() => {
+    // Don't trigger if already done for this step
+    if (hasTriggeredTargetRef.current) return;
+
+    let targetReached = false;
+    let targetTime: number | undefined;
+
+    // Check if target time is reached for rest steps
+    if (isRestStep(currentStep)) {
+      const restTime = timers['rest']?.elapsed || 0;
+      targetTime = currentStep.restTime;
+      if (restTime >= targetTime) {
+        targetReached = true;
+      }
+    }
+    // Check if target time is reached for exercise time steps
+    else if (isExerciseStep(currentStep) && currentStep.trackingType === 'time') {
+      const exerciseTime = timers['exercise']?.elapsed || 0;
+      targetTime = currentStep.targetTime;
+      if (targetTime && exerciseTime >= targetTime) {
+        targetReached = true;
+      }
+    }
+
+    if (targetReached && targetTime) {
+      hasTriggeredTargetRef.current = true;
+
+      // Play sound if enabled
+      if (settings.timerSoundEnabled) {
+        playTimerSound(settings.timerSoundId, settings.customTimerSound);
+      }
+
+      // Auto-next if enabled
+      if (settings.autoNext) {
+        // Small delay to let sound play
+        setTimeout(() => {
+          handleNext();
+        }, 500);
+      }
+    }
+  }, [
+    currentStep, 
+    timers, 
+    settings.autoNext, 
+    settings.timerSoundEnabled, 
+    settings.timerSoundId, 
+    settings.customTimerSound,
+    playTimerSound,
+    handleNext,
+  ]);
 
   const isLastStep = currentStepIndex === steps.length - 1;
   const isFirstStep = currentStepIndex === 0;
@@ -146,7 +225,12 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
           totalSteps={steps.length}
           leftLabel={
             isExerciseStep(currentStep) && setProgress
-              ? t('activeWorkout.setProgress', { current: setProgress.current, total: setProgress.total })
+              ? t('activeWorkout.seriesAndSetProgress', { 
+                  seriesCurrent: seriesProgress.current, 
+                  seriesTotal: seriesProgress.total,
+                  setCurrent: setProgress.current, 
+                  setTotal: setProgress.total 
+                })
               : isRestStep(currentStep)
                 ? currentStep.type === 'serie_rest'
                   ? t('activeWorkout.seriesRest')
@@ -218,26 +302,25 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       </div>
 
       {/* Media Modal */}
-      {showMedia && currentExercise && (
-        <div className="fixed inset-0 z-50 bg-black/90 flex flex-col items-center justify-center p-4">
-          <button onClick={() => setShowMedia(false)} className="absolute top-4 right-4 text-white">
-            <Icon name="close" size={32} />
-          </button>
-          <div className="w-full max-w-md aspect-square bg-black rounded-2xl overflow-hidden relative">
-            {currentExercise.media.length > 0 ? (
-              (() => {
-                const m = currentExercise.media[0];
-                if (m.type === 'image') return <img src={m.url} className="w-full h-full object-contain" />;
-                if (m.type === 'video') return <video src={m.url} controls className="w-full h-full object-contain" />;
-                if (m.type === 'youtube') return <iframe src={`https://www.youtube.com/embed/${m.url}`} className="w-full h-full" allowFullScreen />;
-                return null;
-              })()
-            ) : (
-              <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
-            )}
-          </div>
-        </div>
-      )}
+      <Modal
+        isOpen={showMedia && !!currentExercise}
+        onClose={() => setShowMedia(false)}
+        variant="centered"
+        showCloseButton={true}
+        className="bg-black rounded-2xl max-w-md aspect-square overflow-hidden p-0"
+      >
+        {currentExercise && currentExercise.media.length > 0 ? (
+          (() => {
+            const m = currentExercise.media[0];
+            if (m.type === 'image') return <img src={m.url} className="w-full h-full object-contain" alt={currentExercise.title} />;
+            if (m.type === 'video') return <video src={m.url} controls className="w-full h-full object-contain" />;
+            if (m.type === 'youtube') return <iframe src={`https://www.youtube.com/embed/${m.url}`} className="w-full h-full" allowFullScreen title={currentExercise.title} />;
+            return null;
+          })()
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
+        )}
+      </Modal>
     </div>
   );
 }

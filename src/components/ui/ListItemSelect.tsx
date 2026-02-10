@@ -17,6 +17,7 @@ interface ListItemSelectProps {
   options: SelectOption[];
   onSelect: (value: string) => void;
   title: string;
+  description?: string;
 }
 
 export function ListItemSelect({ 
@@ -26,7 +27,8 @@ export function ListItemSelect({
   value, 
   options, 
   onSelect, 
-  title 
+  title,
+  description
 }: ListItemSelectProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -38,23 +40,23 @@ export function ListItemSelect({
 
   return (
     <>
-      <div className="relative flex flex-col w-full">
+      <div className="relative flex flex-col w-full border-t border-border first:border-t-0">
         <button
           onClick={() => setIsOpen(true)}
           type="button"
-          className="flex items-center gap-4 px-4 min-h-[60px] justify-between w-full hover:bg-surface-highlight transition-colors group"
+          className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
         >
-          <div className="flex items-center gap-3">
-            <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
               <Icon name={icon} size={18} />
             </div>
-            <p className="text-text-main text-base font-medium leading-normal flex-1 truncate text-left">
+            <p className="text-text-main text-base font-medium leading-normal truncate text-left">
               {label}
             </p>
           </div>
           <div className="shrink-0 flex items-center gap-2 text-text-secondary">
             {valueLabel && (
-              <p className="text-sm font-normal leading-normal">{valueLabel}</p>
+              <p className="text-sm font-normal leading-normal whitespace-nowrap">{valueLabel}</p>
             )}
             <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
           </div>
@@ -67,7 +69,10 @@ export function ListItemSelect({
         variant="bottom-sheet"
       >
         <div className="flex flex-col p-4">
-          <h3 className="text-lg font-bold text-text-main mb-4">{title}</h3>
+          <h3 className="text-lg font-bold text-text-main mb-1">{title}</h3>
+          {description && (
+            <p className="text-sm text-text-secondary mb-4">{description}</p>
+          )}
           <div className="flex flex-col gap-2">
             {options.map((option) => (
               <button
