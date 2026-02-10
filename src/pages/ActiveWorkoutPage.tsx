@@ -49,48 +49,75 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   // Track if we've already triggered sound/auto-next for current step
   const hasTriggeredTargetRef = useRef(false);
 
-  const currentStep = steps[currentStepIndex];
-
-  // Find the actual Exercise from DB
-  const currentExercise = useMemo(() => {
-    return exercises.find(e => e.id === Number(currentStep.exerciseId));
-  }, [exercises, currentStep.exerciseId]);
-
-  // Calculate series progress (which series we're on out of total)
-  const seriesProgress = useMemo(() => {
-    // Get all unique series IDs in order of appearance
+  // Pre-calculate progress map for all steps (only depends on steps, not current state)
+  const progressMap = useMemo(() => {
+    const map = new Map<number, { series: { current: number; total: number }; exercise: { current: number; total: number } | null; set: { current: number; total: number } | null }>();
+    
+    // 1. Calculate series metadata
     const uniqueSeriesIds: string[] = [];
     steps.forEach(step => {
       if (!uniqueSeriesIds.includes(step.seriesId)) {
         uniqueSeriesIds.push(step.seriesId);
       }
     });
-    const currentSeriesIndex = uniqueSeriesIds.indexOf(currentStep.seriesId);
-    return {
-      current: currentSeriesIndex + 1,
-      total: uniqueSeriesIds.length
-    };
-  }, [currentStep.seriesId, steps]);
+    
+    // 2. For each step, calculate its progress
+    steps.forEach(step => {
+      const currentSeriesIndex = uniqueSeriesIds.indexOf(step.seriesId);
+      const series = {
+        current: currentSeriesIndex + 1,
+        total: uniqueSeriesIds.length
+      };
 
-  // For exercise steps:
-  // Obtain the count of sets for the current exercise and which set we're on (for display "Set 2 of 4" etc)
-  const setProgress = useMemo(() => {
-    if (!isExerciseStep(currentStep)) return null;
-    const sameExerciseSteps = steps.filter(
-      (s): s is ExerciseStep =>
-        isExerciseStep(s) &&
-        
-        // Same exercise
-        s.exerciseId === currentStep.exerciseId && 
-        // Same series
-        s.seriesId === currentStep.seriesId && 
+      // Rest steps only have series progress
+      if (!isExerciseStep(step)) {
+        map.set(step.stepIndex, { series, exercise: null, set: null });
+        return;
+      }
 
-        // Same exercise index inside the exercise (to differentiate if the same exercise is repeated in the same series)
-        s.setIndexInsideExercise === currentStep.setIndexInsideExercise 
-    );
-    const setIndex = sameExerciseSteps.findIndex(s => s.stepIndex === currentStep.stepIndex);
-    return { current: setIndex + 1, total: sameExerciseSteps.length };
-  }, [currentStep, steps]);
+      // 3. Calculate exercise progress within the series
+      const uniqueExerciseIndices: number[] = [];
+      steps.forEach(s => {
+        if (isExerciseStep(s) && s.seriesId === step.seriesId) {
+          if (!uniqueExerciseIndices.includes(s.exerciseIndexInsideSerie)) {
+            uniqueExerciseIndices.push(s.exerciseIndexInsideSerie);
+          }
+        }
+      });
+      uniqueExerciseIndices.sort((a, b) => a - b);
+      
+      const exercise = {
+        current: uniqueExerciseIndices.indexOf(step.exerciseIndexInsideSerie) + 1,
+        total: uniqueExerciseIndices.length
+      };
+
+      // 4. Calculate set progress within the exercise
+      const setsOfCurrentExercise = steps.filter(
+        (s): s is ExerciseStep =>
+          isExerciseStep(s) 
+          && s.seriesId === step.seriesId
+          && s.exerciseIndexInsideSerie === step.exerciseIndexInsideSerie
+      );
+      
+      const currentSetIndex = setsOfCurrentExercise.findIndex(s => s.stepIndex === step.stepIndex);
+      const set = {
+        current: currentSetIndex + 1,
+        total: setsOfCurrentExercise.length
+      };
+
+      map.set(step.stepIndex, { series, exercise, set });
+    });
+
+    return map;
+  }, [steps]);
+
+  const currentStep = steps[currentStepIndex];
+  const progress = progressMap.get(currentStepIndex)!;
+
+  // Find the actual Exercise from DB
+  const currentExercise = useMemo(() => {
+    return exercises.find(e => e.id === Number(currentStep.exerciseId));
+  }, [exercises, currentStep.exerciseId]);
 
   // Count remaining exercise steps (excluding rest steps from the count)
   const stepsRemaining = useMemo(() => {
@@ -224,12 +251,14 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
           currentStep={currentStepIndex + 1}
           totalSteps={steps.length}
           leftLabel={
-            isExerciseStep(currentStep) && setProgress
-              ? t('activeWorkout.seriesAndSetProgress', { 
-                  seriesCurrent: seriesProgress.current, 
-                  seriesTotal: seriesProgress.total,
-                  setCurrent: setProgress.current, 
-                  setTotal: setProgress.total 
+            isExerciseStep(currentStep) && progress.set && progress.exercise
+              ? t('activeWorkout.seriesSetExerciseProgress', { 
+                  seriesCurrent: progress.series.current, 
+                  seriesTotal: progress.series.total,
+                  setCurrent: progress.set.current, 
+                  setTotal: progress.set.total,
+                  exerciseCurrent: progress.exercise.current,
+                  exerciseTotal: progress.exercise.total
                 })
               : isRestStep(currentStep)
                 ? currentStep.type === 'serie_rest'
