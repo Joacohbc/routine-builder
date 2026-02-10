@@ -47,7 +47,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
           type: 'exercise',
           
           seriesId: series.id,
-          exerciseId: ex.id,
+          exerciseId: ex.exerciseId.toString(),
           setId: set.id,
           stepIndex: flatSteps.length,
           
@@ -70,7 +70,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
             type: 'exercise_rest',
 
             seriesId: series.id,
-            exerciseId: ex.id,
+            exerciseId: ex.exerciseId.toString(),
             setId: set.id,
             stepIndex: flatSteps.length,
 
@@ -88,7 +88,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
             type: 'serie_rest',
 
             seriesId: series.id,
-            exerciseId: ex.id,
+            exerciseId: ex.exerciseId.toString(),
             setId: set.id,
             stepIndex: flatSteps.length,
 

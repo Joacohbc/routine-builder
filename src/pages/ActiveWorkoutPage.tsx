@@ -51,22 +51,10 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
 
   const currentStep = steps[currentStepIndex];
 
-  // Map RoutineExercise.id → Exercise DB id for lookup
-  const routineExerciseMap = useMemo(() => {
-    const map = new Map<string, number>();
-    routine.series.forEach(s => {
-      s.exercises.forEach(ex => {
-        map.set(ex.id, ex.exerciseId);
-      });
-    });
-    return map;
-  }, [routine]);
-
   // Find the actual Exercise from DB
   const currentExercise = useMemo(() => {
-    const dbId = routineExerciseMap.get(currentStep.exerciseId);
-    return exercises.find(e => e.id === dbId);
-  }, [exercises, currentStep.exerciseId, routineExerciseMap]);
+    return exercises.find(e => e.id === Number(currentStep.exerciseId));
+  }, [exercises, currentStep.exerciseId]);
 
   // For exercise steps: compute set position within its exercise in this series
   const setProgress = useMemo(() => {
