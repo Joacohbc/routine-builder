@@ -56,6 +56,12 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   // Track if we've already triggered sound/auto-next for current step
   const hasTriggeredTargetRef = useRef(false);
 
+  // Guard against stale timer values on step transitions.
+  // When step changes, timer reset is async (setState). The auto-next effect
+  // would see old elapsed values and re-trigger. This ref skips the first
+  // check after a step change, letting the timer state catch up.
+  const prevStepForTimerCheckRef = useRef<number>(-1);
+
   // Pre-calculate progress map for all steps (only depends on steps, not current state)
   const progressMap = useMemo(() => {
     const map = new Map<number, { series: { current: number; total: number }; exercise: { current: number; total: number } | null; set: { current: number; total: number } | null }>();
@@ -152,9 +158,6 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         start('exercise');
       }
     }
-    
-    // Reset the trigger flag when step changes
-    hasTriggeredTargetRef.current = false;
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
   const handleNext = useCallback(() => {
@@ -186,6 +189,15 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // Handle target time reached: play sound and auto-next
   useEffect(() => {
+    // When step changes, skip this check cycle. Timer values are stale
+    // (reset/start are batched setState calls not yet committed).
+    // The next timer tick will re-trigger this effect with fresh values.
+    if (prevStepForTimerCheckRef.current !== currentStepIndex) {
+      prevStepForTimerCheckRef.current = currentStepIndex;
+      hasTriggeredTargetRef.current = false;
+      return;
+    }
+
     // Don't trigger if already done for this step
     if (hasTriggeredTargetRef.current) return;
 
@@ -226,6 +238,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       }
     }
   }, [
+    currentStepIndex,
     currentStep, 
     timers, 
     localAutoNext, 
