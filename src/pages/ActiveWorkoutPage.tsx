@@ -45,7 +45,6 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
-  const [isFading, setIsFading] = useState(false);
   
   // Local auto-next state (initialized from settings, can be toggled during workout)
   const [localAutoNext, setLocalAutoNext] = useState(settings.autoNext);
@@ -53,14 +52,10 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   // Toast ref for auto-next notifications
   const toastRef = useRef<ToastRef>(null);
   
-  // Track if we've already triggered sound/auto-next for current step
-  const hasTriggeredTargetRef = useRef(false);
-
-  // Guard against stale timer values on step transitions.
-  // When step changes, timer reset is async (setState). The auto-next effect
-  // would see old elapsed values and re-trigger. This ref skips the first
-  // check after a step change, letting the timer state catch up.
-  const prevStepForTimerCheckRef = useRef<number>(-1);
+  // Single ref to guard auto-next: tracks which step was last checked and
+  // whether the target was already triggered. Prevents duplicate triggers
+  // within a step AND skips stale timer values on step transitions.
+  const autoNextGuardRef = useRef({ stepIndex: -1, triggered: false });
 
   // Pre-calculate progress map for all steps (only depends on steps, not current state)
   const progressMap = useMemo(() => {
@@ -161,24 +156,16 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
   const handleNext = useCallback(() => {
-    setIsFading(true);
-    setTimeout(() => {
-      if (currentStepIndex < steps.length - 1) {
-        setCurrentStepIndex(prev => prev + 1);
-      } else {
-        navigate('/builder');
-      }
-      setIsFading(false);
-    }, 150);
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(prev => prev + 1);
+    } else {
+      navigate('/builder');
+    }
   }, [currentStepIndex, steps.length, navigate]);
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
-      setIsFading(true);
-      setTimeout(() => {
-        setCurrentStepIndex(prev => prev - 1);
-        setIsFading(false);
-      }, 150);
+      setCurrentStepIndex(prev => prev - 1);
     }
   };
 
@@ -189,17 +176,18 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // Handle target time reached: play sound and auto-next
   useEffect(() => {
-    // When step changes, skip this check cycle. Timer values are stale
-    // (reset/start are batched setState calls not yet committed).
-    // The next timer tick will re-trigger this effect with fresh values.
-    if (prevStepForTimerCheckRef.current !== currentStepIndex) {
-      prevStepForTimerCheckRef.current = currentStepIndex;
-      hasTriggeredTargetRef.current = false;
+    const guard = autoNextGuardRef.current;
+
+    // New step: reset guard state and skip this cycle.
+    // Timer values are stale (reset/start are batched setState).
+    // The next timer tick will re-trigger with fresh values.
+    if (guard.stepIndex !== currentStepIndex) {
+      autoNextGuardRef.current = { stepIndex: currentStepIndex, triggered: false };
       return;
     }
 
     // Don't trigger if already done for this step
-    if (hasTriggeredTargetRef.current) return;
+    if (guard.triggered) return;
 
     let targetReached = false;
     let targetTime: number | undefined;
@@ -222,7 +210,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     }
 
     if (targetReached && targetTime) {
-      hasTriggeredTargetRef.current = true;
+      autoNextGuardRef.current.triggered = true;
 
       // Play sound if enabled
       if (settings.timerSoundEnabled) {
@@ -308,10 +296,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
         { !isRestStep(currentStep) &&         
-        <div className={cn(
-          "text-center z-10 transition-opacity duration-150",
-          isFading ? "opacity-0" : "opacity-100"
-        )}>
+        <div key={`info-${currentStepIndex}`} className="text-center z-10 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || t('activeWorkout.unknownExercise')}</h1>
           {isExerciseStep(currentStep) && currentStep.isSuperset && (
             <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
@@ -321,10 +306,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         </div>}
 
         {/* Step Content */}
-        <div className={cn(
-          "transition-opacity duration-150",
-          isFading ? "opacity-0" : "opacity-100"
-        )}>
+        <div key={`content-${currentStepIndex}`} className="animate-fade-in">
           {isRestStep(currentStep) ? (
             <RestingStep
               restTimer={timers['rest']?.elapsed || 0}
