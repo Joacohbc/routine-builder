@@ -272,16 +272,19 @@
     "resting": "Resting",
     "skipRest": "Skip Rest",
     "targetRestTime": "Target: {{time}}",
-    "exerciseRest": "Set Rest",
+    "setRest": "Set Rest",
+    "exerciseRest": "Exercise Rest",
     "seriesRest": "Series Rest",
     "setProgress": "Set {{current}} of {{total}}",
-    "seriesAndSetProgress": "Serie {{seriesCurrent}} of {{seriesTotal}} - Set {{setCurrent}} of {{setTotal}}",
+    "seriesSetExerciseProgress": "Series {{seriesCurrent}}/{{seriesTotal}} > Exercise {{exerciseCurrent}}/{{exerciseTotal}} > Set {{setCurrent}}/{{setTotal}}",
     "stepsRemaining": "{{count}} remaining",
     "finishWorkout": "Finish Workout",
     "nextStep": "Next Set",
     "supersetFlow": "SUPERSET FLOW",
     "unknownExercise": "Unknown Exercise",
-    "noMedia": "No Media"
+    "noMedia": "No Media",
+    "autoNextEnabled": "Auto-Next: ON",
+    "autoNextDisabled": "Auto-Next: OFF"
   },
   "speechTest": {
     "title": "Web Speech API Test",

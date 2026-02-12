@@ -3,12 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
-import { useSettings } from '@/hooks/useSettings';
 import { useAudio } from '@/hooks/useAudio';
+import type { Settings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Stepper';
 import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
+import { Toast, type ToastRef } from '@/components/ui/Toast';
 import { RestingStep } from '@/components/routine/RestingStep';
 import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
 import { formatTimeMMSS } from '@/lib/timeUtils';
@@ -19,6 +20,7 @@ import type { WorkoutStep, ExerciseStep, RestStep as RestStepType } from '@/page
 interface ActiveWorkoutPageProps {
   routine: Routine;
   steps: WorkoutStep[];
+  settings: Settings;
 }
 
 function isExerciseStep(step: WorkoutStep): step is ExerciseStep {
@@ -26,10 +28,10 @@ function isExerciseStep(step: WorkoutStep): step is ExerciseStep {
 }
 
 function isRestStep(step: WorkoutStep): step is RestStepType {
-  return step.type === 'exercise_rest' || step.type === 'serie_rest';
+  return step.type === 'set_rest' || step.type === 'exercise_rest' || step.type === 'serie_rest';
 }
 
-export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageProps) {
+export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWorkoutPageProps) {
   
   // Utilities
   const navigate = useNavigate();
@@ -39,58 +41,91 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
   
   // Data
   const { exercises } = useExercises();
-  const { settings } = useSettings();
 
   // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
-  const [isFading, setIsFading] = useState(false);
   
-  // Track if we've already triggered sound/auto-next for current step
-  const hasTriggeredTargetRef = useRef(false);
+  // Local auto-next state (initialized from settings, can be toggled during workout)
+  const [localAutoNext, setLocalAutoNext] = useState(settings.autoNext);
+  
+  // Toast ref for auto-next notifications
+  const toastRef = useRef<ToastRef>(null);
+  
+  // Single ref to guard auto-next: tracks which step was last checked and
+  // whether the target was already triggered. Prevents duplicate triggers
+  // within a step AND skips stale timer values on step transitions.
+  const autoNextGuardRef = useRef({ stepIndex: -1, triggered: false });
 
-  const currentStep = steps[currentStepIndex];
-
-  // Find the actual Exercise from DB
-  const currentExercise = useMemo(() => {
-    return exercises.find(e => e.id === Number(currentStep.exerciseId));
-  }, [exercises, currentStep.exerciseId]);
-
-  // Calculate series progress (which series we're on out of total)
-  const seriesProgress = useMemo(() => {
-    // Get all unique series IDs in order of appearance
+  // Pre-calculate progress map for all steps (only depends on steps, not current state)
+  const progressMap = useMemo(() => {
+    const map = new Map<number, { series: { current: number; total: number }; exercise: { current: number; total: number } | null; set: { current: number; total: number } | null }>();
+    
+    // 1. Calculate series metadata
     const uniqueSeriesIds: string[] = [];
     steps.forEach(step => {
       if (!uniqueSeriesIds.includes(step.seriesId)) {
         uniqueSeriesIds.push(step.seriesId);
       }
     });
-    const currentSeriesIndex = uniqueSeriesIds.indexOf(currentStep.seriesId);
-    return {
-      current: currentSeriesIndex + 1,
-      total: uniqueSeriesIds.length
-    };
-  }, [currentStep.seriesId, steps]);
+    
+    // 2. For each step, calculate its progress
+    steps.forEach(step => {
+      const currentSeriesIndex = uniqueSeriesIds.indexOf(step.seriesId);
+      const series = {
+        current: currentSeriesIndex + 1,
+        total: uniqueSeriesIds.length
+      };
 
-  // For exercise steps:
-  // Obtain the count of sets for the current exercise and which set we're on (for display "Set 2 of 4" etc)
-  const setProgress = useMemo(() => {
-    if (!isExerciseStep(currentStep)) return null;
-    const sameExerciseSteps = steps.filter(
-      (s): s is ExerciseStep =>
-        isExerciseStep(s) &&
-        
-        // Same exercise
-        s.exerciseId === currentStep.exerciseId && 
-        // Same series
-        s.seriesId === currentStep.seriesId && 
+      // Rest steps only have series progress
+      if (!isExerciseStep(step)) {
+        map.set(step.stepIndex, { series, exercise: null, set: null });
+        return;
+      }
 
-        // Same exercise index inside the exercise (to differentiate if the same exercise is repeated in the same series)
-        s.setIndexInsideExercise === currentStep.setIndexInsideExercise 
-    );
-    const setIndex = sameExerciseSteps.findIndex(s => s.stepIndex === currentStep.stepIndex);
-    return { current: setIndex + 1, total: sameExerciseSteps.length };
-  }, [currentStep, steps]);
+      // 3. Calculate exercise progress within the series
+      const uniqueExerciseIndices: number[] = [];
+      steps.forEach(s => {
+        if (isExerciseStep(s) && s.seriesId === step.seriesId) {
+          if (!uniqueExerciseIndices.includes(s.exerciseIndexInsideSerie)) {
+            uniqueExerciseIndices.push(s.exerciseIndexInsideSerie);
+          }
+        }
+      });
+      uniqueExerciseIndices.sort((a, b) => a - b);
+      
+      const exercise = {
+        current: uniqueExerciseIndices.indexOf(step.exerciseIndexInsideSerie) + 1,
+        total: uniqueExerciseIndices.length
+      };
+
+      // 4. Calculate set progress within the exercise
+      const setsOfCurrentExercise = steps.filter(
+        (s): s is ExerciseStep =>
+          isExerciseStep(s) 
+          && s.seriesId === step.seriesId
+          && s.exerciseIndexInsideSerie === step.exerciseIndexInsideSerie
+      );
+      
+      const currentSetIndex = setsOfCurrentExercise.findIndex(s => s.stepIndex === step.stepIndex);
+      const set = {
+        current: currentSetIndex + 1,
+        total: setsOfCurrentExercise.length
+      };
+
+      map.set(step.stepIndex, { series, exercise, set });
+    });
+
+    return map;
+  }, [steps]);
+
+  const currentStep = steps[currentStepIndex];
+  const progress = progressMap.get(currentStepIndex)!;
+
+  // Find the actual Exercise from DB
+  const currentExercise = useMemo(() => {
+    return exercises.find(e => e.id === Number(currentStep.exerciseId));
+  }, [exercises, currentStep.exerciseId]);
 
   // Count remaining exercise steps (excluding rest steps from the count)
   const stepsRemaining = useMemo(() => {
@@ -118,37 +153,41 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         start('exercise');
       }
     }
-    
-    // Reset the trigger flag when step changes
-    hasTriggeredTargetRef.current = false;
   }, [currentStepIndex, currentStep, start, pause, reset]);
 
   const handleNext = useCallback(() => {
-    setIsFading(true);
-    setTimeout(() => {
-      if (currentStepIndex < steps.length - 1) {
-        setCurrentStepIndex(prev => prev + 1);
-      } else {
-        navigate('/builder');
-      }
-      setIsFading(false);
-    }, 150);
+    if (currentStepIndex < steps.length - 1) {
+      setCurrentStepIndex(prev => prev + 1);
+    } else {
+      navigate('/builder');
+    }
   }, [currentStepIndex, steps.length, navigate]);
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
-      setIsFading(true);
-      setTimeout(() => {
-        setCurrentStepIndex(prev => prev - 1);
-        setIsFading(false);
-      }, 350);
+      setCurrentStepIndex(prev => prev - 1);
     }
+  };
+
+  const handleToggleAutoNext = () => {
+    setLocalAutoNext(!localAutoNext);
+    toastRef.current?.show(2000);
   };
 
   // Handle target time reached: play sound and auto-next
   useEffect(() => {
+    const guard = autoNextGuardRef.current;
+
+    // New step: reset guard state and skip this cycle.
+    // Timer values are stale (reset/start are batched setState).
+    // The next timer tick will re-trigger with fresh values.
+    if (guard.stepIndex !== currentStepIndex) {
+      autoNextGuardRef.current = { stepIndex: currentStepIndex, triggered: false };
+      return;
+    }
+
     // Don't trigger if already done for this step
-    if (hasTriggeredTargetRef.current) return;
+    if (guard.triggered) return;
 
     let targetReached = false;
     let targetTime: number | undefined;
@@ -171,15 +210,15 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
     }
 
     if (targetReached && targetTime) {
-      hasTriggeredTargetRef.current = true;
+      autoNextGuardRef.current.triggered = true;
 
       // Play sound if enabled
       if (settings.timerSoundEnabled) {
         playTimerSound(settings.timerSoundId, settings.customTimerSound);
       }
 
-      // Auto-next if enabled
-      if (settings.autoNext) {
+      // Auto-next if enabled (using local state)
+      if (localAutoNext) {
         // Small delay to let sound play
         setTimeout(() => {
           handleNext();
@@ -187,9 +226,10 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       }
     }
   }, [
+    currentStepIndex,
     currentStep, 
     timers, 
-    settings.autoNext, 
+    localAutoNext, 
     settings.timerSoundEnabled, 
     settings.timerSoundId, 
     settings.customTimerSound,
@@ -202,6 +242,13 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
 
   return (
     <div className="flex flex-col h-screen bg-background text-text-main">
+      {/* Auto-Next Toast */}
+      <Toast ref={toastRef} position="bottom">
+        <span className="text-sm font-medium">
+          {localAutoNext ? t('activeWorkout.autoNextEnabled') : t('activeWorkout.autoNextDisabled')}
+        </span>
+      </Toast>
+
       {/* Header */}
       <div className="flex items-center justify-between px-6 py-4 pt-safe-top">
         <button onClick={() => navigate(-1)} className="text-text-muted">
@@ -224,17 +271,21 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
           currentStep={currentStepIndex + 1}
           totalSteps={steps.length}
           leftLabel={
-            isExerciseStep(currentStep) && setProgress
-              ? t('activeWorkout.seriesAndSetProgress', { 
-                  seriesCurrent: seriesProgress.current, 
-                  seriesTotal: seriesProgress.total,
-                  setCurrent: setProgress.current, 
-                  setTotal: setProgress.total 
+            isExerciseStep(currentStep) && progress.set && progress.exercise
+              ? t('activeWorkout.seriesSetExerciseProgress', { 
+                  seriesCurrent: progress.series.current, 
+                  seriesTotal: progress.series.total,
+                  setCurrent: progress.set.current, 
+                  setTotal: progress.set.total,
+                  exerciseCurrent: progress.exercise.current,
+                  exerciseTotal: progress.exercise.total
                 })
               : isRestStep(currentStep)
                 ? currentStep.type === 'serie_rest'
                   ? t('activeWorkout.seriesRest')
-                  : t('activeWorkout.exerciseRest')
+                  : currentStep.type === 'exercise_rest'
+                    ? t('activeWorkout.exerciseRest')
+                    : t('activeWorkout.setRest')
                 : ''
           }
           rightLabel={t('activeWorkout.stepsRemaining', { count: stepsRemaining })}
@@ -245,10 +296,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
         { !isRestStep(currentStep) &&         
-        <div className={cn(
-          "text-center z-10 transition-opacity duration-150",
-          isFading ? "opacity-0" : "opacity-100"
-        )}>
+        <div key={`info-${currentStepIndex}`} className="text-center z-10 animate-fade-in">
           <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || t('activeWorkout.unknownExercise')}</h1>
           {isExerciseStep(currentStep) && currentStep.isSuperset && (
             <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
@@ -258,10 +306,7 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
         </div>}
 
         {/* Step Content */}
-        <div className={cn(
-          "transition-opacity duration-150",
-          isFading ? "opacity-0" : "opacity-100"
-        )}>
+        <div key={`content-${currentStepIndex}`} className="animate-fade-in">
           {isRestStep(currentStep) ? (
             <RestingStep
               restTimer={timers['rest']?.elapsed || 0}
@@ -298,6 +343,18 @@ export default function ActiveWorkoutPage({ routine, steps }: ActiveWorkoutPageP
                 ? t('activeWorkout.finishWorkout')
                 : t('activeWorkout.nextStep')}
           </Button>
+          <button
+            onClick={handleToggleAutoNext}
+            className={cn(
+              "h-14 w-14 rounded-2xl flex items-center justify-center transition-colors",
+              localAutoNext
+                ? "bg-primary/20 text-primary"
+                : "bg-surface-highlight text-text-muted"
+            )}
+            aria-label={localAutoNext ? t('activeWorkout.autoNextEnabled') : t('activeWorkout.autoNextDisabled')}
+          >
+            <Icon name="bolt" size={24} />
+          </button>
         </div>
       </div>
 
