@@ -68,12 +68,12 @@ export function ListItemSelect({
         onClose={() => setIsOpen(false)}
         variant="bottom-sheet"
       >
-        <div className="flex flex-col p-4">
+        <div className="flex flex-col p-4 max-h-[80vh]">
           <h3 className="text-lg font-bold text-text-main mb-1">{title}</h3>
           {description && (
             <p className="text-sm text-text-secondary mb-4">{description}</p>
           )}
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-2 overflow-y-scroll flex-1 min-h-0 -mx-4 px-4">
             {options.map((option) => (
               <button
                 key={option.value}
