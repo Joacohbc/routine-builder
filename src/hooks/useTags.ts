@@ -5,20 +5,57 @@ import type { Tag } from '@/types';
 import { useTranslation } from 'react-i18next';
 
 export const TAG_COLORS = [
+  // Reds
   '#ef4444', // red-500
+  '#dc2626', // red-600
+  '#f87171', // red-400
+  
+  // Oranges
   '#f97316', // orange-500
+  '#ea580c', // orange-600
+  '#fb923c', // orange-400
+  
+  // Ambers/Yellows
   '#f59e0b', // amber-500
+  '#eab308', // yellow-500
+  '#fbbf24', // amber-400
+  
+  // Limes/Greens
   '#84cc16', // lime-500
   '#22c55e', // green-500
   '#10b981', // emerald-500
+  '#14b8a6', // teal-500
+  '#16a34a', // green-600
+  '#65a30d', // lime-600
+  
+  // Cyans/Blues
   '#06b6d4', // cyan-500
   '#0ea5e9', // sky-500
   '#3b82f6', // blue-500
+  '#2563eb', // blue-600
+  '#1d4ed8', // blue-700
+  '#0891b2', // cyan-600
+  
+  // Indigos/Purples
   '#6366f1', // indigo-500
   '#8b5cf6', // violet-500
+  '#a855f7', // purple-500
+  '#5b21b6', // violet-800
+  '#7c3aed', // violet-600
+  
+  // Pinks/Fuchsias
   '#d946ef', // fuchsia-500
   '#ec4899', // pink-500
+  '#db2777', // pink-600
+  '#f472b6', // pink-400
+  
+  // Neutrals
   '#64748b', // slate-500
+  '#6b7280', // gray-500
+  '#78716c', // stone-500
+  '#737373', // neutral-500
+  '#475569', // slate-600
+  '#4b5563', // gray-600
 ];
 
 const fetchTags = async (): Promise<Tag[]> => {
