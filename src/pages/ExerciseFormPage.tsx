@@ -24,7 +24,6 @@ export default function ExerciseFormPage() {
         return {
             title: '',
             description: '',
-            muscleGroup: '',
             tags: [],
             media: [],
             primaryEquipment: [],

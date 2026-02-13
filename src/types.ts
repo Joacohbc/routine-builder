@@ -1,8 +1,6 @@
-export type { MuscleGroup, Muscle } from '@/lib/typesMuscle';
+export type { Muscle } from '@/lib/typesMuscle';
 export {
-  MUSCLES_BY_GROUP,
-  MUSCLE_GROUP_COLORS,
-  ALL_MUSCLE_GROUPS,
+  MUSCLE_COLORS,
   ALL_MUSCLES,
 } from '@/lib/typesMuscle';
 
@@ -52,9 +50,9 @@ export type MediaType = 'image' | 'video' | 'youtube';
 /**
  * Type of tag:
  * - 'custom': user-created tag
- * - MuscleGroup value (e.g. 'chest', 'back'): system muscle tag belonging to that group
+ * - 'muscle': system muscle tag (e.g. 'chest', 'abs', 'upper_abs')
  */
-export type TagType = 'custom' | 'muscle_group';
+export type TagType = 'custom' | 'muscle';
 
 /** Category labels for organizing exercises and equipment */
 export interface Tag {
