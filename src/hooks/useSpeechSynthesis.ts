@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { loadVoices, isSpeechSynthesisSupported } from '@/lib/webSpeech';
 
 interface UseSpeechSynthesisOptions {
@@ -11,6 +11,8 @@ export function useSpeechSynthesis(options?: UseSpeechSynthesisOptions) {
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
   const [selectedVoice, setSelectedVoice] = useState<SpeechSynthesisVoice | null>(null);
 
+  const isSupported = useMemo(() => isSpeechSynthesisSupported && voices.length > 0, [ voices.length]);
+  
   useEffect(() => {
     if (!isSpeechSynthesisSupported) return;
 
@@ -80,7 +82,7 @@ export function useSpeechSynthesis(options?: UseSpeechSynthesisOptions) {
   }, []);
 
   return {
-    isSupported: isSpeechSynthesisSupported,
+    isSupported,
     isSpeaking,
     voices,
     selectedVoice,
