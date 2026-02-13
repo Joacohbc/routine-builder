@@ -3,6 +3,7 @@ import { loadVoices, isSpeechSynthesisSupported } from '@/lib/webSpeech';
 
 interface UseSpeechSynthesisOptions {
   language?: string;
+  defaultVoiceURI?: string;
 }
 
 export function useSpeechSynthesis(options?: UseSpeechSynthesisOptions) {
@@ -24,6 +25,7 @@ export function useSpeechSynthesis(options?: UseSpeechSynthesisOptions) {
         // If a language is specified, try to find a voice for that language
         if (options?.language) {
           const langCode = options.language.toLowerCase();
+
           // Try exact match first (e.g., 'es-ES')
           let voice = availableVoices.find(v => v.lang.toLowerCase() === langCode);
           
@@ -33,35 +35,42 @@ export function useSpeechSynthesis(options?: UseSpeechSynthesisOptions) {
           }
           
           setSelectedVoice(voice || availableVoices[0] || null);
-        } else {
-          setSelectedVoice(availableVoices[0] || null);
+          return;
         }
+
+        // If a defaultVoiceURI is provided, try to find that voice
+        if (options?.defaultVoiceURI) {
+          const voice = availableVoices.find(v => v.voiceURI === options.defaultVoiceURI);
+          setSelectedVoice(voice || availableVoices[0] || null);
+          return;
+        }
+
+        setSelectedVoice(availableVoices[0] || null);
       });
 
     return () => {
       mounted = false;
     };
-  }, [options?.language]);
+  }, [options?.language, options?.defaultVoiceURI]);
 
   const speak = useCallback((text: string) => {
     if (!text || !isSpeechSynthesisSupported) return;
+    if(voices.length === 0) return; // Voices not loaded yet
+    if(selectedVoice === null) return; // No voice selected
 
     // Cancel any ongoing speech
     window.speechSynthesis.cancel();
 
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = selectedVoice ? selectedVoice.lang : '';
-
-    if (selectedVoice) {
-      utterance.voice = selectedVoice;
-    }
+    utterance.voice = selectedVoice;
 
     utterance.onstart = () => setIsSpeaking(true);
     utterance.onend = () => setIsSpeaking(false);
     utterance.onerror = () => setIsSpeaking(false);
 
     window.speechSynthesis.speak(utterance);
-  }, [selectedVoice]);
+  }, [ selectedVoice, voices ]);
 
   const cancel = useCallback(() => {
     if (isSpeechSynthesisSupported) {

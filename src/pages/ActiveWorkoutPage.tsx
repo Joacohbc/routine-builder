@@ -38,8 +38,9 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   const navigate = useNavigate();
   const { timers, start, pause, reset } = useMultiTimer();
   const { playTimerSound } = useAudio();
-  const { t, i18n } = useTranslation();
-  const { speak } = useSpeechSynthesis({ language: i18n.language });
+  const { t } = useTranslation();
+
+  const { speak } = useSpeechSynthesis({ defaultVoiceURI: settings.voiceCountdownVoiceURI });
   
   // Data
   const { exercises } = useExercises();
@@ -198,7 +199,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     }
     // For times < 60 seconds, announce specific countdown numbers
     else {
-      const countdownSeconds = [30, 15, 10, 5];
+      const countdownSeconds = [ 45, 30, 15, 10, 5];
       for (const num of countdownSeconds) {
         if (remainingTime === num && !countdownAnnouncedRef.current.has(num)) {
           countdownAnnouncedRef.current.add(num);
