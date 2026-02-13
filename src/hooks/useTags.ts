@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES, type DehydratedInventoryItem, type DehydratedExercise } from '@/lib/db';
+import { dbPromise, DB_TABLES, buildSystemTags, type DehydratedInventoryItem, type DehydratedExercise } from '@/lib/db';
 import { validateSchema, tagValidators } from '@/lib/validations';
 import type { Tag } from '@/types';
 import { useTranslation } from 'react-i18next';
@@ -160,6 +160,83 @@ const deleteTag = async (tags: Tag[], id: number) => {
   await tx.done;
 };
 
+/**
+ * Restore/update all system tags to their default values.
+ * This will delete existing system tags and recreate them from scratch.
+ */
+const restoreSystemTags = async () => {
+  const db = await dbPromise;
+  const tx = db.transaction([DB_TABLES.TAGS], 'readwrite');
+  const store = tx.objectStore(DB_TABLES.TAGS);
+
+  // 1. Delete all existing system tags
+  const allTags = await store.getAll();
+  for (const tag of allTags) {
+    if (tag.system) {
+      await store.delete(tag.id!);
+    }
+  }
+
+  // 2. Re-create system tags with default values
+  const systemTags = buildSystemTags();
+  for (const tag of systemTags) {
+    await store.add(tag as Tag);
+  }
+
+  await tx.done;
+};
+
+/**
+ * Delete all system tags.
+ * Warning: This will remove all default muscle, purpose, and difficulty tags.
+ */
+const deleteAllSystemTags = async () => {
+  const db = await dbPromise;
+  const tx = db.transaction([DB_TABLES.TAGS, DB_TABLES.INVENTORY, DB_TABLES.EXERCISES], 'readwrite');
+  const tagStore = tx.objectStore(DB_TABLES.TAGS);
+  
+  // Get all system tags
+  const allTags = await tagStore.getAll();
+  const systemTagIds = allTags.filter(tag => tag.system).map(tag => tag.id!);
+
+  // 1. Delete all system tags
+  for (const id of systemTagIds) {
+    await tagStore.delete(id);
+  }
+
+  // 2. Remove system tag IDs from Inventory Items
+  let cursor = await tx.objectStore(DB_TABLES.INVENTORY).openCursor();
+  while (cursor) {
+    const item = cursor.value as DehydratedInventoryItem;
+    
+    if (item.tagIds) {
+      const updatedTagIds = item.tagIds.filter((tid: number) => !systemTagIds.includes(tid));
+      if (updatedTagIds.length !== item.tagIds.length) {
+        item.tagIds = updatedTagIds;
+        await cursor.update(item);
+      }
+    }
+    cursor = await cursor.continue();
+  }
+
+  // 3. Remove system tag IDs from Exercises
+  let exCursor = await tx.objectStore(DB_TABLES.EXERCISES).openCursor();
+  while (exCursor) {
+    const exercise = exCursor.value as DehydratedExercise;
+    
+    if (exercise.tagIds) {
+      const updatedTagIds = exercise.tagIds.filter((tid: number) => !systemTagIds.includes(tid));
+      if (updatedTagIds.length !== exercise.tagIds.length) {
+        exercise.tagIds = updatedTagIds;
+        await exCursor.update(exercise);
+      }
+    }
+    exCursor = await exCursor.continue();
+  }
+
+  await tx.done;
+};
+
 export function useTags() {
   const { t } = useTranslation();
   const [ tags, setTags ] = useState<Tag[]>([]);
@@ -212,12 +289,24 @@ export function useTags() {
     await refresh();
   }, [tags, refresh]);
 
+  const onRestoreSystemTags = useCallback(async () => {
+    await restoreSystemTags();
+    await refresh();
+  }, [refresh]);
+
+  const onDeleteAllSystemTags = useCallback(async () => {
+    await deleteAllSystemTags();
+    await refresh();
+  }, [refresh]);
+
   return { 
     tags, 
     loading, 
     addTag: onAddTag, 
     updateTag: onUpdateTag, 
     deleteTag: onDeleteTag, 
+    restoreSystemTags: onRestoreSystemTags,
+    deleteAllSystemTags: onDeleteAllSystemTags,
     refresh,
     formatTagName
   };

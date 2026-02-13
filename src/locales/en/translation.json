@@ -177,7 +177,18 @@
     "voiceCountdownDesc": "Speak countdown seconds during workout",
     "selectVoiceCountdown": "Select Seconds Aloud",
     "voiceSelection": "Voice Selection",
-    "selectVoice": "Select Voice"
+    "selectVoice": "Select Voice",
+    "restoreDefaultTags": "Restore Default Tags",
+    "restoreDefaultTagsDesc": "Reset all system tags to default values",
+    "deleteDefaultTags": "Delete All Default Tags",
+    "deleteDefaultTagsDesc": "Remove all muscle, purpose, and difficulty tags",
+    "restoreDefaultTagsTitle": "Restore Default Tags",
+    "restoreDefaultTagsWarning": "This will reset all system tags (muscles, purposes, difficulties) to their default values. Any custom modifications will be lost. Continue?",
+    "deleteDefaultTagsTitle": "Delete All Default Tags",
+    "deleteDefaultTagsWarning": "This will permanently delete all system tags (muscles, purposes, difficulties). They will be removed from all exercises and inventory items. This action cannot be undone. Are you sure?",
+    "restoreSuccess": "Default tags restored successfully",
+    "deleteSuccess": "All default tags deleted successfully",
+    "operationError": "Operation failed. Please try again."
   },
   "iconPicker": {
     "title": "Select Icon",

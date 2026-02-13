@@ -17,7 +17,7 @@ export type DehydratedExercise = Omit<Exercise, 'tags' | 'primaryEquipment'> & {
  * Build the full list of system tags to seed into the DB.
  * Includes muscles, exercise purposes, and difficulty levels.
  */
-function buildSystemTags(): Omit<Tag, 'id'>[] {
+export function buildSystemTags(): Omit<Tag, 'id'>[] {
   const systemTags: Omit<Tag, 'id'>[] = [];
 
   // Muscle tags
