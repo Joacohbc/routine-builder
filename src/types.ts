@@ -1,10 +1,12 @@
-export type { MuscleGroup, Muscle } from '@/lib/typesMuscle';
+export type { Muscle, ExercisePurpose, DifficultyLevel } from '@/lib/systemTags';
 export {
-  MUSCLES_BY_GROUP,
-  MUSCLE_GROUP_COLORS,
-  ALL_MUSCLE_GROUPS,
+  MUSCLE_COLORS,
   ALL_MUSCLES,
-} from '@/lib/typesMuscle';
+  PURPOSE_COLORS,
+  ALL_PURPOSES,
+  DIFFICULTY_COLORS,
+  ALL_DIFFICULTIES,
+} from '@/lib/systemTags';
 
 /** Current availability status of equipment */
 export type InventoryStatus = 'available' | 'checked_out' | 'maintenance';
@@ -52,9 +54,11 @@ export type MediaType = 'image' | 'video' | 'youtube';
 /**
  * Type of tag:
  * - 'custom': user-created tag
- * - MuscleGroup value (e.g. 'chest', 'back'): system muscle tag belonging to that group
+ * - 'muscle': system muscle tag (e.g. 'chest', 'abs', 'upper_abs')
+ * - 'purpose': exercise purpose tag (e.g. 'warmup', 'cardio', 'stretching')
+ * - 'difficulty': difficulty level tag (e.g. 'beginner', 'intermediate', 'advanced')
  */
-export type TagType = 'custom' | 'muscle_group';
+export type TagType = 'custom' | 'muscle' | 'purpose' | 'difficulty';
 
 /** Category labels for organizing exercises and equipment */
 export interface Tag {

@@ -7,6 +7,7 @@ import { useTheme, type Theme } from '@/hooks/useTheme';
 import { useSettings } from '@/hooks/useSettings';
 import { useAudio, getTimerSoundOptions, getTimerSoundLabel } from '@/hooks/useAudio';
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
+import { useTags } from '@/hooks/useTags';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
 import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
@@ -21,9 +22,12 @@ export default function SettingsPage() {
   const { t, i18n } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { isSupported: isSpeechSupported, voices, setSelectedVoice } = useSpeechSynthesis();
+  const { restoreSystemTags, deleteAllSystemTags } = useTags();
 
   const [importConfirmationOpen, setImportConfirmationOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [restoreTagsConfirmationOpen, setRestoreTagsConfirmationOpen] = useState(false);
+  const [deleteTagsConfirmationOpen, setDeleteTagsConfirmationOpen] = useState(false);
 
   // Get current language code (first two letters)
   const currentLangCode = i18n.language.split('-')[0];
@@ -71,6 +75,30 @@ export default function SettingsPage() {
     } finally {
       setImportConfirmationOpen(false);
       setSelectedFile(null);
+    }
+  };
+
+  const handleRestoreSystemTags = async () => {
+    try {
+      await restoreSystemTags();
+      alert(t('settings.restoreSuccess', 'Default tags restored successfully'));
+    } catch (error) {
+      console.error('Restore system tags failed:', error);
+      alert(t('settings.operationError', 'Operation failed. Please try again.'));
+    } finally {
+      setRestoreTagsConfirmationOpen(false);
+    }
+  };
+
+  const handleDeleteAllSystemTags = async () => {
+    try {
+      await deleteAllSystemTags();
+      alert(t('settings.deleteSuccess', 'All default tags deleted successfully'));
+    } catch (error) {
+      console.error('Delete system tags failed:', error);
+      alert(t('settings.operationError', 'Operation failed. Please try again.'));
+    } finally {
+      setDeleteTagsConfirmationOpen(false);
     }
   };
 
@@ -317,17 +345,17 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full">
               <button
                 onClick={handleExport}
-                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
                     <Icon name="download" size={18} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-text-main text-base font-medium leading-normal">
                       {t('settings.exportData', 'Export Data')}
                     </p>
-                    <p className="text-text-secondary text-xs">
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                       {t('settings.exportDataDesc', 'Download a backup of your data')}
                     </p>
                   </div>
@@ -342,17 +370,17 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full border-t border-border">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
                     <Icon name="upload" size={18} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-text-main text-base font-medium leading-normal">
                       {t('settings.importData', 'Import Data')}
                     </p>
-                    <p className="text-text-secondary text-xs">
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                       {t('settings.importDataDesc', 'Restore data from a backup file')}
                     </p>
                   </div>
@@ -368,6 +396,56 @@ export default function SettingsPage() {
                 accept=".json"
                 onChange={handleFileSelect}
               />
+            </div>
+
+            {/* Restore Default Tags */}
+            <div className="relative flex flex-col w-full border-t border-border">
+              <button
+                onClick={() => setRestoreTagsConfirmationOpen(true)}
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
+                    <Icon name="refresh" size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-text-main text-base font-medium leading-normal">
+                      {t('settings.restoreDefaultTags', 'Restore Default Tags')}
+                    </p>
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                      {t('settings.restoreDefaultTagsDesc', 'Reset all system tags to default values')}
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2 text-text-secondary">
+                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
+            </div>
+
+            {/* Delete All Default Tags */}
+            <div className="relative flex flex-col w-full border-t border-border">
+              <button
+                onClick={() => setDeleteTagsConfirmationOpen(true)}
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-red-500/10 text-red-500 shrink-0">
+                    <Icon name="delete_sweep" size={18} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <p className="text-text-main text-base font-medium leading-normal">
+                      {t('settings.deleteDefaultTags', 'Delete All Default Tags')}
+                    </p>
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
+                      {t('settings.deleteDefaultTagsDesc', 'Remove all muscle, purpose, and difficulty tags')}
+                    </p>
+                  </div>
+                </div>
+                <div className="shrink-0 flex items-center gap-2 text-text-secondary">
+                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                </div>
+              </button>
             </div>
           </div>
         </section>
@@ -402,6 +480,28 @@ export default function SettingsPage() {
         onConfirm={handleImportConfirm}
         title={t('settings.importWarningTitle', 'Import Data')}
         description={t('settings.importWarningDesc', 'This will overwrite all existing data with the content of the backup file. This action cannot be undone. Are you sure?')}
+        confirmText={t('common.confirm', 'Confirm')}
+        cancelText={t('common.cancel', 'Cancel')}
+        variant="danger"
+      />
+
+      <ConfirmationDialog
+        isOpen={restoreTagsConfirmationOpen}
+        onClose={() => setRestoreTagsConfirmationOpen(false)}
+        onConfirm={handleRestoreSystemTags}
+        title={t('settings.restoreDefaultTagsTitle', 'Restore Default Tags')}
+        description={t('settings.restoreDefaultTagsWarning', 'This will reset all system tags (muscles, purposes, difficulties) to their default values. Any custom modifications will be lost. Continue?')}
+        confirmText={t('common.confirm', 'Confirm')}
+        cancelText={t('common.cancel', 'Cancel')}
+        variant="primary"
+      />
+
+      <ConfirmationDialog
+        isOpen={deleteTagsConfirmationOpen}
+        onClose={() => setDeleteTagsConfirmationOpen(false)}
+        onConfirm={handleDeleteAllSystemTags}
+        title={t('settings.deleteDefaultTagsTitle', 'Delete All Default Tags')}
+        description={t('settings.deleteDefaultTagsWarning', 'This will permanently delete all system tags (muscles, purposes, difficulties). They will be removed from all exercises and inventory items. This action cannot be undone. Are you sure?')}
         confirmText={t('common.confirm', 'Confirm')}
         cancelText={t('common.cancel', 'Cancel')}
         variant="danger"

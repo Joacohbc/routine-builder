@@ -1,38 +1,56 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { InventoryItem, Exercise, Routine, Tag } from '@/types';
-import type { Muscle, MuscleGroup } from '@/types';
-import { MUSCLES_BY_GROUP, MUSCLE_GROUP_COLORS } from '@/lib/typesMuscle';
+import { 
+  ALL_MUSCLES, 
+  MUSCLE_COLORS, 
+  ALL_PURPOSES, 
+  PURPOSE_COLORS, 
+  ALL_DIFFICULTIES, 
+  DIFFICULTY_COLORS 
+} from '@/lib/systemTags';
 
 // Dehydrated types (as stored in IndexedDB)
 export type DehydratedInventoryItem = Omit<InventoryItem, 'tags'> & { tagIds?: number[] };
 export type DehydratedExercise = Omit<Exercise, 'tags' | 'primaryEquipment'> & { tagIds?: number[]; primaryEquipmentIds?: number[] };
 
 /**
- * Build the full list of system muscle tags to seed into the DB.
- * Each Muscle gets a tag whose `type` is its parent MuscleGroup,
- * enabling group-based filtering without extra fields.
+ * Build the full list of system tags to seed into the DB.
+ * Includes muscles, exercise purposes, and difficulty levels.
  */
-function buildMuscleSystemTags(): Omit<Tag, 'id'>[] {
-  const muscleTags: Omit<Tag, 'id'>[] = [];
+export function buildSystemTags(): Omit<Tag, 'id'>[] {
+  const systemTags: Omit<Tag, 'id'>[] = [];
 
-  // Build a reverse lookup: muscle -> group
-  const muscleToGroup = new Map<Muscle, MuscleGroup>();
-  for (const [group, muscles] of Object.entries(MUSCLES_BY_GROUP) as [MuscleGroup, Muscle[]][]) {
-    for (const muscle of muscles) {
-      muscleToGroup.set(muscle, group);
-    }
-  }
-
-  for (const [muscle, group] of muscleToGroup.entries()) {
-    muscleTags.push({
+  // Muscle tags
+  for (const muscle of ALL_MUSCLES) {
+    systemTags.push({
       name: muscle,
-      color: MUSCLE_GROUP_COLORS[group],
-      type: 'muscle_group',
+      color: MUSCLE_COLORS[muscle],
+      type: 'muscle',
       system: true,
     });
   }
 
-  return muscleTags;
+  // Exercise purpose tags
+  for (const purpose of ALL_PURPOSES) {
+    systemTags.push({
+      name: purpose,
+      color: PURPOSE_COLORS[purpose],
+      type: 'purpose',
+      system: true,
+    });
+  }
+
+  // Difficulty level tags
+  for (const difficulty of ALL_DIFFICULTIES) {
+    systemTags.push({
+      name: difficulty,
+      color: DIFFICULTY_COLORS[difficulty],
+      type: 'difficulty',
+      system: true,
+    });
+  }
+
+  return systemTags;
 }
 
 interface RoutineDB extends DBSchema {
@@ -81,9 +99,9 @@ export const initDB = async (): Promise<IDBPDatabase<RoutineDB>> => {
         const tagStore = db.createObjectStore('tags', { keyPath: 'id', autoIncrement: true });
         tagStore.createIndex('by-name', 'name', { unique: false });
 
-        // Seed muscle system tags on fresh install
-        const muscleTags = buildMuscleSystemTags();
-        for (const tag of muscleTags) {
+        // Seed system tags on fresh install
+        const systemTags = buildSystemTags();
+        for (const tag of systemTags) {
           tagStore.add(tag as Tag);
         }
       }
