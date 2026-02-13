@@ -20,7 +20,7 @@
 ### Why use it?
 
 * **Your data is yours:** Everything is saved in your phone's browser (`IndexedDB`), so you don't need internet.
-* **Voice Control (Web Speech API):** Manage your workout without touching the screen. Ideal for when your hands are busy or covered in chalk.
+* **Voice Control (Web Speech API):** Train without touching the screen.
 * **Multi-language Support:** Now the app speaks your language thanks to `i18next` integration.
 * **Zero friction:** No sign-up, no login, just enter and build your routine.
 * **Clean and fast:** No ads, no distractions, just what matters.
