@@ -16,11 +16,7 @@
     "settings": "Ajustes",
     "exercises": "Ejercicios",
     "enabled": "Activado",
-    "disabled": "Desactivado",
-    "tagTypes": {
-      "muscle": "Músculo",
-      "custom": "Etiqueta Personalizada"
-    }
+    "disabled": "Desactivado"
   },
   "nav": {
     "inventory": "Inventario",
@@ -66,7 +62,6 @@
     "max": "Debe ser como máximo {{max}}",
     "email": "Debe ser una dirección de correo electrónico válida",
     "url": "Debe ser una URL válida",
-    "iconTooLong": "El nombre del icono es demasiado largo",
     "array": "Debe ser una lista",
     "minArray": "Debe tener al menos {{min}} elementos",
     "emptySeries": "La serie debe contener al menos un ejercicio",
@@ -80,7 +75,6 @@
   "routineBuilder": {
     "newRoutine": "Nueva Rutina",
     "series": "Serie {{count}}",
-    "union": "Unión 🔗",
     "standard": "Estándar",
     "superset": "Superserie",
     "switchToReps": "Repeticiones (cantidad)",
@@ -96,7 +90,6 @@
     "addExercise": "Añadir Ejercicio",
     "addSeries": "+ Añadir Serie",
     "removeSeries": "Eliminar Serie",
-    "seriesType": "Tipo de Serie",
     "restTime": "Tiempo de Descanso",
     "restAfterSerie": "Descanso después de la Serie",
     "supersetNoRest": "Sin descanso entre ejercicios en superserie",
@@ -138,14 +131,11 @@
     "color": "Color",
     "selectColor": "Seleccionar color {{color}}",
     "noTags": "No se encontraron etiquetas.",
-    "noCustomTags": "No se encontraron etiquetas personalizadas. Crea una para empezar.",
-    "addPlaceholder": "Añadir etiqueta personalizada..."
+    "noCustomTags": "No se encontraron etiquetas personalizadas. Crea una para empezar."
   },
   "settings": {
-    "title": "Ajustes",
     "general": "General",
     "language": "Idioma",
-    "manageTags": "Gestionar Etiquetas",
     "appearance": "Apariencia",
     "lightMode": "Modo Claro",
     "darkMode": "Modo Oscuro",
@@ -187,15 +177,11 @@
     "voiceCountdownDesc": "Dictar los segundos de cuenta regresiva durante el entrenamiento",
     "selectVoiceCountdown": "Seleccionar Segundos en Voz Alta",
     "voiceSelection": "Selección de Voz",
-    "selectVoice": "Seleccionar Voz",
-    "voiceNotSupported": "Síntesis de voz no soportada en este navegador"
+    "selectVoice": "Seleccionar Voz"
   },
   "iconPicker": {
     "title": "Seleccionar Icono",
     "selectPlaceholder": "Selecciona un icono...",
-    "common": "Comunes",
-    "all": "Todos los Iconos",
-    "loading": "Cargando iconos...",
     "loadingMore": "Cargando más iconos...",
     "notFound": "No se encontraron iconos",
     "footer": "Mostrando {{count}} iconos"
@@ -203,10 +189,6 @@
   "mobileWarning": {
     "title": "Solo para Teléfonos",
     "description": "Esta aplicación está pensada para el uso en vertical y desde teléfonos."
-  },
-  "workInProgress": {
-    "title": "En Construcción",
-    "description": "Esta función está actualmente en desarrollo. ¡Vuelve pronto para ver actualizaciones!"
   },
   "exercise": {
     "enterYoutubeUrl": "Introduce la URL de YouTube:",
@@ -219,24 +201,6 @@
     "descriptionPlaceholder": "Añade indicaciones, consejos de forma o instrucciones...",
     "equipment": "Equipo Requerido",
     "tags": "Músculos y Etiquetas",
-    "muscleGroups": {
-      "chest": "Pecho",
-      "back": "Espalda",
-      "lats": "Dorsales",
-      "traps": "Trapecios",
-      "lower_back": "Espalda Baja",
-      "shoulders": "Hombros",
-      "biceps": "Bíceps",
-      "triceps": "Tríceps",
-      "forearms": "Antebrazos",
-      "abs": "Abdominales",
-      "obliques": "Oblicuos",
-      "quadriceps": "Cuádriceps",
-      "hamstrings": "Isquiotibiales",
-      "glutes": "Glúteos",
-      "calves": "Pantorrillas",
-      "full_body": "Cuerpo Completo"
-    },
     "muscles": {
       "pectoralis_major": "Pectoral Mayor",
       "pectoralis_minor": "Pectoral Menor",
@@ -287,7 +251,6 @@
     "setRest": "Descanso entre Sets",
     "exerciseRest": "Descanso entre Ejercicios",
     "seriesRest": "Descanso de Serie",
-    "setProgress": "Set {{current}} de {{total}}",
     "seriesSetExerciseProgress": "Serie {{seriesCurrent}}/{{seriesTotal}} > Ejercicio {{exerciseCurrent}}/{{exerciseTotal}} > Set {{setCurrent}}/{{setTotal}}",
     "stepsRemaining": "{{count}} restantes",
     "finishWorkout": "Terminar Entrenamiento",
