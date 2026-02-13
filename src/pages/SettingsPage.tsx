@@ -345,17 +345,17 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full">
               <button
                 onClick={handleExport}
-                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
                     <Icon name="download" size={18} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-text-main text-base font-medium leading-normal">
                       {t('settings.exportData', 'Export Data')}
                     </p>
-                    <p className="text-text-secondary text-xs">
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                       {t('settings.exportDataDesc', 'Download a backup of your data')}
                     </p>
                   </div>
@@ -370,17 +370,17 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full border-t border-border">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
                     <Icon name="upload" size={18} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-text-main text-base font-medium leading-normal">
                       {t('settings.importData', 'Import Data')}
                     </p>
-                    <p className="text-text-secondary text-xs">
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                       {t('settings.importDataDesc', 'Restore data from a backup file')}
                     </p>
                   </div>
@@ -402,17 +402,17 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full border-t border-border">
               <button
                 onClick={() => setRestoreTagsConfirmationOpen(true)}
-                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary shrink-0">
                     <Icon name="refresh" size={18} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-text-main text-base font-medium leading-normal">
                       {t('settings.restoreDefaultTags', 'Restore Default Tags')}
                     </p>
-                    <p className="text-text-secondary text-xs">
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                       {t('settings.restoreDefaultTagsDesc', 'Reset all system tags to default values')}
                     </p>
                   </div>
@@ -427,17 +427,17 @@ export default function SettingsPage() {
             <div className="relative flex flex-col w-full border-t border-border">
               <button
                 onClick={() => setDeleteTagsConfirmationOpen(true)}
-                className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
+                className="flex items-center gap-4 px-4 py-4 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
-                  <div className="flex items-center justify-center size-8 rounded-full bg-red-500/10 text-red-500">
+                  <div className="flex items-center justify-center size-8 rounded-full bg-red-500/10 text-red-500 shrink-0">
                     <Icon name="delete_sweep" size={18} />
                   </div>
                   <div className="flex-1 text-left">
                     <p className="text-text-main text-base font-medium leading-normal">
                       {t('settings.deleteDefaultTags', 'Delete All Default Tags')}
                     </p>
-                    <p className="text-text-secondary text-xs">
+                    <p className="text-text-secondary text-xs mt-1 leading-relaxed">
                       {t('settings.deleteDefaultTagsDesc', 'Remove all muscle, purpose, and difficulty tags')}
                     </p>
                   </div>
