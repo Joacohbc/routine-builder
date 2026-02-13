@@ -182,7 +182,13 @@
     "importWarningTitle": "Importar Datos",
     "importWarningDesc": "Esto sobrescribirá todos los datos existentes con el contenido del archivo de copia de seguridad. Esta acción no se puede deshacer. ¿Estás seguro?",
     "importSuccess": "Datos importados exitosamente",
-    "importError": "Error al importar datos"
+    "importError": "Error al importar datos",
+    "voiceCountdown": "Segundos en Voz Alta",
+    "voiceCountdownDesc": "Dictar los segundos de cuenta regresiva durante el entrenamiento",
+    "selectVoiceCountdown": "Seleccionar Segundos en Voz Alta",
+    "voiceSelection": "Selección de Voz",
+    "selectVoice": "Seleccionar Voz",
+    "voiceNotSupported": "Síntesis de voz no soportada en este navegador"
   },
   "iconPicker": {
     "title": "Seleccionar Icono",

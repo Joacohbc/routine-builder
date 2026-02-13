@@ -5,12 +5,15 @@ export interface Settings {
   timerSoundEnabled: boolean;
   timerSoundId: string; // 'bell', 'level', 'next', 'ring', 'custom'
   customTimerSound?: string; // Base64 Data URI for custom audio
+  voiceCountdownEnabled: boolean;
+  voiceCountdownVoiceURI?: string; // URI of the selected voice
 }
 
 const DEFAULT_SETTINGS: Settings = {
   autoNext: false,
   timerSoundEnabled: true,
   timerSoundId: 'bell',
+  voiceCountdownEnabled: false,
 };
 
 const STORAGE_KEY = 'app-settings';

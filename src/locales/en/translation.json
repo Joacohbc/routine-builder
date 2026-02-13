@@ -182,7 +182,13 @@
     "importWarningTitle": "Import Data",
     "importWarningDesc": "This will overwrite all existing data with the content of the backup file. This action cannot be undone. Are you sure?",
     "importSuccess": "Data imported successfully",
-    "importError": "Failed to import data"
+    "importError": "Failed to import data",
+    "voiceCountdown": "Seconds Aloud",
+    "voiceCountdownDesc": "Speak countdown seconds during workout",
+    "selectVoiceCountdown": "Select Seconds Aloud",
+    "voiceSelection": "Voice Selection",
+    "selectVoice": "Select Voice",
+    "voiceNotSupported": "Voice synthesis not supported in this browser"
   },
   "iconPicker": {
     "title": "Select Icon",

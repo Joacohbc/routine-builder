@@ -6,6 +6,7 @@ import { Icon } from '@/components/ui/Icon';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 import { useSettings } from '@/hooks/useSettings';
 import { useAudio, getTimerSoundOptions, getTimerSoundLabel } from '@/hooks/useAudio';
+import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
 import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
@@ -19,6 +20,7 @@ export default function SettingsPage() {
   const { playTimerSound } = useAudio();
   const { t, i18n } = useTranslation();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isSupported: isSpeechSupported, voices, setSelectedVoice } = useSpeechSynthesis();
 
   const [importConfirmationOpen, setImportConfirmationOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
@@ -184,6 +186,50 @@ export default function SettingsPage() {
               title={t('settings.selectTimerSound', 'Select Timer Sound')}
               description={t('settings.timerSoundDesc', 'Play sound when target time is reached')}
             />
+
+            
+
+            {/* ListItem: Voice Countdown */}
+            {isSpeechSupported && (
+              <ListItemSelect
+                icon="record_voice_over"
+                label={t('settings.voiceCountdown', 'Seconds Aloud')}
+                valueLabel={settings.voiceCountdownEnabled ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
+                value={settings.voiceCountdownEnabled ? 'enabled' : 'disabled'}
+                options={[
+                  { label: t('common.enabled', 'Enabled'), value: 'enabled' },
+                  { label: t('common.disabled', 'Disabled'), value: 'disabled' },
+                ]}
+                onSelect={(value) => updateSettings({ voiceCountdownEnabled: value === 'enabled' })}
+                title={t('settings.selectVoiceCountdown', 'Select Seconds Aloud')}
+                description={t('settings.voiceCountdownDesc', 'Speak countdown seconds during workout')}
+              />
+            )}
+
+            {/* ListItem: Voice Selection (only if voice countdown is enabled and supported) */}
+            {isSpeechSupported && settings.voiceCountdownEnabled && voices.length > 0 && (
+              <ListItemSelect
+                icon="person"
+                label={t('settings.voiceSelection', 'Voice Selection')}
+                valueLabel={
+                  voices.find(v => v.voiceURI == settings.voiceCountdownVoiceURI)?.name 
+                  || t('settings.selectVoice', 'Select Voice')
+                }
+                value={settings.voiceCountdownVoiceURI}
+                options={voices.map(voice => ({
+                  label: `${voice.name} (${voice.lang})`,
+                  value: voice.voiceURI
+                }))}
+                onSelect={(voiceURI) => {
+                  const voice = voices.find(v => v.voiceURI === voiceURI);
+                  if (voice) {
+                    setSelectedVoice(voice);
+                    updateSettings({ voiceCountdownVoiceURI: voiceURI });
+                  }
+                }}
+                title={t('settings.selectVoice', 'Select Voice')}
+              />
+            )}
 
             {/* ListItem: Sound Selection (only if timer sound is enabled) */}
             {settings.timerSoundEnabled && (
