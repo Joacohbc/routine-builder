@@ -284,7 +284,13 @@
     "unknownExercise": "Unknown Exercise",
     "noMedia": "No Media",
     "autoNextEnabled": "Auto-Next: ON",
-    "autoNextDisabled": "Auto-Next: OFF"
+    "autoNextDisabled": "Auto-Next: OFF",
+    "countdown": {
+      "second": "{{count}} second",
+      "seconds": "{{count}} seconds",
+      "minute": "{{count}} minute",
+      "minutes": "{{count}} minutes"
+    }
   },
   "speechTest": {
     "title": "Web Speech API Test",

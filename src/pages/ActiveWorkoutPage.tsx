@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
 import { useAudio } from '@/hooks/useAudio';
+import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import type { Settings } from '@/hooks/useSettings';
 import { Button } from '@/components/ui/Button';
 import { Stepper } from '@/components/ui/Stepper';
@@ -37,7 +38,8 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   const navigate = useNavigate();
   const { timers, start, pause, reset } = useMultiTimer();
   const { playTimerSound } = useAudio();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const { speak } = useSpeechSynthesis({ language: i18n.language });
   
   // Data
   const { exercises } = useExercises();
@@ -56,6 +58,9 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   // whether the target was already triggered. Prevents duplicate triggers
   // within a step AND skips stale timer values on step transitions.
   const autoNextGuardRef = useRef({ stepIndex: -1, triggered: false });
+
+  // Ref to track which countdown announcements have been made for the current step
+  const countdownAnnouncedRef = useRef(new Set<number>());
 
   // Pre-calculate progress map for all steps (only depends on steps, not current state)
   const progressMap = useMemo(() => {
@@ -154,6 +159,58 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       }
     }
   }, [currentStepIndex, currentStep, start, pause, reset]);
+
+  // Reset countdown announcements when step changes
+  useEffect(() => {
+    countdownAnnouncedRef.current.clear();
+  }, [currentStepIndex]);
+
+  // Handle countdown voice announcements (only for exercise time steps)
+  useEffect(() => {
+    // Only announce for exercise steps with time tracking
+    if (!isExerciseStep(currentStep) || currentStep.trackingType !== 'time') {
+      return;
+    }
+
+    const elapsed = timers['exercise']?.elapsed || 0;
+    const targetTime = currentStep.targetTime;
+
+    if (!targetTime) return;
+
+    const remainingTime = targetTime - elapsed;
+
+    if (remainingTime <= 0) return;
+
+    // For times >= 60 seconds, announce every full minute
+    if (remainingTime >= 60) {
+      const remainingMinutes = Math.floor(remainingTime / 60);
+      const isFullMinute = remainingTime % 60 <= 0.5; // Within half a second of a full minute
+      
+      if (isFullMinute) {
+        if (!countdownAnnouncedRef.current.has(remainingMinutes)) {
+          countdownAnnouncedRef.current.add(remainingMinutes);
+          const announcement = remainingMinutes === 1
+            ? t('activeWorkout.countdown.minute', { count: remainingMinutes })
+            : t('activeWorkout.countdown.minutes', { count: remainingMinutes });
+          speak(announcement);
+        }
+      }
+    }
+    // For times < 60 seconds, announce specific countdown numbers
+    else {
+      const countdownSeconds = [30, 15, 10, 5];
+      for (const num of countdownSeconds) {
+        if (remainingTime === num && !countdownAnnouncedRef.current.has(num)) {
+          countdownAnnouncedRef.current.add(num);
+          const announcement = num === 1 
+            ? t('activeWorkout.countdown.second', { count: num })
+            : t('activeWorkout.countdown.seconds', { count: num });
+          speak(announcement);
+          break; // Only announce one number per tick
+        }
+      }
+    }
+  }, [currentStep, timers, speak, t]);
 
   const handleNext = useCallback(() => {
     if (currentStepIndex < steps.length - 1) {
