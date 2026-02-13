@@ -5,7 +5,7 @@ import { Layout } from '@/components/ui/Layout';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 import { useSettings } from '@/hooks/useSettings';
-import { TIMER_SOUNDS, useAudio } from '@/hooks/useAudio';
+import { useAudio, getTimerSoundOptions, getTimerSoundLabel } from '@/hooks/useAudio';
 import { Form } from '@/components/ui/Form';
 import { ListItemSelect } from '@/components/ui/ListItemSelect';
 import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
@@ -191,19 +191,9 @@ export default function SettingsPage() {
                 <ListItemSelect
                   icon="volume_up"
                   label={t('settings.soundType', 'Sound Type')}
-                  valueLabel={
-                    settings.timerSoundId === 'custom'
-                      ? t('settings.customSound', 'Custom')
-                      : settings.timerSoundId.charAt(0).toUpperCase() + settings.timerSoundId.slice(1)
-                  }
+                  valueLabel={getTimerSoundLabel(settings.timerSoundId, t)}
                   value={settings.timerSoundId}
-                  options={[
-                    ...Object.keys(TIMER_SOUNDS).map(key => ({
-                      label: key.charAt(0).toUpperCase() + key.slice(1),
-                      value: key,
-                    })),
-                    { label: t('settings.customSound', 'Custom'), value: 'custom' },
-                  ]}
+                  options={getTimerSoundOptions(t)}
                   onSelect={(value) => updateSettings({ timerSoundId: value })}
                   title={t('settings.selectSound', 'Select Sound')}
                 />
@@ -217,7 +207,7 @@ export default function SettingsPage() {
                       </div>
                       <div className="flex-1">
                         <p className="text-text-main text-sm font-medium">
-                          {settings.timerSoundId.charAt(0).toUpperCase() + settings.timerSoundId.slice(1)}
+                          {getTimerSoundLabel(settings.timerSoundId, t)}
                         </p>
                         <p className="text-text-secondary text-xs">
                           {t('settings.tapToPreview', 'Tap play to preview')}

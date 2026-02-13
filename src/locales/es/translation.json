@@ -168,6 +168,12 @@
     "tapToPreview": "Toca reproducir para previsualizar",
     "audioHint": "Formatos soportados: MP3, WAV, OGG. Tamaño máximo: 1MB",
     "soundsFrom": "Sonidos de",
+    "sounds": {
+      "ring": "Timbre",
+      "level": "Nivel",
+      "simple": "Simple",
+      "bell": "Campana"
+    },
     "dataManagement": "Gestión de Datos",
     "exportData": "Exportar Datos",
     "exportDataDesc": "Descargar una copia de seguridad de tus datos",

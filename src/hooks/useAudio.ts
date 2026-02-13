@@ -1,4 +1,5 @@
 import { useCallback, useRef } from 'react';
+import type { TFunction } from 'i18next';
 
 /**
  * Predefined timer sounds.
@@ -7,8 +8,38 @@ import { useCallback, useRef } from 'react';
 export const TIMER_SOUNDS: Record<string, string> = {
   ring: 'audios/bell-www.mp3',
   level: 'audios/next-level.mp3',
-  next: 'audios/simple-next.mp3',
+  simple: 'audios/simple-next.mp3',
   bell: 'audios/simplebell-ring.mp3',
+};
+
+/**
+ * Get timer sound options with translations
+ * @param t - Translation function from useTranslation
+ * @returns Array of sound options with translated labels
+ */
+export const getTimerSoundOptions = (t: TFunction) => [
+  { label: t('settings.sounds.ring'), value: 'ring' },
+  { label: t('settings.sounds.level'), value: 'level' },
+  { label: t('settings.sounds.simple'), value: 'simple' },
+  { label: t('settings.sounds.bell'), value: 'bell' },
+  { label: t('settings.customSound'), value: 'custom' },
+];
+
+/**
+ * Get translated label for a sound ID
+ * @param soundId - The sound ID
+ * @param t - Translation function from useTranslation
+ * @returns Translated label
+ */
+export const getTimerSoundLabel = (soundId: string, t: TFunction): string => {
+  const soundLabels: Record<string, string> = {
+    ring: t('settings.sounds.ring'),
+    level: t('settings.sounds.level'),
+    simple: t('settings.sounds.simple'),
+    bell: t('settings.sounds.bell'),
+    custom: t('settings.customSound'),
+  };
+  return soundLabels[soundId] || soundId;
 };
 
 /**
