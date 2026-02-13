@@ -113,3 +113,64 @@ export const ALL_MUSCLES: Muscle[] = [
   'calves',
   'full_body',
 ];
+
+/**
+ * Exercise Purpose - What the exercise is meant for
+ */
+export type ExercisePurpose =
+  | 'warmup'
+  | 'stretching'
+  | 'cardio'
+  | 'mobility'
+  | 'rehab'
+  | 'cooldown';
+
+/**
+ * Difficulty Level - How challenging the exercise is
+ */
+export type DifficultyLevel =
+  | 'beginner'
+  | 'intermediate'
+  | 'advanced';
+
+/**
+ * Default colors for exercise purposes
+ */
+export const PURPOSE_COLORS: Record<ExercisePurpose, string> = {
+  warmup: '#F59E0B',      // Amber
+  stretching: '#8B5CF6',  // Purple
+  cardio: '#EF4444',      // Red
+  mobility: '#10B981',    // Green
+  rehab: '#3B82F6',       // Blue
+  cooldown: '#06B6D4',    // Cyan
+};
+
+/**
+ * Default colors for difficulty levels
+ */
+export const DIFFICULTY_COLORS: Record<DifficultyLevel, string> = {
+  beginner: '#10B981',    // Green
+  intermediate: '#F59E0B', // Amber
+  advanced: '#EF4444',    // Red
+};
+
+/**
+ * Helper to get all exercise purposes as an array
+ */
+export const ALL_PURPOSES: ExercisePurpose[] = [
+  'warmup',
+  'stretching',
+  'cardio',
+  'mobility',
+  'rehab',
+  'cooldown',
+];
+
+/**
+ * Helper to get all difficulty levels as an array
+ */
+export const ALL_DIFFICULTIES: DifficultyLevel[] = [
+  'beginner',
+  'intermediate',
+  'advanced',
+];

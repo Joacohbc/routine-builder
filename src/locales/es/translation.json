@@ -226,6 +226,19 @@
       "glutes": "Glúteos",
       "calves": "Gemelos",
       "full_body": "Cuerpo Completo"
+    },
+    "purposes": {
+      "warmup": "Calentamiento",
+      "stretching": "Estiramiento",
+      "cardio": "Cardio",
+      "mobility": "Movilidad",
+      "rehab": "Rehabilitación",
+      "cooldown": "Enfriamiento"
+    },
+    "difficulties": {
+      "beginner": "Principiante",
+      "intermediate": "Intermedio",
+      "advanced": "Avanzado"
     }
   },
   "activeWorkout": {

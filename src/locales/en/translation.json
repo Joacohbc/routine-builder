@@ -226,6 +226,19 @@
       "glutes": "Glutes",
       "calves": "Calves",
       "full_body": "Full Body"
+    },
+    "purposes": {
+      "warmup": "Warmup",
+      "stretching": "Stretching",
+      "cardio": "Cardio",
+      "mobility": "Mobility",
+      "rehab": "Rehab",
+      "cooldown": "Cooldown"
+    },
+    "difficulties": {
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
     }
   },
   "activeWorkout": {

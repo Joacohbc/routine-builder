@@ -129,7 +129,20 @@ export function useTags() {
   const [ loading, setLoading ] = useState(true);
 
   const formatTagName = useCallback(
-    (tag: Tag) => tag.system ? t('exercise.muscles.' + tag.name, 'No name') : tag.name,
+    (tag: Tag) => {
+      if (!tag.system) return tag.name;
+      
+      // Map tag type to translation key
+      const translationKey = tag.type === 'muscle' 
+        ? `exercise.muscles.${tag.name}`
+        : tag.type === 'purpose'
+        ? `exercise.purposes.${tag.name}`
+        : tag.type === 'difficulty'
+        ? `exercise.difficulties.${tag.name}`
+        : tag.name;
+      
+      return t(translationKey, tag.name);
+    },
   [ t ]);
 
   const refresh = useCallback(async () => {
