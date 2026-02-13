@@ -1,12 +1,12 @@
 # <div align="center"> 📱 Routine Builder </div>
 
 <div align="center">
-  <a href="README_EN.md">🇺🇸 English</a>
+  <a href="README.md">🇪🇸 Español</a>
 </div>
 
 <br/>
 
-**Routine Builder** es esa app simple que necesitabas para anotar tus rutinas sin vueltas. Olvídate de crear cuentas o subir cosas a la nube: todo se queda en tu celular, 100% local y privado. Ideal para usar mientras te mueves.
+**Routine Builder** is that simple app you needed to track your workout routines without any hassle. Forget about creating accounts or uploading things to the cloud: everything stays on your phone, 100% local and private. Perfect for use on the go.
 
 <div align="center">
   
@@ -20,14 +20,14 @@
 
 </div>
 
-### ¿Por qué usarla?
+### Why use it?
 
-* **Tu data es tuya:** Todo se guarda en el navegador de tu celu (`IndexedDB`), así que no necesitas internet.
-* **Cero fricción:** No hay registros, no hay login, solo entras y armás tu rutina.
-* **Hecha para el celu:** Interfaz cómoda para usar con una mano.
-* **Limpia y rápida:** Sin anuncios, sin distracciones, solo lo que importa.
+* **Your data is yours:** Everything is saved in your phone's browser (`IndexedDB`), so you don't need internet.
+* **Zero friction:** No registration, no login, just open it and build your routine.
+* **Made for mobile:** Comfortable interface designed for one-handed use.
+* **Clean and fast:** No ads, no distractions, just what matters.
 
 ---
 <div align="center">
-  <sub>Simple. Local. Para vos.</sub>
+  <sub>Simple. Local. For you.</sub>
 </div>
