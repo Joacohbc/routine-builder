@@ -1,4 +1,4 @@
-export type { Muscle, ExercisePurpose, DifficultyLevel } from '@/lib/typesMuscle';
+export type { Muscle, ExercisePurpose, DifficultyLevel } from '@/lib/systemTags';
 export {
   MUSCLE_COLORS,
   ALL_MUSCLES,
@@ -6,7 +6,7 @@ export {
   ALL_PURPOSES,
   DIFFICULTY_COLORS,
   ALL_DIFFICULTIES,
-} from '@/lib/typesMuscle';
+} from '@/lib/systemTags';
 
 /** Current availability status of equipment */
 export type InventoryStatus = 'available' | 'checked_out' | 'maintenance';

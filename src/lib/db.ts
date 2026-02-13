@@ -7,7 +7,7 @@ import {
   PURPOSE_COLORS, 
   ALL_DIFFICULTIES, 
   DIFFICULTY_COLORS 
-} from '@/lib/typesMuscle';
+} from '@/lib/systemTags';
 
 // Dehydrated types (as stored in IndexedDB)
 export type DehydratedInventoryItem = Omit<InventoryItem, 'tags'> & { tagIds?: number[] };
