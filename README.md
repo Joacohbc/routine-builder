@@ -9,6 +9,9 @@
 [![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=fff)](#)
 [![Tailwind CSS](https://img.shields.io/badge/Tailwind%20CSS-%2338B2AC.svg?logo=tailwind-css&logoColor=white)](#)
 [![React Router](https://img.shields.io/badge/React_Router-CA4245?logo=react-router&logoColor=white)](#)
+[![i18next](https://img.shields.io/badge/i18next-26A69A?logo=i18next&logoColor=white)](#)
+[![Web Speech API](https://img.shields.io/badge/Web%20Speech%20API-333333?logo=googlechrome&logoColor=white)](#)
+[![ESLint](https://img.shields.io/badge/ESLint-4B32C3?logo=eslint&logoColor=white)](#)
 [![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=fff)](#)
 [![IndexedDB](https://img.shields.io/badge/IndexedDB-00599C?logo=databricks&logoColor=white)](#)
 
@@ -17,8 +20,9 @@
 ### ¿Por qué usarla?
 
 * **Tu data es tuya:** Todo se guarda en el navegador de tu celu (`IndexedDB`), así que no necesitas internet.
+* **Control por voz (Web Speech API):** Entrena sin tocar la pantalla.
+* **Soporte Multilenguaje:** Ahora la app habla tu idioma gracias a la integración con `i18next`.
 * **Cero fricción:** No hay registros, no hay login, solo entras y armás tu rutina.
-* **Hecha para el celu:** Interfaz cómoda para usar con una mano.
 * **Limpia y rápida:** Sin anuncios, sin distracciones, solo lo que importa.
 
 ---
