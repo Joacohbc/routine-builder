@@ -21,7 +21,7 @@ export default function ExerciseListPage() {
   const filteredExercises = useMemo(() => {
     return fuzzySearch(exercises, search, (ex) => [
       ex.title,
-      ...(ex.tags || []).map(tag => tag.name)
+      ...(ex.tags || []).map((tag) => tag.name),
     ]);
   }, [exercises, search]);
 

@@ -52,16 +52,17 @@ export default function InventoryPage() {
     const searchMatches = fuzzySearch(items, search, (item) => [item.name]);
 
     // 2. Apply other filters
-    return searchMatches.filter(item => {
-        const matchesStatus = filterStatus === 'all'
+    return searchMatches.filter((item) => {
+      const matchesStatus =
+        filterStatus === 'all'
           ? true
           : filterStatus === 'available'
             ? item.status === 'available'
             : item.status !== 'available';
 
-        const matchesTag = activeTagId ? item.tags?.some(tag => tag.id === activeTagId) : true;
+      const matchesTag = activeTagId ? item.tags?.some((tag) => tag.id === activeTagId) : true;
 
-        return matchesStatus && matchesTag;
+      return matchesStatus && matchesTag;
     });
   }, [items, search, filterStatus, activeTagId]);
 

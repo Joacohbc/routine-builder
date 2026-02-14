@@ -3,10 +3,10 @@
  * Example: "Crème Brûlée" -> "creme brulee"
  */
 export function normalizeString(str: string): string {
-  if (!str) return "";
+  if (!str) return '';
   return str
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase();
 }
 
@@ -90,21 +90,23 @@ export function fuzzySearch<T>(
       // 2. Levenshtein distance check
       // Only check distance if query is long enough (>= 3 chars) to avoid false positives
       if (normalizedQuery.length >= 3) {
-
         // Check individual words for fuzzy match (e.g. "sqat" matches "Squat" in "Back Squat")
         const words = normalizedText.split(/\s+/);
         for (const word of words) {
-           // Skip short words to avoid noise
-           if (word.length < 3) continue;
+          // Skip short words to avoid noise
+          if (word.length < 3) continue;
 
-           if (levenshteinDistance(word, normalizedQuery) <= threshold) {
-             return true;
-           }
+          if (levenshteinDistance(word, normalizedQuery) <= threshold) {
+            return true;
+          }
         }
 
         // Check full phrase if it's reasonably short (e.g. "leg press" vs "leg prss")
-        if (normalizedText.length < 50 && levenshteinDistance(normalizedText, normalizedQuery) <= threshold) {
-            return true;
+        if (
+          normalizedText.length < 50 &&
+          levenshteinDistance(normalizedText, normalizedQuery) <= threshold
+        ) {
+          return true;
         }
       }
 
