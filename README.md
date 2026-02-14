@@ -19,13 +19,14 @@
 
 ### ¿Por qué usarla?
 
-* **Tu data es tuya:** Todo se guarda en el navegador de tu celu (`IndexedDB`), así que no necesitas internet.
-* **Control por voz (Web Speech API):** Entrena sin tocar la pantalla.
-* **Soporte Multilenguaje:** Ahora la app habla tu idioma gracias a la integración con `i18next`.
-* **Cero fricción:** No hay registros, no hay login, solo entras y armás tu rutina.
-* **Limpia y rápida:** Sin anuncios, sin distracciones, solo lo que importa.
+- **Tu data es tuya:** Todo se guarda en el navegador de tu celu (`IndexedDB`), así que no necesitas internet.
+- **Control por voz (Web Speech API):** Entrena sin tocar la pantalla.
+- **Soporte Multilenguaje:** Ahora la app habla tu idioma gracias a la integración con `i18next`.
+- **Cero fricción:** No hay registros, no hay login, solo entras y armás tu rutina.
+- **Limpia y rápida:** Sin anuncios, sin distracciones, solo lo que importa.
 
 ---
+
 <div align="center">
   <sub>Simple. Local. Para vos.</sub>
 </div>

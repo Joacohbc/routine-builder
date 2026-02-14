@@ -37,7 +37,7 @@ export type TrackingType = 'reps' | 'time';
  * How exercises are organized in a series
  * - standard: Traditional single-exercise sets with full rest between sets (Exercise → Rest → Repeat)
  *   Focus: Strength/hypertrophy with complete recovery
- * 
+ *
  * - superset: 2-3 exercises performed back-to-back with no rest between them (Exercise A → Exercise B → Rest → Repeat)
  *   Focus: Time efficiency, antagonist muscle groups, high intensity with heavier loads
  */
@@ -49,7 +49,7 @@ export type MediaType = 'image' | 'video' | 'youtube';
 /**
  * TAGS: Flexible labeling system for categorizing exercises and equipment, allowing users to create custom tags
  * for muscle groups, equipment types, workout styles, or any organizational scheme they prefer.
-*/
+ */
 
 /**
  * Type of tag:
@@ -75,7 +75,7 @@ export interface Tag {
 }
 
 /**
- * INVENTORY: Represents workout equipment/gear owned by the user, with status and 
+ * INVENTORY: Represents workout equipment/gear owned by the user, with status and
  * condition tracking for effective workout planning and management.
  */
 
@@ -91,9 +91,9 @@ export interface InventoryItem {
 }
 
 /**
- * EXERCISES: Core structures for defining workout exercises with associated media, 
+ * EXERCISES: Core structures for defining workout exercises with associated media,
  * equipment requirements, and categorization for routine building.
-*/
+ */
 
 /** Media attachment (image, video, or YouTube link) */
 export interface MediaItem {
@@ -152,7 +152,7 @@ export interface RoutineSeries {
   id: string;
   type: SeriesType;
   exercises: RoutineExercise[];
-  
+
   // Seconds of rest after completing this entire series before moving to the next one.
   restAfterSerie: number;
 }

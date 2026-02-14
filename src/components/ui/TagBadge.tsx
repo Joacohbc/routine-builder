@@ -14,13 +14,13 @@ export function TagBadge({ label, color, className }: TagBadgeProps) {
   return (
     <span
       className={cn(
-        "text-[10px] px-2 py-0.5 rounded-md font-medium border whitespace-nowrap",
+        'text-[10px] px-2 py-0.5 rounded-md font-medium border whitespace-nowrap',
         className
       )}
       style={{
         backgroundColor: `${color}15`,
         color: color,
-        borderColor: `${color}30`
+        borderColor: `${color}30`,
       }}
     >
       {label}

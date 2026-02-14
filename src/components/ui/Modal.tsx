@@ -18,7 +18,7 @@ export function Modal({
   children,
   variant = 'centered',
   className,
-  showCloseButton = false
+  showCloseButton = false,
 }: ModalProps) {
   const contentRef = useRef<HTMLDivElement>(null);
 
@@ -41,11 +41,7 @@ export function Modal({
   if (!isOpen) return null;
 
   return createPortal(
-    <div
-      className="fixed inset-0 z-[100] flex"
-      role="dialog"
-      aria-modal="true"
-    >
+    <div className="fixed inset-0 z-[100] flex" role="dialog" aria-modal="true">
       {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm transition-opacity"
@@ -54,20 +50,23 @@ export function Modal({
       />
 
       {/* Container */}
-      <div className={cn(
-        "relative w-full h-full pointer-events-none flex",
-        variant === 'centered' && "items-center justify-center p-4",
-        variant === 'bottom-sheet' && "items-end justify-center sm:items-center p-0 sm:p-4",
-        variant === 'fullscreen' && "items-stretch justify-stretch",
-      )}>
+      <div
+        className={cn(
+          'relative w-full h-full pointer-events-none flex',
+          variant === 'centered' && 'items-center justify-center p-4',
+          variant === 'bottom-sheet' && 'items-end justify-center sm:items-center p-0 sm:p-4',
+          variant === 'fullscreen' && 'items-stretch justify-stretch'
+        )}
+      >
         {/* Content */}
         <div
           ref={contentRef}
           className={cn(
-            "bg-surface shadow-2xl pointer-events-auto flex flex-col transition-all",
-            variant === 'centered' && "w-full max-w-lg rounded-3xl max-h-[90vh]",
-            variant === 'bottom-sheet' && "w-full max-w-lg rounded-t-3xl sm:rounded-3xl max-h-[90vh]",
-            variant === 'fullscreen' && "w-full h-full",
+            'bg-surface shadow-2xl pointer-events-auto flex flex-col transition-all',
+            variant === 'centered' && 'w-full max-w-lg rounded-3xl max-h-[90vh]',
+            variant === 'bottom-sheet' &&
+              'w-full max-w-lg rounded-t-3xl sm:rounded-3xl max-h-[90vh]',
+            variant === 'fullscreen' && 'w-full h-full',
             className
           )}
           onClick={(e) => e.stopPropagation()}

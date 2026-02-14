@@ -57,28 +57,37 @@ export function useRoutines() {
     refresh();
   }, [refresh]);
 
-  const onAddRoutine = useCallback(async (routine: Omit<Routine, 'id'>) => {
-    const id = await addRoutine(routine);
-    await refresh();
-    return id;
-  }, [refresh]);
+  const onAddRoutine = useCallback(
+    async (routine: Omit<Routine, 'id'>) => {
+      const id = await addRoutine(routine);
+      await refresh();
+      return id;
+    },
+    [refresh]
+  );
 
-  const onUpdateRoutine = useCallback(async (routine: Routine) => {
-    await updateRoutine(routine);
-    await refresh();
-  }, [refresh]);
+  const onUpdateRoutine = useCallback(
+    async (routine: Routine) => {
+      await updateRoutine(routine);
+      await refresh();
+    },
+    [refresh]
+  );
 
-  const onDeleteRoutine = useCallback(async (id: number) => {
-    await deleteRoutine(id);
-    await refresh();
-  }, [refresh]);
+  const onDeleteRoutine = useCallback(
+    async (id: number) => {
+      await deleteRoutine(id);
+      await refresh();
+    },
+    [refresh]
+  );
 
-  return { 
-    routines, 
-    loading, 
-    addRoutine: onAddRoutine, 
-    updateRoutine: onUpdateRoutine, 
-    deleteRoutine: onDeleteRoutine, 
-    refresh 
+  return {
+    routines,
+    loading,
+    addRoutine: onAddRoutine,
+    updateRoutine: onUpdateRoutine,
+    deleteRoutine: onDeleteRoutine,
+    refresh,
   };
 }

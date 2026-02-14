@@ -27,13 +27,12 @@ export interface WorkoutStep {
 }
 
 export interface ExerciseStep extends WorkoutStep {
-
   /**
    * 0-based index of the exercise within the serie.
-   * This must to be filled with the index of the Exercise inside the Serie because 
+   * This must to be filled with the index of the Exercise inside the Serie because
    * if the same Exercise is repeated in the same Serie, we need to differentiate them from the
    * previous or next one.
-  **/
+   **/
   exerciseIndexInsideSerie: number;
 
   type: 'exercise';
@@ -58,23 +57,22 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
   routine.series.forEach((series) => {
     series.exercises.forEach((ex, exIdx) => {
       ex.sets.forEach((set, setIdx) => {
-        
         // All exercise steps are added first, then rest steps are added after each exercise (except the last one)
         const exerciseStep: ExerciseStep = {
           type: 'exercise',
-          
+
           seriesId: series.id,
-          
+
           exerciseId: ex.exerciseId.toString(),
 
           setId: set.id,
           stepIndex: flatSteps.length,
           exerciseIndexInsideSerie: exIdx,
-          
+
           targetWeight: set.weight || 0,
           targetReps: set.reps,
           targetTime: set.time,
-          
+
           trackingType: ex.trackingType,
           setType: set.type,
           isSuperset: series.type === 'superset',
@@ -86,7 +84,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
         const isLastExerciseFromSeries = exIdx === series.exercises.length - 1;
 
         // Add set rest after each set (except the last set of the exercise)
-        if(ex.restAfterSet > 0 && !isLastSetFromExercise) {
+        if (ex.restAfterSet > 0 && !isLastSetFromExercise) {
           const setRestStep: RestStep = {
             type: 'set_rest',
 
@@ -95,14 +93,14 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
             setId: set.id,
             stepIndex: flatSteps.length,
 
-            restTime: ex.restAfterSet
+            restTime: ex.restAfterSet,
           };
 
           flatSteps.push(setRestStep);
         }
 
         // Add exercise rest after each exercise (except the last exercise of the series)
-        if(ex.restAfterSet > 0 && isLastSetFromExercise && !isLastExerciseFromSeries) {
+        if (ex.restAfterSet > 0 && isLastSetFromExercise && !isLastExerciseFromSeries) {
           const exerciseRestStep: RestStep = {
             type: 'exercise_rest',
 
@@ -111,17 +109,14 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
             setId: set.id,
             stepIndex: flatSteps.length,
 
-            restTime: series.restAfterSerie
+            restTime: series.restAfterSerie,
           };
 
           flatSteps.push(exerciseRestStep);
         }
 
         // Add series rest after the last exercise of the series
-        if(series.restAfterSerie > 0 
-            && isLastExerciseFromSeries
-            && isLastSetFromExercise) {
-
+        if (series.restAfterSerie > 0 && isLastExerciseFromSeries && isLastSetFromExercise) {
           const serieRestStep: RestStep = {
             type: 'serie_rest',
 
@@ -129,7 +124,7 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
             exerciseId: ex.exerciseId.toString(),
             setId: set.id,
             stepIndex: flatSteps.length,
-            restTime: series.restAfterSerie
+            restTime: series.restAfterSerie,
           };
 
           flatSteps.push(serieRestStep);
@@ -150,13 +145,13 @@ export default function WorkoutPageContainer() {
 
   const routine = useMemo(() => {
     if (!id) return null;
-    return routines.find(r => r.id === Number(id)) || null;
-  }, [ id, routines ]);
-  
+    return routines.find((r) => r.id === Number(id)) || null;
+  }, [id, routines]);
+
   const steps = useMemo(() => {
     if (!routine) return [];
     return generateWorkoutSteps(routine);
-  }, [ routine ]);
+  }, [routine]);
 
   if (!routine || steps.length === 0) {
     return (

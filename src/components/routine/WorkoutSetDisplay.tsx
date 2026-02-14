@@ -16,13 +16,11 @@ export function WorkoutSetDisplay({
   targetReps,
   time,
   targetTime,
-  trackingType
+  trackingType,
 }: WorkoutSetDisplayProps) {
-
   return (
     <div className="w-full max-w-xs flex flex-col gap-6">
       <div className="grid grid-cols-2 gap-6">
-
         {/* Weight Display */}
         <div className="flex flex-col gap-2">
           <label className="text-center text-xs font-bold text-text-muted uppercase">KG</label>
@@ -36,7 +34,9 @@ export function WorkoutSetDisplay({
         {/* Reps or Time Display */}
         {trackingType === 'time' ? (
           <div className="flex flex-col gap-2">
-            <label className="text-center text-xs font-bold text-text-muted uppercase">{t('routineBuilder.time')}</label>
+            <label className="text-center text-xs font-bold text-text-muted uppercase">
+              {t('routineBuilder.time')}
+            </label>
             <div className="relative">
               <div className="w-full text-center text-4xl font-bold font-mono text-text-main py-2">
                 {formatTimeMMSS(time || 0)}
@@ -49,7 +49,9 @@ export function WorkoutSetDisplay({
         ) : (
           <div className="flex flex-col gap-2">
             <label className="text-center text-xs font-bold text-text-muted uppercase">
-              {targetReps === Infinity ? t('routineBuilder.fail', 'Fail') : t('routineBuilder.reps')}
+              {targetReps === Infinity
+                ? t('routineBuilder.fail', 'Fail')
+                : t('routineBuilder.reps')}
             </label>
             <div className="relative">
               <div className="w-full text-center text-4xl font-bold text-text-main py-2">

@@ -20,15 +20,15 @@ interface ListItemSelectProps {
   description?: string;
 }
 
-export function ListItemSelect({ 
-  icon, 
-  label, 
-  valueLabel, 
-  value, 
-  options, 
-  onSelect, 
+export function ListItemSelect({
+  icon,
+  label,
+  valueLabel,
+  value,
+  options,
+  onSelect,
   title,
-  description
+  description,
 }: ListItemSelectProps) {
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -58,37 +58,33 @@ export function ListItemSelect({
             {valueLabel && (
               <p className="text-sm font-normal leading-normal whitespace-nowrap">{valueLabel}</p>
             )}
-            <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+            <Icon
+              name="chevron_right"
+              size={20}
+              className="group-hover:translate-x-0.5 transition-transform"
+            />
           </div>
         </button>
       </div>
 
-      <Modal
-        isOpen={isOpen}
-        onClose={() => setIsOpen(false)}
-        variant="bottom-sheet"
-      >
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} variant="bottom-sheet">
         <div className="flex flex-col p-4 max-h-[80vh]">
           <h3 className="text-lg font-bold text-text-main mb-1">{title}</h3>
-          {description && (
-            <p className="text-sm text-text-secondary mb-4">{description}</p>
-          )}
+          {description && <p className="text-sm text-text-secondary mb-4">{description}</p>}
           <div className="flex flex-col gap-2 overflow-y-scroll flex-1 min-h-0 -mx-4 px-4">
             {options.map((option) => (
               <button
                 key={option.value}
                 onClick={() => handleSelect(option.value)}
                 className={cn(
-                  "flex items-center justify-between p-4 rounded-xl transition-all",
+                  'flex items-center justify-between p-4 rounded-xl transition-all',
                   value === option.value
-                    ? "bg-primary/10 text-primary border border-primary/20"
-                    : "bg-surface text-text-main hover:bg-surface-highlight border border-border"
+                    ? 'bg-primary/10 text-primary border border-primary/20'
+                    : 'bg-surface text-text-main hover:bg-surface-highlight border border-border'
                 )}
               >
                 <span className="font-medium">{option.label}</span>
-                {value === option.value && (
-                  <Icon name="check" size={20} />
-                )}
+                {value === option.value && <Icon name="check" size={20} />}
               </button>
             ))}
           </div>

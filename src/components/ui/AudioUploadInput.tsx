@@ -51,7 +51,7 @@ export function AudioUploadInput({ value, onChange, className }: AudioUploadInpu
   };
 
   return (
-    <div className={cn("flex flex-col gap-2", className)}>
+    <div className={cn('flex flex-col gap-2', className)}>
       <input
         type="file"
         ref={fileInputRef}
@@ -76,7 +76,7 @@ export function AudioUploadInput({ value, onChange, className }: AudioUploadInpu
           <button
             onClick={() => {
               const audio = new Audio(value);
-              audio.play().catch(err => console.error('Preview failed:', err));
+              audio.play().catch((err) => console.error('Preview failed:', err));
             }}
             className="flex items-center justify-center size-8 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
           >
@@ -100,7 +100,7 @@ export function AudioUploadInput({ value, onChange, className }: AudioUploadInpu
           {t('settings.uploadCustomAudio', 'Upload Custom Audio')}
         </Button>
       )}
-      
+
       <p className="text-xs text-text-muted px-1">
         {t('settings.audioHint', 'Supported formats: MP3, WAV, OGG. Max size: 1MB')}
       </p>

@@ -19,15 +19,13 @@ export default function ManageTagsPage() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { tags, addTag, updateTag, deleteTag } = useTags();
-  
+
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingTag, setEditingTag] = useState<Tag | null>(null);
   const [tagToDelete, setTagToDelete] = useState<Tag | null>(null);
   const [filter, setFilter] = useState<'custom' | 'all'>('custom');
 
-  const filteredTags = filter === 'custom' 
-    ? tags.filter(tag => !tag.system) 
-    : tags;
+  const filteredTags = filter === 'custom' ? tags.filter((tag) => !tag.system) : tags;
 
   const handleOpenForm = (tag?: Tag) => {
     if (tag) {
@@ -108,7 +106,7 @@ export default function ManageTagsPage() {
               onDelete={setTagToDelete}
             />
           ))}
-          
+
           {filteredTags.length === 0 && (
             <div className="text-center py-10 text-slate-500 dark:text-slate-400">
               {filter === 'custom'
@@ -119,16 +117,12 @@ export default function ManageTagsPage() {
         </div>
       </div>
 
-      <Modal
-        isOpen={isFormOpen}
-        onClose={handleCloseForm}
-        variant="bottom-sheet"
-      >
+      <Modal isOpen={isFormOpen} onClose={handleCloseForm} variant="bottom-sheet">
         <div className="p-4 pb-8 space-y-6">
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">
             {editingTag ? t('tags.editTag', 'Edit Tag') : t('tags.createTag', 'Create Tag')}
           </h3>
-          
+
           <Form
             onSubmit={handleSubmit}
             defaultValues={{
@@ -137,25 +131,19 @@ export default function ManageTagsPage() {
             }}
             submitLabel={editingTag ? t('common.save', 'Save') : t('common.create', 'Create')}
           >
-            <Form.Field
-              name="name"
-              validator={tagValidators.name}
-            >
+            <Form.Field name="name" validator={tagValidators.name}>
               {({ value, onChange, error }) => (
                 <Input
-                    label={t('tags.name', 'Name')}
-                    placeholder={t('tags.namePlaceholder', 'e.g., Pull, Heavy')}
-                    value={String(value || '')}
-                    onChange={(e) => onChange(e.target.value)}
-                    error={error}
-                  />
+                  label={t('tags.name', 'Name')}
+                  placeholder={t('tags.namePlaceholder', 'e.g., Pull, Heavy')}
+                  value={String(value || '')}
+                  onChange={(e) => onChange(e.target.value)}
+                  error={error}
+                />
               )}
             </Form.Field>
-            
-            <Form.Field
-              name="color"
-              validator={validators.required}
-            >
+
+            <Form.Field name="color" validator={validators.required}>
               {({ value, onChange, error }) => (
                 <ColorPicker
                   label={t('tags.color', 'Color')}
@@ -175,7 +163,10 @@ export default function ManageTagsPage() {
         onClose={() => setTagToDelete(null)}
         onConfirm={handleDelete}
         title={t('tags.deleteTitle', 'Delete Tag')}
-        description={t('tags.deleteDescription', 'Are you sure you want to delete this tag? It will be removed from all exercises and inventory items.')}
+        description={t(
+          'tags.deleteDescription',
+          'Are you sure you want to delete this tag? It will be removed from all exercises and inventory items.'
+        )}
         confirmText={t('common.delete', 'Delete')}
         cancelText={t('common.cancel', 'Cancel')}
         variant="danger"

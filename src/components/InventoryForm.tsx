@@ -18,7 +18,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
 
   const handleFormSubmit = async (rawValues: unknown) => {
     const values = rawValues as InventoryItem;
-  
+
     await onSave({
       name: values.name,
       icon: values.icon,
@@ -45,10 +45,16 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
       <Layout
         header={
           <div className="flex items-center justify-between px-6 py-4 bg-background/95 backdrop-blur-md z-50">
-            <button type="button" onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight text-gray-900 dark:text-white transition-colors">
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight text-gray-900 dark:text-white transition-colors"
+            >
               <Icon name="close" />
             </button>
-            <h1 className="text-lg font-bold text-gray-900 dark:text-white">{item ? t('inventory.titleEdit') : t('inventory.titleNew')}</h1>
+            <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+              {item ? t('inventory.titleEdit') : t('inventory.titleNew')}
+            </h1>
             <FormSubmitButton />
           </div>
         }
@@ -102,7 +108,8 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
                 label={t('common.tags')}
                 activeTags={value as Tag[]}
                 onChange={setValue}
-                type={'inventory'} />
+                type={'inventory'}
+              />
             )}
           </Form.Field>
         </div>
@@ -114,7 +121,7 @@ export function InventoryForm({ item, onClose, onSave }: InventoryFormProps) {
 function FormSubmitButton() {
   const { t } = useTranslation();
   const { errors, isSubmitting } = useFormContext();
-  const hasErrors = Object.keys(errors).some(key => !!errors[key]);
+  const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
 
   return (
     <Button

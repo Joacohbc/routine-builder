@@ -112,7 +112,9 @@ export default function SettingsPage() {
           >
             <Icon name="arrow_back" size={24} />
           </button>
-          <h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">{t('common.settings', 'Settings')}</h2>
+          <h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
+            {t('common.settings', 'Settings')}
+          </h2>
         </div>
       }
     >
@@ -120,7 +122,9 @@ export default function SettingsPage() {
         {/* Section: General */}
         <section>
           {/* SectionHeader */}
-          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3 pt-2">{t('settings.general', 'General')}</h3>
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3 pt-2">
+            {t('settings.general', 'General')}
+          </h3>
           {/* Grouped List Items Background */}
           <div className="bg-surface rounded-xl overflow-hidden shadow-sm border border-border">
             {/* ListItem: Language */}
@@ -133,7 +137,7 @@ export default function SettingsPage() {
               onSelect={handleLanguageChange}
               title={t('settings.selectLanguage', 'Select Language')}
             />
-          
+
             {/* ListItem: Manage Tags */}
             <div className="relative flex flex-col w-full border-t border-border">
               <button
@@ -149,7 +153,11 @@ export default function SettingsPage() {
                   </p>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-text-secondary">
-                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                  <Icon
+                    name="chevron_right"
+                    size={20}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                  />
                 </div>
               </button>
             </div>
@@ -169,7 +177,11 @@ export default function SettingsPage() {
                   </p>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-text-secondary">
-                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                  <Icon
+                    name="chevron_right"
+                    size={20}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                  />
                 </div>
               </button>
             </div>
@@ -180,16 +192,21 @@ export default function SettingsPage() {
         <section>
           {/* SectionHeader */}
 
-          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3 pt-2">{t('settings.workout', 'Workout')}</h3>
-          
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3 pt-2">
+            {t('settings.workout', 'Workout')}
+          </h3>
+
           {/* Grouped List Items Background */}
           <div className="bg-surface rounded-xl overflow-hidden shadow-sm border border-border">
-          
             {/* ListItem: Auto-Next */}
             <ListItemSelect
               icon="bolt"
               label={t('settings.autoNext', 'Auto-Next')}
-              valueLabel={settings.autoNext ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
+              valueLabel={
+                settings.autoNext
+                  ? t('common.enabled', 'Enabled')
+                  : t('common.disabled', 'Disabled')
+              }
               value={settings.autoNext ? 'enabled' : 'disabled'}
               options={[
                 { label: t('common.enabled', 'Enabled'), value: 'enabled' },
@@ -197,14 +214,21 @@ export default function SettingsPage() {
               ]}
               onSelect={(value) => updateSettings({ autoNext: value === 'enabled' })}
               title={t('settings.selectAutoNext', 'Select Auto-Next')}
-              description={t('settings.autoNextDesc', 'Automatically advance when target time is reached')}
+              description={t(
+                'settings.autoNextDesc',
+                'Automatically advance when target time is reached'
+              )}
             />
 
             {/* ListItem: Timer Sound Enabled */}
             <ListItemSelect
               icon="notifications_active"
               label={t('settings.timerSound', 'Timer Sound')}
-              valueLabel={settings.timerSoundEnabled ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
+              valueLabel={
+                settings.timerSoundEnabled
+                  ? t('common.enabled', 'Enabled')
+                  : t('common.disabled', 'Disabled')
+              }
               value={settings.timerSoundEnabled ? 'enabled' : 'disabled'}
               options={[
                 { label: t('common.enabled', 'Enabled'), value: 'enabled' },
@@ -215,14 +239,16 @@ export default function SettingsPage() {
               description={t('settings.timerSoundDesc', 'Play sound when target time is reached')}
             />
 
-            
-
             {/* ListItem: Voice Countdown */}
             {isSpeechSupported && (
               <ListItemSelect
                 icon="record_voice_over"
                 label={t('settings.voiceCountdown', 'Seconds Aloud')}
-                valueLabel={settings.voiceCountdownEnabled ? t('common.enabled', 'Enabled') : t('common.disabled', 'Disabled')}
+                valueLabel={
+                  settings.voiceCountdownEnabled
+                    ? t('common.enabled', 'Enabled')
+                    : t('common.disabled', 'Disabled')
+                }
                 value={settings.voiceCountdownEnabled ? 'enabled' : 'disabled'}
                 options={[
                   { label: t('common.enabled', 'Enabled'), value: 'enabled' },
@@ -230,7 +256,10 @@ export default function SettingsPage() {
                 ]}
                 onSelect={(value) => updateSettings({ voiceCountdownEnabled: value === 'enabled' })}
                 title={t('settings.selectVoiceCountdown', 'Select Seconds Aloud')}
-                description={t('settings.voiceCountdownDesc', 'Speak countdown seconds during workout')}
+                description={t(
+                  'settings.voiceCountdownDesc',
+                  'Speak countdown seconds during workout'
+                )}
               />
             )}
 
@@ -240,16 +269,16 @@ export default function SettingsPage() {
                 icon="person"
                 label={t('settings.voiceSelection', 'Voice Selection')}
                 valueLabel={
-                  voices.find(v => v.voiceURI == settings.voiceCountdownVoiceURI)?.name 
-                  || t('settings.selectVoice', 'Select Voice')
+                  voices.find((v) => v.voiceURI == settings.voiceCountdownVoiceURI)?.name ||
+                  t('settings.selectVoice', 'Select Voice')
                 }
                 value={settings.voiceCountdownVoiceURI}
-                options={voices.map(voice => ({
+                options={voices.map((voice) => ({
                   label: `${voice.name} (${voice.lang})`,
-                  value: voice.voiceURI
+                  value: voice.voiceURI,
                 }))}
                 onSelect={(voiceURI) => {
-                  const voice = voices.find(v => v.voiceURI === voiceURI);
+                  const voice = voices.find((v) => v.voiceURI === voiceURI);
                   if (voice) {
                     setSelectedVoice(voice);
                     updateSettings({ voiceCountdownVoiceURI: voiceURI });
@@ -288,7 +317,9 @@ export default function SettingsPage() {
                         </p>
                       </div>
                       <button
-                        onClick={() => playTimerSound(settings.timerSoundId, settings.customTimerSound)}
+                        onClick={() =>
+                          playTimerSound(settings.timerSoundId, settings.customTimerSound)
+                        }
                         className="flex items-center justify-center size-10 rounded-full bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                       >
                         <Icon name="play_arrow" size={20} />
@@ -314,18 +345,25 @@ export default function SettingsPage() {
         {/* Section: Appearance */}
         <section>
           {/* SectionHeader */}
-          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3">{t('settings.appearance', 'Appearance')}</h3>
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3">
+            {t('settings.appearance', 'Appearance')}
+          </h3>
           {/* RadioList Container */}
-          <Form
-            onSubmit={() => { }}
-            defaultValues={{ theme_selector: theme }}
-          >
+          <Form onSubmit={() => {}} defaultValues={{ theme_selector: theme }}>
             <Form.RadioButtonGroup
               name="theme_selector"
               options={[
-                { label: t('settings.lightMode', 'Light Mode'), value: 'light', icon: 'light_mode' },
+                {
+                  label: t('settings.lightMode', 'Light Mode'),
+                  value: 'light',
+                  icon: 'light_mode',
+                },
                 { label: t('settings.darkMode', 'Dark Mode'), value: 'dark', icon: 'dark_mode' },
-                { label: t('settings.systemDefault', 'System Default'), value: 'system', icon: 'settings_brightness' }
+                {
+                  label: t('settings.systemDefault', 'System Default'),
+                  value: 'system',
+                  icon: 'settings_brightness',
+                },
               ]}
               validator={(value) => {
                 if (value !== theme) {
@@ -339,7 +377,9 @@ export default function SettingsPage() {
 
         {/* Section: Data Management */}
         <section>
-          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3">{t('settings.dataManagement', 'Data Management')}</h3>
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3">
+            {t('settings.dataManagement', 'Data Management')}
+          </h3>
           <div className="bg-surface rounded-xl overflow-hidden shadow-sm border border-border">
             {/* Export Data */}
             <div className="relative flex flex-col w-full">
@@ -361,7 +401,11 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-text-secondary">
-                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                  <Icon
+                    name="chevron_right"
+                    size={20}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                  />
                 </div>
               </button>
             </div>
@@ -386,7 +430,11 @@ export default function SettingsPage() {
                   </div>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-text-secondary">
-                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                  <Icon
+                    name="chevron_right"
+                    size={20}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                  />
                 </div>
               </button>
               <input
@@ -413,12 +461,19 @@ export default function SettingsPage() {
                       {t('settings.restoreDefaultTags', 'Restore Default Tags')}
                     </p>
                     <p className="text-text-secondary text-xs mt-1 leading-relaxed">
-                      {t('settings.restoreDefaultTagsDesc', 'Reset all system tags to default values')}
+                      {t(
+                        'settings.restoreDefaultTagsDesc',
+                        'Reset all system tags to default values'
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-text-secondary">
-                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                  <Icon
+                    name="chevron_right"
+                    size={20}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                  />
                 </div>
               </button>
             </div>
@@ -438,12 +493,19 @@ export default function SettingsPage() {
                       {t('settings.deleteDefaultTags', 'Delete All Default Tags')}
                     </p>
                     <p className="text-text-secondary text-xs mt-1 leading-relaxed">
-                      {t('settings.deleteDefaultTagsDesc', 'Remove all muscle, purpose, and difficulty tags')}
+                      {t(
+                        'settings.deleteDefaultTagsDesc',
+                        'Remove all muscle, purpose, and difficulty tags'
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="shrink-0 flex items-center gap-2 text-text-secondary">
-                  <Icon name="chevron_right" size={20} className="group-hover:translate-x-0.5 transition-transform" />
+                  <Icon
+                    name="chevron_right"
+                    size={20}
+                    className="group-hover:translate-x-0.5 transition-transform"
+                  />
                 </div>
               </button>
             </div>
@@ -455,13 +517,17 @@ export default function SettingsPage() {
           <div className="size-10 rounded-xl bg-primary mb-3 flex items-center justify-center shadow-lg shadow-primary/40">
             <Icon name="inventory_2" className="text-white" />
           </div>
-          <p className="text-xs font-medium text-text-secondary">{t('settings.version', 'Lavender Focus v1.0.4')}</p>
-          <p className="text-[10px] text-text-muted mt-1">{t('settings.localData', 'Local Data Storage Active')}</p>
+          <p className="text-xs font-medium text-text-secondary">
+            {t('settings.version', 'Lavender Focus v1.0.4')}
+          </p>
+          <p className="text-[10px] text-text-muted mt-1">
+            {t('settings.localData', 'Local Data Storage Active')}
+          </p>
           <p className="text-[9px] text-text-muted mt-2">
             {t('settings.soundsFrom', 'Sounds from')}{' '}
-            <a 
-              href="https://pixabay.com/" 
-              target="_blank" 
+            <a
+              href="https://pixabay.com/"
+              target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-text-secondary transition-colors"
             >
@@ -479,7 +545,10 @@ export default function SettingsPage() {
         }}
         onConfirm={handleImportConfirm}
         title={t('settings.importWarningTitle', 'Import Data')}
-        description={t('settings.importWarningDesc', 'This will overwrite all existing data with the content of the backup file. This action cannot be undone. Are you sure?')}
+        description={t(
+          'settings.importWarningDesc',
+          'This will overwrite all existing data with the content of the backup file. This action cannot be undone. Are you sure?'
+        )}
         confirmText={t('common.confirm', 'Confirm')}
         cancelText={t('common.cancel', 'Cancel')}
         variant="danger"
@@ -490,7 +559,10 @@ export default function SettingsPage() {
         onClose={() => setRestoreTagsConfirmationOpen(false)}
         onConfirm={handleRestoreSystemTags}
         title={t('settings.restoreDefaultTagsTitle', 'Restore Default Tags')}
-        description={t('settings.restoreDefaultTagsWarning', 'This will reset all system tags (muscles, purposes, difficulties) to their default values. Any custom modifications will be lost. Continue?')}
+        description={t(
+          'settings.restoreDefaultTagsWarning',
+          'This will reset all system tags (muscles, purposes, difficulties) to their default values. Any custom modifications will be lost. Continue?'
+        )}
         confirmText={t('common.confirm', 'Confirm')}
         cancelText={t('common.cancel', 'Cancel')}
         variant="primary"
@@ -501,7 +573,10 @@ export default function SettingsPage() {
         onClose={() => setDeleteTagsConfirmationOpen(false)}
         onConfirm={handleDeleteAllSystemTags}
         title={t('settings.deleteDefaultTagsTitle', 'Delete All Default Tags')}
-        description={t('settings.deleteDefaultTagsWarning', 'This will permanently delete all system tags (muscles, purposes, difficulties). They will be removed from all exercises and inventory items. This action cannot be undone. Are you sure?')}
+        description={t(
+          'settings.deleteDefaultTagsWarning',
+          'This will permanently delete all system tags (muscles, purposes, difficulties). They will be removed from all exercises and inventory items. This action cannot be undone. Are you sure?'
+        )}
         confirmText={t('common.confirm', 'Confirm')}
         cancelText={t('common.cancel', 'Cancel')}
         variant="danger"

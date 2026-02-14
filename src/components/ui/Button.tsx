@@ -9,22 +9,24 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   children?: ReactNode;
 }
 
-export function Button({ 
-  className, 
-  variant = 'primary', 
-  size = 'md', 
-  icon, 
-  children, 
-  ...props 
+export function Button({
+  className,
+  variant = 'primary',
+  size = 'md',
+  icon,
+  children,
+  ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center rounded-2xl font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none';
-  
+  const baseStyles =
+    'inline-flex items-center justify-center rounded-2xl font-medium transition-all duration-200 active:scale-95 disabled:opacity-50 disabled:pointer-events-none';
+
   const variants = {
     primary: 'bg-primary hover:bg-primary-dark text-white shadow-lg shadow-primary/30',
     secondary: 'bg-surface border border-border text-text-main hover:bg-surface-highlight',
     ghost: 'text-text-secondary hover:bg-surface-highlight',
     icon: 'rounded-full hover:bg-surface-highlight text-text-muted',
-    floating: 'fixed bottom-24 right-6 z-50 bg-primary hover:bg-primary-dark text-white rounded-2xl shadow-lg shadow-primary/30 w-14 h-14',
+    floating:
+      'fixed bottom-24 right-6 z-50 bg-primary hover:bg-primary-dark text-white rounded-2xl shadow-lg shadow-primary/30 w-14 h-14',
   };
 
   const sizes = {
@@ -35,10 +37,10 @@ export function Button({
   };
 
   return (
-    <button 
+    <button
       className={cn(
-        baseStyles, 
-        variants[variant], 
+        baseStyles,
+        variants[variant],
         variant !== 'icon' && variant !== 'floating' && sizes[size],
         className
       )}

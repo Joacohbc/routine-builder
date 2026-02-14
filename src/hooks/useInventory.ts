@@ -8,13 +8,15 @@ const fetchItems = async (): Promise<InventoryItem[]> => {
     const db = await dbPromise;
     const [allItems, allTags] = await Promise.all([
       db.getAll(DB_TABLES.INVENTORY),
-      db.getAll(DB_TABLES.TAGS)
+      db.getAll(DB_TABLES.TAGS),
     ]);
 
     // Hydrate tags
     const hydratedItems = allItems.map((item: DehydratedInventoryItem) => ({
       ...item,
-      tags: (item.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[]
+      tags: (item.tagIds || [])
+        .map((id: number) => allTags.find((t: Tag) => t.id === id))
+        .filter(Boolean) as Tag[],
     }));
 
     return hydratedItems;
@@ -33,7 +35,7 @@ const addItem = async (item: Omit<InventoryItem, 'id'>) => {
   const { tags, ...itemWithoutTags } = item;
   const itemToSave = {
     ...itemWithoutTags,
-    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[]
+    tagIds: (tags || []).map((t) => t.id).filter(Boolean) as number[],
   };
 
   const id = await db.add(DB_TABLES.INVENTORY, itemToSave);
@@ -51,7 +53,7 @@ const updateItem = async (item: InventoryItem) => {
   const { tags, ...itemWithoutTags } = item;
   const itemToSave = {
     ...itemWithoutTags,
-    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[]
+    tagIds: (tags || []).map((t) => t.id).filter(Boolean) as number[],
   };
 
   await db.put(DB_TABLES.INVENTORY, itemToSave);
@@ -81,28 +83,37 @@ export function useInventory() {
     refresh();
   }, [refresh]);
 
-  const onAddItem = useCallback(async (item: Omit<InventoryItem, 'id'>) => {
-    const id = await addItem(item);
-    await refresh();
-    return id;
-  }, [refresh]);
+  const onAddItem = useCallback(
+    async (item: Omit<InventoryItem, 'id'>) => {
+      const id = await addItem(item);
+      await refresh();
+      return id;
+    },
+    [refresh]
+  );
 
-  const onUpdateItem = useCallback(async (item: InventoryItem) => {
-    await updateItem(item);
-    await refresh();
-  }, [refresh]);
+  const onUpdateItem = useCallback(
+    async (item: InventoryItem) => {
+      await updateItem(item);
+      await refresh();
+    },
+    [refresh]
+  );
 
-  const onDeleteItem = useCallback(async (id: number) => {
-    await deleteItem(id);
-    await refresh();
-  }, [refresh]);
+  const onDeleteItem = useCallback(
+    async (id: number) => {
+      await deleteItem(id);
+      await refresh();
+    },
+    [refresh]
+  );
 
-  return { 
-    items, 
-    loading, 
-    addItem: onAddItem, 
-    updateItem: onUpdateItem, 
-    deleteItem: onDeleteItem, 
-    refresh 
+  return {
+    items,
+    loading,
+    addItem: onAddItem,
+    updateItem: onUpdateItem,
+    deleteItem: onDeleteItem,
+    refresh,
   };
 }

@@ -17,7 +17,12 @@ interface TagSelectorProps {
   label?: string;
 }
 
-export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles & Tags' }: TagSelectorProps) {
+export function TagSelector({
+  activeTags = [],
+  onChange,
+  type,
+  label = 'Muscles & Tags',
+}: TagSelectorProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
 
@@ -30,7 +35,7 @@ export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles 
 
   // Ensure activeTags with Translation already applied (from useTags)
   const selectedTags = useMemo(() => {
-    return tags.filter(tag => activeTags.some(active => active.id === tag.id));
+    return tags.filter((tag) => activeTags.some((active) => active.id === tag.id));
   }, [activeTags, tags]);
 
   // Calculate most used tags for this type
@@ -47,25 +52,27 @@ export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles 
       });
     });
 
-    return tags
-      // Exclude already selected tags
-      // Sort by usage count
-      // Take top 4
-      .filter(tag => !selectedTags.some(t => t.id === tag.id))
-      .sort((a, b) => (usageCount[b.id!] || 0) - (usageCount[a.id!] || 0))
-      .slice(0, 4);
+    return (
+      tags
+        // Exclude already selected tags
+        // Sort by usage count
+        // Take top 4
+        .filter((tag) => !selectedTags.some((t) => t.id === tag.id))
+        .sort((a, b) => (usageCount[b.id!] || 0) - (usageCount[a.id!] || 0))
+        .slice(0, 4)
+    );
   }, [type, inventoryItems, exercises, tags, selectedTags]);
 
   // Toggle tag selection
   const toggleTag = (tag: Tag) => {
-    if (selectedTags.some(t => t.id === tag.id)) {
-      onChange(selectedTags.filter(t => t.id !== tag.id));
+    if (selectedTags.some((t) => t.id === tag.id)) {
+      onChange(selectedTags.filter((t) => t.id !== tag.id));
     } else {
       onChange([...selectedTags, tag]);
     }
   };
 
-  const modalFilteredTags = tags.filter(tag =>
+  const modalFilteredTags = tags.filter((tag) =>
     tag.name.toLowerCase().includes(modalSearch.toLowerCase())
   );
 
@@ -73,19 +80,24 @@ export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles 
     <>
       <div>
         <div className="flex items-center justify-between mb-2 px-1">
-          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">{label}</label>
+          <label className="text-xs font-bold text-gray-400 uppercase tracking-wider">
+            {label}
+          </label>
         </div>
-        
+
         <div className="bg-surface border border-gray-200 dark:border-surface-highlight rounded-2xl p-4 space-y-4">
-        
           {/* Selected Tags */}
           <div className="flex flex-wrap gap-2">
-            {selectedTags.map(tag => (
+            {selectedTags.map((tag) => (
               <button
                 key={tag.id}
                 onClick={() => toggleTag(tag)}
                 className="group flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 transition-all hover:bg-primary/20"
-                style={{ color: tag.color, backgroundColor: `${tag.color}15`, borderColor: `${tag.color}30` }}
+                style={{
+                  color: tag.color,
+                  backgroundColor: `${tag.color}15`,
+                  borderColor: `${tag.color}30`,
+                }}
               >
                 <span className="text-sm font-medium">{tag.name}</span>
                 <Icon name="close" size={14} className="opacity-60 group-hover:opacity-100" />
@@ -93,15 +105,16 @@ export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles 
             ))}
 
             {/* Suggestions */}
-            {!search && suggestedTags.map(tag => (
-              <button
-                key={tag.id}
-                onClick={() => toggleTag(tag)}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-surface-highlight text-gray-600 dark:text-gray-400 border border-transparent transition-all hover:border-gray-300 dark:hover:border-gray-600"
-              >
-                <span className="text-sm font-medium">{tag.name}</span>
-              </button>
-            ))}
+            {!search &&
+              suggestedTags.map((tag) => (
+                <button
+                  key={tag.id}
+                  onClick={() => toggleTag(tag)}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-surface-highlight text-gray-600 dark:text-gray-400 border border-transparent transition-all hover:border-gray-300 dark:hover:border-gray-600"
+                >
+                  <span className="text-sm font-medium">{tag.name}</span>
+                </button>
+              ))}
           </div>
 
           <div className="border-t border-gray-100 dark:border-surface-highlight pt-4 flex gap-2">
@@ -142,11 +155,15 @@ export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles 
             <Icon name="arrow_back" />
           </button>
           <div className="flex-1 relative">
-            <Icon name="search" className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
+            <Icon
+              name="search"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+              size={20}
+            />
             <input
               autoFocus
               value={modalSearch}
-              onChange={e => setModalSearch(e.target.value)}
+              onChange={(e) => setModalSearch(e.target.value)}
               placeholder={t('common.search', 'Search...')}
               className="w-full bg-gray-100 dark:bg-surface-highlight rounded-xl py-3 pl-10 pr-4 outline-none border border-transparent focus:border-primary transition-all"
             />
@@ -156,10 +173,12 @@ export function TagSelector({ activeTags = [], onChange, type, label = 'Muscles 
         <div className="flex-1 overflow-y-auto p-4">
           <div className="flex flex-wrap gap-3">
             {modalFilteredTags.length === 0 ? (
-              <p className="text-gray-500 w-full text-center mt-10">No tags found matching "{modalSearch}"</p>
+              <p className="text-gray-500 w-full text-center mt-10">
+                No tags found matching "{modalSearch}"
+              </p>
             ) : (
-              modalFilteredTags.map(tag => {
-                const isSelected = selectedTags.some(t => t.id === tag.id);
+              modalFilteredTags.map((tag) => {
+                const isSelected = selectedTags.some((t) => t.id === tag.id);
                 return (
                   <TagItem
                     key={tag.id}

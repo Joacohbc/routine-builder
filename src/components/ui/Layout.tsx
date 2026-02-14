@@ -14,9 +14,7 @@ export function Layout({ children, header }: LayoutProps) {
           {header}
         </header>
       )}
-      <main className="flex-1 overflow-y-auto px-6 pb-24">
-        {children}
-      </main>
+      <main className="flex-1 overflow-y-auto px-6 pb-24">{children}</main>
       <BottomNav />
     </div>
   );

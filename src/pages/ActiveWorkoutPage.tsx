@@ -16,7 +16,11 @@ import { WorkoutSetDisplay } from '@/components/routine/WorkoutSetDisplay';
 import { formatTimeMMSS } from '@/lib/timeUtils';
 import { cn } from '@/lib/utils';
 import type { Routine } from '@/types';
-import type { WorkoutStep, ExerciseStep, RestStep as RestStepType } from '@/pages/WorkoutPageContainer';
+import type {
+  WorkoutStep,
+  ExerciseStep,
+  RestStep as RestStepType,
+} from '@/pages/WorkoutPageContainer';
 
 interface ActiveWorkoutPageProps {
   routine: Routine;
@@ -33,7 +37,6 @@ function isRestStep(step: WorkoutStep): step is RestStepType {
 }
 
 export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWorkoutPageProps) {
-  
   // Utilities
   const navigate = useNavigate();
   const { timers, start, pause, reset } = useMultiTimer();
@@ -41,20 +44,20 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   const { t } = useTranslation();
 
   const { speak } = useSpeechSynthesis({ defaultVoiceURI: settings.voiceCountdownVoiceURI });
-  
+
   // Data
   const { exercises } = useExercises();
 
   // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
-  
+
   // Local auto-next state (initialized from settings, can be toggled during workout)
   const [localAutoNext, setLocalAutoNext] = useState(settings.autoNext);
-  
+
   // Toast ref for auto-next notifications
   const toastRef = useRef<ToastRef>(null);
-  
+
   // Single ref to guard auto-next: tracks which step was last checked and
   // whether the target was already triggered. Prevents duplicate triggers
   // within a step AND skips stale timer values on step transitions.
@@ -65,22 +68,29 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // Pre-calculate progress map for all steps (only depends on steps, not current state)
   const progressMap = useMemo(() => {
-    const map = new Map<number, { series: { current: number; total: number }; exercise: { current: number; total: number } | null; set: { current: number; total: number } | null }>();
-    
+    const map = new Map<
+      number,
+      {
+        series: { current: number; total: number };
+        exercise: { current: number; total: number } | null;
+        set: { current: number; total: number } | null;
+      }
+    >();
+
     // 1. Calculate series metadata
     const uniqueSeriesIds: string[] = [];
-    steps.forEach(step => {
+    steps.forEach((step) => {
       if (!uniqueSeriesIds.includes(step.seriesId)) {
         uniqueSeriesIds.push(step.seriesId);
       }
     });
-    
+
     // 2. For each step, calculate its progress
-    steps.forEach(step => {
+    steps.forEach((step) => {
       const currentSeriesIndex = uniqueSeriesIds.indexOf(step.seriesId);
       const series = {
         current: currentSeriesIndex + 1,
-        total: uniqueSeriesIds.length
+        total: uniqueSeriesIds.length,
       };
 
       // Rest steps only have series progress
@@ -91,7 +101,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
       // 3. Calculate exercise progress within the series
       const uniqueExerciseIndices: number[] = [];
-      steps.forEach(s => {
+      steps.forEach((s) => {
         if (isExerciseStep(s) && s.seriesId === step.seriesId) {
           if (!uniqueExerciseIndices.includes(s.exerciseIndexInsideSerie)) {
             uniqueExerciseIndices.push(s.exerciseIndexInsideSerie);
@@ -99,24 +109,26 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         }
       });
       uniqueExerciseIndices.sort((a, b) => a - b);
-      
+
       const exercise = {
         current: uniqueExerciseIndices.indexOf(step.exerciseIndexInsideSerie) + 1,
-        total: uniqueExerciseIndices.length
+        total: uniqueExerciseIndices.length,
       };
 
       // 4. Calculate set progress within the exercise
       const setsOfCurrentExercise = steps.filter(
         (s): s is ExerciseStep =>
-          isExerciseStep(s) 
-          && s.seriesId === step.seriesId
-          && s.exerciseIndexInsideSerie === step.exerciseIndexInsideSerie
+          isExerciseStep(s) &&
+          s.seriesId === step.seriesId &&
+          s.exerciseIndexInsideSerie === step.exerciseIndexInsideSerie
       );
-      
-      const currentSetIndex = setsOfCurrentExercise.findIndex(s => s.stepIndex === step.stepIndex);
+
+      const currentSetIndex = setsOfCurrentExercise.findIndex(
+        (s) => s.stepIndex === step.stepIndex
+      );
       const set = {
         current: currentSetIndex + 1,
-        total: setsOfCurrentExercise.length
+        total: setsOfCurrentExercise.length,
       };
 
       map.set(step.stepIndex, { series, exercise, set });
@@ -130,13 +142,13 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // Find the actual Exercise from DB
   const currentExercise = useMemo(() => {
-    return exercises.find(e => e.id === Number(currentStep.exerciseId));
+    return exercises.find((e) => e.id === Number(currentStep.exerciseId));
   }, [exercises, currentStep.exerciseId]);
 
   // Count remaining exercise steps (excluding rest steps from the count)
   const stepsRemaining = useMemo(() => {
     const exerciseSteps = steps.filter(isExerciseStep);
-    const currentExIdx = exerciseSteps.findIndex(s => s.stepIndex >= currentStep.stepIndex);
+    const currentExIdx = exerciseSteps.findIndex((s) => s.stepIndex >= currentStep.stepIndex);
     const completed = currentExIdx !== -1 ? currentExIdx : exerciseSteps.length;
     return exerciseSteps.length - completed - (isExerciseStep(currentStep) ? 1 : 0);
   }, [currentStep, steps]);
@@ -186,26 +198,28 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     if (remainingTime >= 60) {
       const remainingMinutes = Math.floor(remainingTime / 60);
       const isFullMinute = remainingTime % 60 <= 0.5; // Within half a second of a full minute
-      
+
       if (isFullMinute) {
         if (!countdownAnnouncedRef.current.has(remainingMinutes)) {
           countdownAnnouncedRef.current.add(remainingMinutes);
-          const announcement = remainingMinutes === 1
-            ? t('activeWorkout.countdown.minute', { count: remainingMinutes })
-            : t('activeWorkout.countdown.minutes', { count: remainingMinutes });
+          const announcement =
+            remainingMinutes === 1
+              ? t('activeWorkout.countdown.minute', { count: remainingMinutes })
+              : t('activeWorkout.countdown.minutes', { count: remainingMinutes });
           speak(announcement);
         }
       }
     }
     // For times < 60 seconds, announce specific countdown numbers
     else {
-      const countdownSeconds = [ 45, 30, 15, 10, 5];
+      const countdownSeconds = [45, 30, 15, 10, 5];
       for (const num of countdownSeconds) {
         if (remainingTime === num && !countdownAnnouncedRef.current.has(num)) {
           countdownAnnouncedRef.current.add(num);
-          const announcement = num === 1 
-            ? t('activeWorkout.countdown.second', { count: num })
-            : t('activeWorkout.countdown.seconds', { count: num });
+          const announcement =
+            num === 1
+              ? t('activeWorkout.countdown.second', { count: num })
+              : t('activeWorkout.countdown.seconds', { count: num });
           speak(announcement);
           break; // Only announce one number per tick
         }
@@ -215,7 +229,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   const handleNext = useCallback(() => {
     if (currentStepIndex < steps.length - 1) {
-      setCurrentStepIndex(prev => prev + 1);
+      setCurrentStepIndex((prev) => prev + 1);
     } else {
       navigate('/builder');
     }
@@ -223,7 +237,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   const handlePrevious = () => {
     if (currentStepIndex > 0) {
-      setCurrentStepIndex(prev => prev - 1);
+      setCurrentStepIndex((prev) => prev - 1);
     }
   };
 
@@ -285,11 +299,11 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     }
   }, [
     currentStepIndex,
-    currentStep, 
-    timers, 
-    localAutoNext, 
-    settings.timerSoundEnabled, 
-    settings.timerSoundId, 
+    currentStep,
+    timers,
+    localAutoNext,
+    settings.timerSoundEnabled,
+    settings.timerSoundId,
     settings.customTimerSound,
     playTimerSound,
     handleNext,
@@ -314,29 +328,32 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         </button>
         <div className="flex flex-col items-center">
           <h2 className="font-bold text-sm">{routine.name}</h2>
-          <span className="text-xs font-mono text-primary">{formatTimeMMSS(timers['totalTime']?.elapsed)}</span>
+          <span className="text-xs font-mono text-primary">
+            {formatTimeMMSS(timers['totalTime']?.elapsed)}
+          </span>
         </div>
-        <button onClick={() => setShowMedia(true)} className={cn("text-text-muted", !currentExercise?.media.length && "opacity-20")}>
+        <button
+          onClick={() => setShowMedia(true)}
+          className={cn('text-text-muted', !currentExercise?.media.length && 'opacity-20')}
+        >
           <Icon name="movie" />
         </button>
       </div>
 
       {/* Progress */}
-      <div className={cn(
-        "px-6 mb-6 transition-opacity duration-150"
-      )}>
+      <div className={cn('px-6 mb-6 transition-opacity duration-150')}>
         <Stepper
           currentStep={currentStepIndex + 1}
           totalSteps={steps.length}
           leftLabel={
             isExerciseStep(currentStep) && progress.set && progress.exercise
-              ? t('activeWorkout.seriesSetExerciseProgress', { 
-                  seriesCurrent: progress.series.current, 
+              ? t('activeWorkout.seriesSetExerciseProgress', {
+                  seriesCurrent: progress.series.current,
                   seriesTotal: progress.series.total,
-                  setCurrent: progress.set.current, 
+                  setCurrent: progress.set.current,
                   setTotal: progress.set.total,
                   exerciseCurrent: progress.exercise.current,
-                  exerciseTotal: progress.exercise.total
+                  exerciseTotal: progress.exercise.total,
                 })
               : isRestStep(currentStep)
                 ? currentStep.type === 'serie_rest'
@@ -353,15 +370,18 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 gap-8 relative overflow-hidden">
         {/* Exercise Info */}
-        { !isRestStep(currentStep) &&         
-        <div key={`info-${currentStepIndex}`} className="text-center z-10 animate-fade-in">
-          <h1 className="text-3xl font-bold mb-2 leading-tight">{currentExercise?.title || t('activeWorkout.unknownExercise')}</h1>
-          {isExerciseStep(currentStep) && currentStep.isSuperset && (
-            <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
-              {t('activeWorkout.supersetFlow')}
-            </span>
-          )}
-        </div>}
+        {!isRestStep(currentStep) && (
+          <div key={`info-${currentStepIndex}`} className="text-center z-10 animate-fade-in">
+            <h1 className="text-3xl font-bold mb-2 leading-tight">
+              {currentExercise?.title || t('activeWorkout.unknownExercise')}
+            </h1>
+            {isExerciseStep(currentStep) && currentStep.isSuperset && (
+              <span className="inline-block mt-2 px-3 py-1 bg-primary/20 text-primary text-xs font-bold rounded-full animate-pulse">
+                {t('activeWorkout.supersetFlow')}
+              </span>
+            )}
+          </div>
+        )}
 
         {/* Step Content */}
         <div key={`content-${currentStepIndex}`} className="animate-fade-in">
@@ -404,12 +424,14 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
           <button
             onClick={handleToggleAutoNext}
             className={cn(
-              "h-14 w-14 rounded-2xl flex items-center justify-center transition-colors",
-              localAutoNext
-                ? "bg-primary/20 text-primary"
-                : "bg-surface-highlight text-text-muted"
+              'h-14 w-14 rounded-2xl flex items-center justify-center transition-colors',
+              localAutoNext ? 'bg-primary/20 text-primary' : 'bg-surface-highlight text-text-muted'
             )}
-            aria-label={localAutoNext ? t('activeWorkout.autoNextEnabled') : t('activeWorkout.autoNextDisabled')}
+            aria-label={
+              localAutoNext
+                ? t('activeWorkout.autoNextEnabled')
+                : t('activeWorkout.autoNextDisabled')
+            }
           >
             <Icon name="bolt" size={24} />
           </button>
@@ -427,13 +449,31 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         {currentExercise && currentExercise.media.length > 0 ? (
           (() => {
             const m = currentExercise.media[0];
-            if (m.type === 'image') return <img src={m.url} className="w-full h-full object-contain" alt={currentExercise.title} />;
-            if (m.type === 'video') return <video src={m.url} controls className="w-full h-full object-contain" />;
-            if (m.type === 'youtube') return <iframe src={`https://www.youtube.com/embed/${m.url}`} className="w-full h-full" allowFullScreen title={currentExercise.title} />;
+            if (m.type === 'image')
+              return (
+                <img
+                  src={m.url}
+                  className="w-full h-full object-contain"
+                  alt={currentExercise.title}
+                />
+              );
+            if (m.type === 'video')
+              return <video src={m.url} controls className="w-full h-full object-contain" />;
+            if (m.type === 'youtube')
+              return (
+                <iframe
+                  src={`https://www.youtube.com/embed/${m.url}`}
+                  className="w-full h-full"
+                  allowFullScreen
+                  title={currentExercise.title}
+                />
+              );
             return null;
           })()
         ) : (
-          <div className="w-full h-full flex items-center justify-center text-text-muted">{t('activeWorkout.noMedia')}</div>
+          <div className="w-full h-full flex items-center justify-center text-text-muted">
+            {t('activeWorkout.noMedia')}
+          </div>
         )}
       </Modal>
     </div>

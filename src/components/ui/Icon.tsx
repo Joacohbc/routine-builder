@@ -10,11 +10,7 @@ interface IconProps {
 export function Icon({ name, className, filled = false, size }: IconProps) {
   return (
     <span
-      className={cn(
-        'material-symbols-outlined select-none',
-        filled && 'filled',
-        className
-      )}
+      className={cn('material-symbols-outlined select-none', filled && 'filled', className)}
       style={size ? { fontSize: `${size}px` } : undefined}
     >
       {name}

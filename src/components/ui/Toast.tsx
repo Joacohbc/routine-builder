@@ -13,55 +13,57 @@ export interface ToastRef {
   hide: () => void;
 }
 
-export const Toast = forwardRef<ToastRef, ToastProps>(({ children, position = 'bottom', className }, ref) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const timeoutRef = useRef<number | null>(null);
+export const Toast = forwardRef<ToastRef, ToastProps>(
+  ({ children, position = 'bottom', className }, ref) => {
+    const [isVisible, setIsVisible] = useState(false);
+    const timeoutRef = useRef<number | null>(null);
 
-  useImperativeHandle(ref, () => ({
-    show: (duration = 2000) => {
-      // Clear any existing timeout to prevent premature hiding
-      if (timeoutRef.current !== null) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
+    useImperativeHandle(ref, () => ({
+      show: (duration = 2000) => {
+        // Clear any existing timeout to prevent premature hiding
+        if (timeoutRef.current !== null) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
 
-      setIsVisible(true);
+        setIsVisible(true);
 
-      // Set new timeout for auto-hide
-      timeoutRef.current = window.setTimeout(() => {
+        // Set new timeout for auto-hide
+        timeoutRef.current = window.setTimeout(() => {
+          setIsVisible(false);
+          timeoutRef.current = null;
+        }, duration);
+      },
+      hide: () => {
+        // Clear any pending timeout
+        if (timeoutRef.current !== null) {
+          clearTimeout(timeoutRef.current);
+          timeoutRef.current = null;
+        }
         setIsVisible(false);
-        timeoutRef.current = null;
-      }, duration);
-    },
-    hide: () => {
-      // Clear any pending timeout
-      if (timeoutRef.current !== null) {
-        clearTimeout(timeoutRef.current);
-        timeoutRef.current = null;
-      }
-      setIsVisible(false);
-    },
-  }));
+      },
+    }));
 
-  if (!isVisible) return null;
+    if (!isVisible) return null;
 
-  return (
-    <div 
-      className={cn(
-        "fixed left-1/2 -translate-x-1/2 z-50 pointer-events-none",
-        position === 'top' ? 'top-20' : 'bottom-28',
-        "animate-in fade-in duration-300",
-        position === 'top' ? 'slide-in-from-top-5' : 'slide-in-from-bottom-5'
-      )}
-    >
-      <div 
+    return (
+      <div
         className={cn(
-          "px-4 py-2 bg-surface border border-border rounded-full shadow-lg",
-          className
+          'fixed left-1/2 -translate-x-1/2 z-50 pointer-events-none',
+          position === 'top' ? 'top-20' : 'bottom-28',
+          'animate-in fade-in duration-300',
+          position === 'top' ? 'slide-in-from-top-5' : 'slide-in-from-bottom-5'
         )}
       >
-        {children}
+        <div
+          className={cn(
+            'px-4 py-2 bg-surface border border-border rounded-full shadow-lg',
+            className
+          )}
+        >
+          {children}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);

@@ -58,7 +58,7 @@ export const useAudio = () => {
     try {
       // Get the audio source
       let audioSrc: string | undefined;
-      
+
       if (soundId === 'custom' && customSound) {
         audioSrc = customSound;
       } else if (TIMER_SOUNDS[soundId]) {
@@ -79,8 +79,8 @@ export const useAudio = () => {
       // Create and play new audio
       const audio = new Audio(audioSrc);
       audioRef.current = audio;
-      
-      audio.play().catch(error => {
+
+      audio.play().catch((error) => {
         console.error('Failed to play timer sound:', error);
       });
 

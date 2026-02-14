@@ -11,8 +11,10 @@ interface TagProps {
 
 export function Tag({ label, icon, variant = 'default', className, onClick }: TagProps) {
   const variants = {
-    default: 'bg-surface border border-border text-text-secondary hover:border-primary hover:text-primary dark:hover:border-primary dark:hover:text-primary',
-    primary: 'bg-primary/5 dark:bg-primary/10 text-primary border border-primary dark:border-primary',
+    default:
+      'bg-surface border border-border text-text-secondary hover:border-primary hover:text-primary dark:hover:border-primary dark:hover:text-primary',
+    primary:
+      'bg-primary/5 dark:bg-primary/10 text-primary border border-primary dark:border-primary',
     outline: 'border border-border text-text-secondary bg-surface-highlight',
   };
 

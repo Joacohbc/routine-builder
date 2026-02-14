@@ -12,49 +12,45 @@ interface TagItemProps {
   className?: string;
 }
 
-export function TagItem({ 
-  tag, 
-  showActions = false, 
-  onEdit, 
-  onDelete, 
-  onClick, 
+export function TagItem({
+  tag,
+  showActions = false,
+  onEdit,
+  onDelete,
+  onClick,
   selected = false,
-  className 
+  className,
 }: TagItemProps) {
-  
   const Component = onClick ? 'button' : 'div';
 
   return (
     <Component
-      type={onClick ? "button" : undefined}
+      type={onClick ? 'button' : undefined}
       onClick={onClick ? () => onClick(tag) : undefined}
       className={cn(
-        "flex items-center justify-between p-3 rounded-xl border transition-all w-full text-left",
+        'flex items-center justify-between p-3 rounded-xl border transition-all w-full text-left',
         selected
-          ? "bg-primary/5 border-primary"
-          : "bg-surface border-slate-200 dark:border-slate-800 shadow-sm",
-        onClick && "hover:border-primary cursor-pointer",
+          ? 'bg-primary/5 border-primary'
+          : 'bg-surface border-slate-200 dark:border-slate-800 shadow-sm',
+        onClick && 'hover:border-primary cursor-pointer',
         className
       )}
     >
       <div className="flex items-center gap-3">
-        <div 
-          className="w-4 h-4 rounded-full shrink-0" 
-          style={{ backgroundColor: tag.color }} 
-        />
-        <span className={cn(
-          "font-medium",
-          selected ? "text-primary" : "text-slate-900 dark:text-white"
-        )}>
+        <div className="w-4 h-4 rounded-full shrink-0" style={{ backgroundColor: tag.color }} />
+        <span
+          className={cn(
+            'font-medium',
+            selected ? 'text-primary' : 'text-slate-900 dark:text-white'
+          )}
+        >
           {tag.name}
         </span>
       </div>
 
       <div className="flex items-center gap-1">
-        {selected && !showActions && (
-            <Icon name="check" size={18} className="text-primary" />
-        )}
-        
+        {selected && !showActions && <Icon name="check" size={18} className="text-primary" />}
+
         {showActions && (
           <>
             {onEdit && (

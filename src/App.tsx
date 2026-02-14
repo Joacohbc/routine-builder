@@ -16,7 +16,7 @@ function App() {
       <MobileExperienceWarning />
       <Routes>
         <Route path="/" element={<InventoryPage />} />
-        
+
         {/* Exercise Library Routes */}
         <Route path="/exercises" element={<ExerciseListPage />} />
         <Route path="/exercises/new" element={<ExerciseFormPage />} />
@@ -26,12 +26,12 @@ function App() {
         <Route path="/builder" element={<RoutineListPage />} />
         <Route path="/builder/new" element={<RoutineBuilderPage />} />
         <Route path="/builder/:id" element={<RoutineBuilderPage />} />
-        
+
         {/* Workout Player */}
         <Route path="/play/:id" element={<WorkoutPageContainer />} />
 
         {/* Placeholders */}
-        <Route path="/train" element={<RoutineListPage />} /> 
+        <Route path="/train" element={<RoutineListPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/tags" element={<ManageTagsPage />} />
         <Route path="/speech-test" element={<SpeechTestPage />} />

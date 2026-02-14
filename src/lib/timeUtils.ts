@@ -27,7 +27,7 @@ export function parseTime(input: string): number {
     if (parts.length !== 2) return 0; // Invalid format fallback
     const m = parseInt(parts[0], 10) || 0;
     const s = parseInt(parts[1], 10) || 0;
-    return (m * 60) + s;
+    return m * 60 + s;
   }
 
   return parseInt(cleaned, 10) || 0;

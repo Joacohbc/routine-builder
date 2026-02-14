@@ -1,46 +1,46 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
   /* Brand */
-  --color-primary: #B39DDB;
-  --color-primary-dark: #937DC2;
+  --color-primary: #b39ddb;
+  --color-primary-dark: #937dc2;
 
   /* Quality/Status */
-  --color-quality-high: #86EFAC;
-  --color-quality-mid: #FCD34D;
-  --color-quality-low: #FCA5A5;
+  --color-quality-high: #86efac;
+  --color-quality-mid: #fcd34d;
+  --color-quality-low: #fca5a5;
 
   /* Light Mode Palette */
-  --color-background: #F7F6F8;
-  --color-surface: #FFFFFF;
-  --color-surface-highlight: #F1F5F9; /* Slate 100 */
-  --color-surface-input: #FFFFFF;
+  --color-background: #f7f6f8;
+  --color-surface: #ffffff;
+  --color-surface-highlight: #f1f5f9; /* Slate 100 */
+  --color-surface-input: #ffffff;
 
-  --color-text-main: #0F172A;      /* Slate 900 */
+  --color-text-main: #0f172a; /* Slate 900 */
   --color-text-secondary: #475569; /* Slate 600 */
-  --color-text-muted: #94A3B8;     /* Slate 400 */
-  --color-text-inverse: #FFFFFF;
+  --color-text-muted: #94a3b8; /* Slate 400 */
+  --color-text-inverse: #ffffff;
 
-  --color-border: #E2E8F0;         /* Slate 200 */
-  --color-border-hover: #CBD5E1;   /* Slate 300 */
+  --color-border: #e2e8f0; /* Slate 200 */
+  --color-border-hover: #cbd5e1; /* Slate 300 */
 }
 
 .dark {
   /* Dark Mode Palette */
-  --color-background: #18141E;     /* Original Dark Tint */
-  --color-surface: #231F2A;        /* Original Surface Tint */
-  --color-surface-highlight: #2C2C2C;
-  --color-surface-input: #2E2936;
+  --color-background: #18141e; /* Original Dark Tint */
+  --color-surface: #231f2a; /* Original Surface Tint */
+  --color-surface-highlight: #2c2c2c;
+  --color-surface-input: #2e2936;
 
-  --color-text-main: #F8FAFC;      /* Slate 50 */
-  --color-text-secondary: #CBD5E1; /* Slate 300 */
-  --color-text-muted: #64748B;     /* Slate 500 */
-  --color-text-inverse: #0F172A;
+  --color-text-main: #f8fafc; /* Slate 50 */
+  --color-text-secondary: #cbd5e1; /* Slate 300 */
+  --color-text-muted: #64748b; /* Slate 500 */
+  --color-text-inverse: #0f172a;
 
-  --color-border: #2D2836;         /* Tinted border */
-  --color-border-hover: #403848;   /* Lighter tinted border */
+  --color-border: #2d2836; /* Tinted border */
+  --color-border-hover: #403848; /* Lighter tinted border */
 }
 
 @theme {
@@ -64,34 +64,38 @@
   --color-quality-mid: var(--color-quality-mid);
   --color-quality-low: var(--color-quality-low);
 
-  --font-display: "Lexend", sans-serif;
-  --font-sans: "Lexend", sans-serif;
+  --font-display: 'Lexend', sans-serif;
+  --font-sans: 'Lexend', sans-serif;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-    width: 0px;
-    background: transparent;
+  width: 0px;
+  background: transparent;
 }
 .no-scrollbar::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 .no-scrollbar {
-    -ms-overflow-style: none;
-    scrollbar-width: none;
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }
 
 @keyframes fade-in {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .animate-fade-in {
   animation: fade-in 150ms ease-in;
 }
 
 body {
-    background-color: var(--color-background);
-    color: var(--color-text-main);
-    font-family: var(--font-display);
-    -webkit-font-smoothing: antialiased;
+  background-color: var(--color-background);
+  color: var(--color-text-main);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
 }

@@ -5,7 +5,7 @@ import {
   recognitionLanguages,
   type SpeechRecognition,
   type SpeechRecognitionEvent,
-  type SpeechRecognitionErrorEvent
+  type SpeechRecognitionErrorEvent,
 } from '@/lib/webSpeech';
 
 export function useSpeechRecognition(language: string) {
@@ -78,6 +78,6 @@ export function useSpeechRecognition(language: string) {
     transcript,
     error,
     toggleListening,
-    recognitionLanguages
+    recognitionLanguages,
   };
 }

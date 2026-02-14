@@ -14,17 +14,17 @@ async function fetchAllIcons(): Promise<string[]> {
   if (isFetchingPromise) return isFetchingPromise;
 
   isFetchingPromise = fetch('./icon_names.json')
-    .then(res => {
+    .then((res) => {
       if (!res.ok) throw new Error('Failed to load icons');
       return res.json();
     })
-    .then(names => {
+    .then((names) => {
       // Remove duplicates just in case and ensure it's an array of strings
       const uniqueNames = Array.from(new Set(names));
       cachedAllIcons = uniqueNames as string[];
       return cachedAllIcons;
     })
-    .catch(err => {
+    .catch((err) => {
       console.error('Error loading icon_names.json:', err);
       return [];
     });
@@ -49,7 +49,7 @@ export function IconPicker({
   className,
   placeholder,
   label,
-  onBlur
+  onBlur,
 }: IconPickerProps) {
   const { t } = useTranslation();
   const displayPlaceholder = placeholder || t('iconPicker.selectPlaceholder', 'Select an icon...');
@@ -63,7 +63,7 @@ export function IconPicker({
   const resetScroll = () => {
     setDisplayCount(120);
     if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
+      scrollContainerRef.current.scrollTop = 0;
     }
   };
 
@@ -75,10 +75,8 @@ export function IconPicker({
       return fullIconList;
     }
 
-    return fullIconList.filter(icon => normalize(icon).includes(query));
+    return fullIconList.filter((icon) => normalize(icon).includes(query));
   }, [search, fullIconList]);
-
-
 
   // Infinite scroll observer
   useEffect(() => {
@@ -87,13 +85,13 @@ export function IconPicker({
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting) {
-          setDisplayCount(prev => prev + 120);
+          setDisplayCount((prev) => prev + 120);
         }
       },
-      { 
-        threshold: 0.1, 
+      {
+        threshold: 0.1,
         root: scrollContainerRef.current,
-        rootMargin: '200px' 
+        rootMargin: '200px',
       }
     );
 
@@ -109,7 +107,7 @@ export function IconPicker({
 
   useEffect(() => {
     if (isOpen && fullIconList.length === 0) {
-      fetchAllIcons().then(icons => {
+      fetchAllIcons().then((icons) => {
         setFullIconList(icons);
       });
     }
@@ -123,17 +121,15 @@ export function IconPicker({
   const formatIconName = (name: string) => {
     return name
       .split('_')
-      .map(part => part.charAt(0).toUpperCase() + part.slice(1))
+      .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ');
   };
 
   return (
     <>
-      <div className={cn("w-full", className)}>
+      <div className={cn('w-full', className)}>
         {label && (
-          <label className="block text-xs font-medium text-text-secondary mb-1 ml-1">
-            {label}
-          </label>
+          <label className="block text-xs font-medium text-text-secondary mb-1 ml-1">{label}</label>
         )}
         <button
           type="button"
@@ -144,11 +140,11 @@ export function IconPicker({
             resetScroll();
           }}
           className={cn(
-            "w-full flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all text-left",
+            'w-full flex items-center gap-3 px-4 py-3 rounded-2xl border transition-all text-left',
             error
-              ? "border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/10"
-              : "border-border bg-surface hover:border-primary/50",
-            "focus:outline-none focus:ring-2 focus:ring-primary/20"
+              ? 'border-red-400 dark:border-red-500 bg-red-50 dark:bg-red-900/10'
+              : 'border-border bg-surface hover:border-primary/50',
+            'focus:outline-none focus:ring-2 focus:ring-primary/20'
           )}
         >
           {value ? (
@@ -163,9 +159,7 @@ export function IconPicker({
             </>
           ) : (
             <>
-              <span className="flex-1 text-text-muted">
-                {displayPlaceholder}
-              </span>
+              <span className="flex-1 text-text-muted">{displayPlaceholder}</span>
               <Icon name="expand_more" className="text-text-muted" />
             </>
           )}
@@ -182,7 +176,9 @@ export function IconPicker({
         {/* Header */}
         <div className="p-4 border-b border-border space-y-4 bg-surface z-10">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-bold text-text-main">{t('iconPicker.title', 'Select Icon')}</h3>
+            <h3 className="text-lg font-bold text-text-main">
+              {t('iconPicker.title', 'Select Icon')}
+            </h3>
             <button
               onClick={() => setIsOpen(false)}
               className="p-2 text-text-secondary hover:bg-surface-highlight rounded-full"
@@ -205,46 +201,46 @@ export function IconPicker({
         </div>
 
         {/* Content */}
-        <div 
-          ref={scrollContainerRef}
-          className="flex-1 overflow-y-auto p-4 bg-background"
-        >
-            <>
-              <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
-                {filteredIcons.slice(0, displayCount).map((icon) => (
-                  <button
-                    key={icon}
-                    type="button"
-                    onClick={() => handleSelect(icon)}
-                    className={cn(
-                      "aspect-square flex flex-col items-center justify-center gap-2 p-2 rounded-xl border transition-all hover:scale-105 active:scale-95",
-                      value === icon
-                        ? "bg-primary/10 border-primary text-primary"
-                        : "bg-surface text-primary border-transparent hover:border-border shadow-sm"
-                    )}
-                    title={icon}
-                  >
-                    <Icon name={icon} size={28} />
-                  </button>
-                ))}
+        <div ref={scrollContainerRef} className="flex-1 overflow-y-auto p-4 bg-background">
+          <>
+            <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3">
+              {filteredIcons.slice(0, displayCount).map((icon) => (
+                <button
+                  key={icon}
+                  type="button"
+                  onClick={() => handleSelect(icon)}
+                  className={cn(
+                    'aspect-square flex flex-col items-center justify-center gap-2 p-2 rounded-xl border transition-all hover:scale-105 active:scale-95',
+                    value === icon
+                      ? 'bg-primary/10 border-primary text-primary'
+                      : 'bg-surface text-primary border-transparent hover:border-border shadow-sm'
+                  )}
+                  title={icon}
+                >
+                  <Icon name={icon} size={28} />
+                </button>
+              ))}
+            </div>
+
+            {filteredIcons.length > displayCount && (
+              <div
+                ref={observerTarget}
+                className="h-24 flex flex-col items-center justify-center gap-2 mt-4"
+              >
+                <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
+                <p className="text-xs text-text-muted font-medium">
+                  {t('iconPicker.loadingMore', 'Loading more icons...')}
+                </p>
               </div>
+            )}
 
-              {filteredIcons.length > displayCount && (
-                <div ref={observerTarget} className="h-24 flex flex-col items-center justify-center gap-2 mt-4">
-                  <div className="w-6 h-6 border-2 border-primary/20 border-t-primary rounded-full animate-spin" />
-                  <p className="text-xs text-text-muted font-medium">
-                    {t('iconPicker.loadingMore', 'Loading more icons...')}
-                  </p>
-                </div>
-              )}
-
-              {filteredIcons.length === 0 && (
-                <div className="flex flex-col items-center justify-center h-40 text-text-muted">
-                  <Icon name="search_off" size={48} className="mb-2 opacity-20" />
-                  <p>{t('iconPicker.notFound', 'No icons found')}</p>
-                </div>
-              )}
-            </>
+            {filteredIcons.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-40 text-text-muted">
+                <Icon name="search_off" size={48} className="mb-2 opacity-20" />
+                <p>{t('iconPicker.notFound', 'No icons found')}</p>
+              </div>
+            )}
+          </>
         </div>
 
         {/* Footer info */}

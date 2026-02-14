@@ -10,12 +10,12 @@ interface TimerInputProps {
   className?: string;
 }
 
-export function TimerInput({ 
-  value, 
-  onChange, 
-  target, 
+export function TimerInput({
+  value,
+  onChange,
+  target,
   label = 'Time',
-  className
+  className,
 }: TimerInputProps) {
   const [isRunning, setIsRunning] = useState(false);
 
@@ -39,22 +39,17 @@ export function TimerInput({
     <div className={`flex flex-col gap-2 ${className || ''}`}>
       <label className="text-center text-xs font-bold text-gray-400 uppercase">{label}</label>
       <div className="flex flex-col items-center">
-        <div 
-          className="text-4xl font-bold font-mono py-2 cursor-pointer select-none" 
+        <div
+          className="text-4xl font-bold font-mono py-2 cursor-pointer select-none"
           onClick={() => setIsRunning(!isRunning)}
         >
           {formatTime(value)}
         </div>
         {target !== undefined && (
-           <div className="text-xs text-center text-gray-400 mt-1">Target: {formatTime(target)}</div>
+          <div className="text-xs text-center text-gray-400 mt-1">Target: {formatTime(target)}</div>
         )}
-        <Button 
-          variant="ghost" 
-          size="sm" 
-          className="mt-2"
-          onClick={() => setIsRunning(!isRunning)}
-        >
-          <Icon name={isRunning ? "pause" : "play_arrow"} />
+        <Button variant="ghost" size="sm" className="mt-2" onClick={() => setIsRunning(!isRunning)}>
+          <Icon name={isRunning ? 'pause' : 'play_arrow'} />
         </Button>
       </div>
     </div>
