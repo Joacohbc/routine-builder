@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { TagBadge } from '@/components/ui/TagBadge';
+import { fuzzySearch } from '@/lib/search';
 
 export default function ExerciseListPage() {
   const { t } = useTranslation();
@@ -17,11 +18,12 @@ export default function ExerciseListPage() {
   const [search, setSearch] = useState('');
   const navigate = useNavigate();
 
-  const filteredExercises = exercises.filter(
-    (ex) =>
-      ex.title.toLowerCase().includes(search.toLowerCase()) ||
-      ex.tags?.some((tag) => tag.name.toLowerCase().includes(search.toLowerCase()))
-  );
+  const filteredExercises = useMemo(() => {
+    return fuzzySearch(exercises, search, (ex) => [
+      ex.title,
+      ...(ex.tags || []).map(tag => tag.name)
+    ]);
+  }, [exercises, search]);
 
   return (
     <Layout

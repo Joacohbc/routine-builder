@@ -13,6 +13,7 @@ import { InventoryForm } from '@/components/InventoryForm';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { cn } from '@/lib/utils';
 import { getInventoryConditionColors } from '@/lib/typeColors';
+import { fuzzySearch } from '@/lib/search';
 import type { InventoryItem, InventoryStatus } from '@/types';
 
 type FilterStatus = InventoryStatus | 'all';
@@ -46,17 +47,23 @@ export default function InventoryPage() {
     return tags.filter((t) => ids.has(t.id!));
   }, [items, tags]);
 
-  const filteredItems = items.filter((item) => {
-    const matchesSearch = item.name.toLowerCase().includes(search.toLowerCase());
-    const matchesStatus =
-      filterStatus === 'all'
-        ? true
-        : filterStatus === 'available'
-          ? item.status === 'available'
-          : item.status !== 'available'; // Simplified logic
-    const matchesTag = activeTagId ? item.tags?.some((tag) => tag.id === activeTagId) : true;
-    return matchesSearch && matchesStatus && matchesTag;
-  });
+  const filteredItems = useMemo(() => {
+    // 1. Fuzzy Search first (returns subset)
+    const searchMatches = fuzzySearch(items, search, (item) => [item.name]);
+
+    // 2. Apply other filters
+    return searchMatches.filter(item => {
+        const matchesStatus = filterStatus === 'all'
+          ? true
+          : filterStatus === 'available'
+            ? item.status === 'available'
+            : item.status !== 'available';
+
+        const matchesTag = activeTagId ? item.tags?.some(tag => tag.id === activeTagId) : true;
+
+        return matchesStatus && matchesTag;
+    });
+  }, [items, search, filterStatus, activeTagId]);
 
   const handleEdit = (item: InventoryItem) => {
     setEditingItem(item);

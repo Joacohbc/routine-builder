@@ -7,6 +7,7 @@ import { useExercises } from '@/hooks/useExercises';
 import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
 import { TagItem } from '@/components/ui/TagItem';
+import { fuzzySearch } from '@/lib/search';
 
 import type { Tag } from '@/types';
 
@@ -72,9 +73,9 @@ export function TagSelector({
     }
   };
 
-  const modalFilteredTags = tags.filter((tag) =>
-    tag.name.toLowerCase().includes(modalSearch.toLowerCase())
-  );
+  const modalFilteredTags = useMemo(() => {
+    return fuzzySearch(tags, modalSearch, (tag) => [tag.name]);
+  }, [tags, modalSearch]);
 
   return (
     <>
