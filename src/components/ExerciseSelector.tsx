@@ -1,9 +1,10 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { Input } from '@/components/ui/Input';
 import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
+import { fuzzySearch } from '@/lib/search';
 import type { Exercise } from '@/types';
 
 interface ExerciseSelectorProps {
@@ -16,9 +17,9 @@ export function ExerciseSelector({ onSelect, onClose }: ExerciseSelectorProps) {
   const { exercises } = useExercises();
   const [search, setSearch] = useState('');
 
-  const filtered = exercises.filter(e => 
-    e.title.toLowerCase().includes(search.toLowerCase()) 
-  );
+  const filtered = useMemo(() => {
+    return fuzzySearch(exercises, search, (e) => [e.title]);
+  }, [exercises, search]);
 
   return (
     <Modal
