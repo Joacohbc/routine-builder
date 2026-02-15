@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { Layout } from '@/components/ui/Layout';
 import { Button } from '@/components/ui/Button';
 import { Icon } from '@/components/ui/Icon';
@@ -19,7 +20,7 @@ export default function NotFoundPage() {
           {t('notFound.description')}
         </p>
         <Button
-          onClick={() => navigate('/')}
+          onClick={() => navigate(ROUTES.HOME)}
           variant="primary"
           className="w-full max-w-md"
         >

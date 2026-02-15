@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { Layout } from '@/components/ui/Layout';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme, type Theme } from '@/hooks/useTheme';
@@ -127,7 +128,7 @@ export default function SettingsPage() {
             {/* ListItem: Manage Tags */}
             <div className="relative flex flex-col w-full border-t border-border">
               <button
-                onClick={() => navigate('/settings/tags')}
+                onClick={() => navigate(ROUTES.SETTINGS_TAGS)}
                 className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
@@ -151,7 +152,7 @@ export default function SettingsPage() {
             {/* ListItem: Speech Test */}
             <div className="relative flex flex-col w-full border-t border-border">
               <button
-                onClick={() => navigate('/settings/speech-test')}
+                onClick={() => navigate(ROUTES.SETTINGS_SPEECH_TEST)}
                 className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">

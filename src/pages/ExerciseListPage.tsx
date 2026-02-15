@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { buildRoute, ROUTES } from '@/lib/routes';
 import { useExercises } from '@/hooks/useExercises';
 import { useTags } from '@/hooks/useTags';
 import { Layout } from '@/components/ui/Layout';
@@ -44,7 +45,7 @@ export default function ExerciseListPage() {
               key={ex.id}
               hover
               className="group"
-              onClick={() => navigate(`/exercises/${ex.id}`)}
+              onClick={() => navigate(buildRoute.exerciseEdit(ex.id!))}
             >
               <div className="flex items-start justify-between w-full">
                 <div className="flex items-center gap-4 flex-1">
@@ -95,7 +96,7 @@ export default function ExerciseListPage() {
         )}
       </div>
 
-      <Button variant="floating" onClick={() => navigate('/exercises/new')}>
+      <Button variant="floating" onClick={() => navigate(ROUTES.EXERCISES_NEW)}>
         <Icon name="add" size={32} />
       </Button>
     </Layout>

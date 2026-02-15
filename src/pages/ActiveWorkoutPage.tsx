@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { useExercises } from '@/hooks/useExercises';
 import { useMultiTimer } from '@/hooks/useTimers';
 import { useAudio } from '@/hooks/useAudio';
@@ -233,7 +234,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
-      navigate('/routine');
+      navigate(ROUTES.ROUTINE);
     }
   }, [currentStepIndex, steps.length, navigate]);
 

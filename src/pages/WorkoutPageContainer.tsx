@@ -7,6 +7,7 @@ import { Layout } from '@/components/ui/Layout';
 import type { Routine } from '@/types';
 import type { TrackingType, SetType } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 
 /**
  * Type of rest during a workout
@@ -150,7 +151,7 @@ export default function WorkoutPageContainer() {
     const found = routines.find((r) => r.id === Number(id));
     
     if(!found) {
-      navigate('/not-found');
+      navigate(ROUTES.NOT_FOUND);
       return null;
     }
 

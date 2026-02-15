@@ -2,15 +2,16 @@ import { NavLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
+import { ROUTES } from '@/lib/routes';
 
 export function BottomNav() {
   const { t } = useTranslation();
 
   const navItems = [
-    { name: t('common.inventory'), icon: 'inventory_2', path: '/', disabled: false },
-    { name: t('common.exercises'), icon: 'fitness_center', path: '/exercises', disabled: false },
-    { name: t('common.routines'), icon: 'timer', path: '/routine', disabled: false },
-    { name: t('common.settings'), icon: 'settings', path: '/settings', disabled: false },
+    { name: t('common.inventory'), icon: 'inventory_2', path: ROUTES.HOME, disabled: false },
+    { name: t('common.exercises'), icon: 'fitness_center', path: ROUTES.EXERCISES, disabled: false },
+    { name: t('common.routines'), icon: 'timer', path: ROUTES.ROUTINE, disabled: false },
+    { name: t('common.settings'), icon: 'settings', path: ROUTES.SETTINGS, disabled: false },
   ];
 
   return (

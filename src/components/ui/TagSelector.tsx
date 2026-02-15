@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { useTags } from '@/hooks/useTags';
 import { useInventory } from '@/hooks/useInventory';
 import { useExercises } from '@/hooks/useExercises';
@@ -122,7 +123,7 @@ export function TagSelector({
             <button
               type="button"
               className="flex-1 flex items-center justify-center gap-2 text-gray-500 hover:text-primary hover:bg-gray-100 dark:hover:bg-surface-highlight py-2 rounded-xl text-sm font-medium transition-colors"
-              onClick={() => navigate('/settings/tags')}
+              onClick={() => navigate(ROUTES.SETTINGS_TAGS)}
             >
               <Icon name="add" size={18} />
               {t('tags.addNew', 'Add New')}

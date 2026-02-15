@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { useExercises } from '@/hooks/useExercises';
 import { Layout } from '@/components/ui/Layout';
 import { Button } from '@/components/ui/Button';
@@ -40,7 +41,7 @@ export default function ExerciseFormPage() {
 
   useEffect(() => {
     if (id && !exercisesLoading && exercises.length > 0 && !initialValues) {
-      navigate('/exercises');
+      navigate(ROUTES.EXERCISES);
     }
   }, [id, exercises, exercisesLoading, initialValues, navigate]);
 
@@ -62,7 +63,7 @@ export default function ExerciseFormPage() {
       delete newEx.id;
       await addExercise(newEx);
     }
-    navigate('/exercises');
+    navigate(ROUTES.EXERCISES);
   };
 
   if (!initialValues) {

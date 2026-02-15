@@ -1,6 +1,7 @@
 import { useEffect, useMemo } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { useRoutines } from '@/hooks/useRoutines';
 import { Layout } from '@/components/ui/Layout';
 import { Button } from '@/components/ui/Button';
@@ -43,7 +44,7 @@ export default function RoutineBuilderPage() {
     if (id && !routinesLoading && routines.length > 0) {
       const r = routines.find((r) => r.id === Number(id));
       if (!r) {
-        navigate('/routine');
+        navigate(ROUTES.ROUTINE);
       }
     }
   }, [id, routines, routinesLoading, navigate]);
@@ -64,7 +65,7 @@ export default function RoutineBuilderPage() {
       delete newRoutine.id;
       await addRoutine(newRoutine);
     }
-    navigate('/routine');
+    navigate(ROUTES.ROUTINE);
   };
 
   const handleCancel = () => {

@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { buildRoute, ROUTES } from '@/lib/routes';
 import { useRoutines } from '@/hooks/useRoutines';
 import { Layout } from '@/components/ui/Layout';
 import { Button } from '@/components/ui/Button';
@@ -27,7 +28,7 @@ export default function RoutineListPage() {
               key={routine.id}
               hover
               className="group"
-              onClick={() => navigate(`/routine/${routine.id}`)}
+              onClick={() => navigate(buildRoute.routineEdit(routine.id!))}
             >
               <div className="flex items-start justify-between w-full">
                 <div className="flex-1">
@@ -44,7 +45,7 @@ export default function RoutineListPage() {
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/play/${routine.id}`);
+                      navigate(buildRoute.workoutPlay(routine.id!));
                     }}
                     className="p-2 text-primary hover:text-primary-dark"
                   >
@@ -66,7 +67,7 @@ export default function RoutineListPage() {
         )}
       </div>
 
-      <Button variant="floating" onClick={() => navigate('/routine/new')}>
+      <Button variant="floating" onClick={() => navigate(ROUTES.ROUTINE_NEW)}>
         <Icon name="add" size={32} />
       </Button>
     </Layout>
