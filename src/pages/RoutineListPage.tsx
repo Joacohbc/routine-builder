@@ -27,7 +27,7 @@ export default function RoutineListPage() {
               key={routine.id}
               hover
               className="group"
-              onClick={() => navigate(`/builder/${routine.id}`)}
+              onClick={() => navigate(`/routine/${routine.id}`)}
             >
               <div className="flex items-start justify-between w-full">
                 <div className="flex-1">
@@ -66,7 +66,7 @@ export default function RoutineListPage() {
         )}
       </div>
 
-      <Button variant="floating" onClick={() => navigate('/builder/new')}>
+      <Button variant="floating" onClick={() => navigate('/routine/new')}>
         <Icon name="add" size={32} />
       </Button>
     </Layout>

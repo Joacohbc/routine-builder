@@ -9,19 +9,15 @@
     "saving": "Saving...",
     "delete": "Delete",
     "addItem": "Add Item",
-    "inventory": "Inventory",
     "upload": "Upload",
     "search": "Search...",
     "tags": "Tags",
     "settings": "Settings",
+    "inventory": "Inventory",
     "exercises": "Exercises",
+    "routines": "Routines",
     "enabled": "Enabled",
     "disabled": "Disabled"
-  },
-  "nav": {
-    "inventory": "Inventory",
-    "builder": "Builder",
-    "train": "Train"
   },
   "routineList": {
     "title": "Routine Builder",

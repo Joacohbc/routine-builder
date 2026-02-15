@@ -23,18 +23,16 @@ function App() {
         <Route path="/exercises/:id" element={<ExerciseFormPage />} />
 
         {/* Routine Builder Routes */}
-        <Route path="/builder" element={<RoutineListPage />} />
-        <Route path="/builder/new" element={<RoutineBuilderPage />} />
-        <Route path="/builder/:id" element={<RoutineBuilderPage />} />
+        <Route path="/routine" element={<RoutineListPage />} />
+        <Route path="/routine/new" element={<RoutineBuilderPage />} />
+        <Route path="/routine/:id" element={<RoutineBuilderPage />} />
 
         {/* Workout Player */}
         <Route path="/play/:id" element={<WorkoutPageContainer />} />
 
-        {/* Placeholders */}
-        <Route path="/train" element={<RoutineListPage />} />
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/tags" element={<ManageTagsPage />} />
-        <Route path="/speech-test" element={<SpeechTestPage />} />
+        <Route path="/settings/speech-test" element={<SpeechTestPage />} />
       </Routes>
     </HashRouter>
   );

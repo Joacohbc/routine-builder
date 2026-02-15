@@ -233,7 +233,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
-      navigate('/builder');
+      navigate('/routine');
     }
   }, [currentStepIndex, steps.length, navigate]);
 

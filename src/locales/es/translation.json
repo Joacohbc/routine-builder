@@ -9,19 +9,15 @@
     "saving": "Guardando...",
     "delete": "Eliminar",
     "addItem": "Añadir Item",
-    "inventory": "Inventario",
     "upload": "Subir",
     "search": "Buscar...",
     "tags": "Etiquetas",
     "settings": "Ajustes",
     "exercises": "Ejercicios",
+    "routines": "Rutinas",
+    "inventory": "Inventario",
     "enabled": "Activado",
     "disabled": "Desactivado"
-  },
-  "nav": {
-    "inventory": "Inventario",
-    "builder": "Constructor",
-    "train": "Entrenar"
   },
   "routineList": {
     "title": "Constructor de Rutinas",

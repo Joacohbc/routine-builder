@@ -151,7 +151,7 @@ export default function SettingsPage() {
             {/* ListItem: Speech Test */}
             <div className="relative flex flex-col w-full border-t border-border">
               <button
-                onClick={() => navigate('/speech-test')}
+                onClick={() => navigate('/settings/speech-test')}
                 className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">

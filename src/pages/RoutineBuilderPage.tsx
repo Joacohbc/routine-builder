@@ -43,7 +43,7 @@ export default function RoutineBuilderPage() {
     if (id && !routinesLoading && routines.length > 0) {
       const r = routines.find((r) => r.id === Number(id));
       if (!r) {
-        navigate('/builder');
+        navigate('/routine');
       }
     }
   }, [id, routines, routinesLoading, navigate]);
@@ -64,7 +64,7 @@ export default function RoutineBuilderPage() {
       delete newRoutine.id;
       await addRoutine(newRoutine);
     }
-    navigate('/builder');
+    navigate('/routine');
   };
 
   const handleCancel = () => {
