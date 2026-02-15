@@ -8,6 +8,7 @@ import WorkoutPageContainer from '@/pages/WorkoutPageContainer';
 import SettingsPage from '@/pages/SettingsPage';
 import ManageTagsPage from '@/pages/ManageTagsPage';
 import SpeechTestPage from '@/pages/SpeechTestPage';
+import NotFoundPage from '@/pages/NotFoundPage';
 import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
 
 function App() {
@@ -33,6 +34,9 @@ function App() {
         <Route path="/settings" element={<SettingsPage />} />
         <Route path="/settings/tags" element={<ManageTagsPage />} />
         <Route path="/settings/speech-test" element={<SpeechTestPage />} />
+
+        {/* Catch-all route for 404 */}
+        <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </HashRouter>
   );

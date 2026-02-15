@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useSettings } from '@/hooks/useSettings';
 import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
@@ -140,13 +140,22 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
 export default function WorkoutPageContainer() {
   const { id } = useParams();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { routines } = useRoutines();
   const { settings } = useSettings();
 
   const routine = useMemo(() => {
     if (!id) return null;
-    return routines.find((r) => r.id === Number(id)) || null;
-  }, [id, routines]);
+
+    const found = routines.find((r) => r.id === Number(id));
+    
+    if(!found) {
+      navigate('/not-found');
+      return null;
+    }
+
+    return found;
+  }, [id, routines, navigate]);
 
   const steps = useMemo(() => {
     if (!routine) return [];
