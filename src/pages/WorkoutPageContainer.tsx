@@ -155,8 +155,8 @@ export default function WorkoutPageContainer() {
 
   if (!routine || steps.length === 0) {
     return (
-      <Layout>
-        <div className="p-6 text-center">{t('loading')}</div>
+      <Layout title={t('common.loading')}>
+        <div className="p-6 text-center">{t('common.loading')}</div>
       </Layout>
     );
   }

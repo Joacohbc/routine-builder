@@ -4,7 +4,6 @@ import { useInventory } from '@/hooks/useInventory';
 import { useTags } from '@/hooks/useTags';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { Layout } from '@/components/ui/Layout';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
@@ -98,30 +97,9 @@ export default function InventoryPage() {
 
   return (
     <Layout
-      header={
-        <div className="flex flex-col px-6 pb-4 pt-12 gap-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button className="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-highlight transition-colors">
-                <Icon name="menu" className="text-gray-600 dark:text-gray-300" />
-              </button>
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {t('inventoryPage.title')}
-              </h1>
-            </div>
-            <button className="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-highlight transition-colors">
-              <Icon name="notifications" className="text-gray-600 dark:text-gray-300" />
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-primary border border-background-light dark:border-background-dark"></span>
-            </button>
-          </div>
-          <Input
-            icon="search"
-            placeholder={t('common.search')}
-            defaultValue={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      }
+      title={t('inventoryPage.title')}
+      searchValue={search}
+      onSearchChange={setSearch}
     >
       <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar pb-2">
         <Button

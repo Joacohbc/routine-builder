@@ -103,21 +103,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <Layout
-      header={
-        <div className="flex items-center p-4 pb-2 justify-between border-b border-border">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
-          >
-            <Icon name="arrow_back" size={24} />
-          </button>
-          <h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-            {t('common.settings', 'Settings')}
-          </h2>
-        </div>
-      }
-    >
+    <Layout title={t('common.settings', 'Settings')}>
       <div className="flex flex-col gap-6 pt-4">
         {/* Section: General */}
         <section>

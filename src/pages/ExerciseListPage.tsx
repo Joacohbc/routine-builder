@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
 import { useTags } from '@/hooks/useTags';
 import { Layout } from '@/components/ui/Layout';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
@@ -27,21 +26,9 @@ export default function ExerciseListPage() {
 
   return (
     <Layout
-      header={
-        <div className="flex flex-col px-6 pb-4 pt-12 gap-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {t('exerciseList.title')}
-            </h1>
-          </div>
-          <Input
-            icon="search"
-            placeholder={t('common.search')}
-            defaultValue={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      }
+      title={t('exerciseList.title')}
+      searchValue={search}
+      onSearchChange={setSearch}
     >
       <div className="flex flex-col gap-4 mt-4">
         {loading ? (

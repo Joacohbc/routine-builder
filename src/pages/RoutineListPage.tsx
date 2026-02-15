@@ -12,17 +12,7 @@ export default function RoutineListPage() {
   const navigate = useNavigate();
 
   return (
-    <Layout
-      header={
-        <div className="flex flex-col px-6 pb-4 pt-12 gap-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {t('routineList.title')}
-            </h1>
-          </div>
-        </div>
-      }
-    >
+    <Layout title={t('routineList.title')}>
       <div className="flex flex-col gap-4 mt-2">
         {loading ? (
           <p className="text-center text-gray-500">{t('common.loading')}</p>
