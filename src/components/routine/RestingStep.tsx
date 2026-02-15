@@ -11,11 +11,12 @@ interface RestingStepProps {
 export function RestingStep({ restTimer, targetRestTime, restType }: RestingStepProps) {
   const { t } = useTranslation();
 
-  const restLabel = restType === 'serie_rest'
-    ? t('activeWorkout.seriesRest')
-    : restType === 'exercise_rest'
-      ? t('activeWorkout.exerciseRest')
-      : t('activeWorkout.setRest');
+  const restLabel =
+    restType === 'serie_rest'
+      ? t('activeWorkout.seriesRest')
+      : restType === 'exercise_rest'
+        ? t('activeWorkout.exerciseRest')
+        : t('activeWorkout.setRest');
 
   return (
     <div className="flex flex-col items-center justify-center py-10 animate-fade-in">

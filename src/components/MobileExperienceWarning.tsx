@@ -10,9 +10,7 @@ export function MobileExperienceWarning() {
         <Icon name="smartphone" size={40} className="text-primary" />
       </div>
       <h1 className="text-2xl font-bold mb-4">{t('mobileWarning.title')}</h1>
-      <p className="text-text-secondary max-w-sm text-lg">
-        {t('mobileWarning.description')}
-      </p>
+      <p className="text-text-secondary max-w-sm text-lg">{t('mobileWarning.description')}</p>
     </div>
   );
 }

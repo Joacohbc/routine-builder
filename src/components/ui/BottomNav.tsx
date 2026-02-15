@@ -17,7 +17,7 @@ export function BottomNav() {
   return (
     <nav className="fixed bottom-0 w-full bg-surface border-t border-border px-6 py-4 z-30 pb-safe-bottom">
       <div className="flex justify-around items-center max-w-md mx-auto">
-        {navItems.map((item) => (
+        {navItems.map((item) =>
           item.disabled ? (
             <div
               key={item.path}
@@ -30,12 +30,12 @@ export function BottomNav() {
             <NavLink
               key={item.path}
               to={item.path}
-              className={({ isActive }) => cn(
-                'flex flex-col items-center gap-1 transition-colors',
-                isActive 
-                  ? 'text-primary' 
-                  : 'text-text-muted hover:text-text-secondary'
-              )}
+              className={({ isActive }) =>
+                cn(
+                  'flex flex-col items-center gap-1 transition-colors',
+                  isActive ? 'text-primary' : 'text-text-muted hover:text-text-secondary'
+                )
+              }
             >
               {({ isActive }) => (
                 <>
@@ -45,7 +45,7 @@ export function BottomNav() {
               )}
             </NavLink>
           )
-        ))}
+        )}
       </div>
     </nav>
   );

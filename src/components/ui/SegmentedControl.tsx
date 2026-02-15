@@ -2,10 +2,10 @@ import { cn } from '@/lib/utils';
 
 /**
  * SegmentedControl - A multi-option toggle component
- * 
+ *
  * Generic reusable component for selecting between multiple options with a unified toggle interface.
  * Commonly used for filter controls, view switchers, and option selectors.
- * 
+ *
  * @example
  * ```tsx
  * <SegmentedControl
@@ -48,23 +48,24 @@ export function SegmentedControl<T extends string = string>({
   onChange,
   className,
   variant = 'primary',
-  size = 'md'
+  size = 'md',
 }: SegmentedControlProps<T>) {
   const isSmall = size === 'sm';
 
   return (
     <div
       className={cn(
-        "flex items-center gap-1 bg-gray-100 dark:bg-surface-input rounded-lg p-0.5",
+        'flex items-center gap-1 bg-gray-100 dark:bg-surface-input rounded-lg p-0.5',
         className
       )}
     >
       {options.map((option) => {
         const isSelected = value === option.value;
 
-        const selectedStyles = variant === 'primary'
-          ? "bg-primary shadow-sm text-white"
-          : "bg-surface shadow-sm text-text-main";
+        const selectedStyles =
+          variant === 'primary'
+            ? 'bg-primary shadow-sm text-white'
+            : 'bg-surface shadow-sm text-text-main';
 
         return (
           <button
@@ -72,11 +73,11 @@ export function SegmentedControl<T extends string = string>({
             type="button"
             onClick={() => onChange(option.value)}
             className={cn(
-              "text-xs font-semibold transition-all",
-              isSmall ? "px-2 py-1 rounded-md" : "px-3 py-1.5 rounded-md",
+              'text-xs font-semibold transition-all',
+              isSmall ? 'px-2 py-1 rounded-md' : 'px-3 py-1.5 rounded-md',
               isSelected
                 ? selectedStyles
-                : "text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
             )}
           >
             {option.label}

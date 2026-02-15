@@ -19,7 +19,7 @@ export const useTheme = () => {
     if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
       return savedTheme;
     }
-    
+
     // Si no hay tema guardado, usar 'system'
     return 'system';
   });
@@ -27,14 +27,14 @@ export const useTheme = () => {
   useEffect(() => {
     const root = document.documentElement;
     const effectiveTheme = getEffectiveTheme(theme);
-    
+
     // Actualizar la clase del elemento html
     if (effectiveTheme === 'dark') {
       root.classList.add('dark');
     } else {
       root.classList.remove('dark');
     }
-    
+
     // Guardar en localStorage
     localStorage.setItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
@@ -47,7 +47,7 @@ export const useTheme = () => {
     const handleChange = () => {
       const root = document.documentElement;
       const effectiveTheme = getSystemTheme();
-      
+
       if (effectiveTheme === 'dark') {
         root.classList.add('dark');
       } else {
@@ -60,7 +60,7 @@ export const useTheme = () => {
   }, [theme]);
 
   const toggleTheme = () => {
-    setTheme(prevTheme => {
+    setTheme((prevTheme) => {
       const effectiveTheme = getEffectiveTheme(prevTheme);
       return effectiveTheme === 'dark' ? 'light' : 'dark';
     });
@@ -80,9 +80,10 @@ export const useTheme = () => {
 // Función para inicializar el tema antes de que React renderice
 export const initializeTheme = () => {
   const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
-  const theme = savedTheme && ['light', 'dark', 'system'].includes(savedTheme) ? savedTheme : 'system';
+  const theme =
+    savedTheme && ['light', 'dark', 'system'].includes(savedTheme) ? savedTheme : 'system';
   const effectiveTheme = getEffectiveTheme(theme);
-  
+
   const root = document.documentElement;
   if (effectiveTheme === 'dark') {
     root.classList.add('dark');

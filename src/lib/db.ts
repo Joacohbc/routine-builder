@@ -1,17 +1,20 @@
 import { openDB, type DBSchema, type IDBPDatabase } from 'idb';
 import type { InventoryItem, Exercise, Routine, Tag } from '@/types';
-import { 
-  ALL_MUSCLES, 
-  MUSCLE_COLORS, 
-  ALL_PURPOSES, 
-  PURPOSE_COLORS, 
-  ALL_DIFFICULTIES, 
-  DIFFICULTY_COLORS 
+import {
+  ALL_MUSCLES,
+  MUSCLE_COLORS,
+  ALL_PURPOSES,
+  PURPOSE_COLORS,
+  ALL_DIFFICULTIES,
+  DIFFICULTY_COLORS,
 } from '@/lib/systemTags';
 
 // Dehydrated types (as stored in IndexedDB)
 export type DehydratedInventoryItem = Omit<InventoryItem, 'tags'> & { tagIds?: number[] };
-export type DehydratedExercise = Omit<Exercise, 'tags' | 'primaryEquipment'> & { tagIds?: number[]; primaryEquipmentIds?: number[] };
+export type DehydratedExercise = Omit<Exercise, 'tags' | 'primaryEquipment'> & {
+  tagIds?: number[];
+  primaryEquipmentIds?: number[];
+};
 
 /**
  * Build the full list of system tags to seed into the DB.

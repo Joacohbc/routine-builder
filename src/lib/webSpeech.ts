@@ -47,7 +47,7 @@ export interface SpeechRecognition extends EventTarget {
  * This allows TypeScript to understand: `const API = window.SpeechRecognition; new API();`
  */
 interface SpeechRecognitionConstructor {
-  new(): SpeechRecognition; // Calling 'new' returns a SpeechRecognition instance
+  new (): SpeechRecognition; // Calling 'new' returns a SpeechRecognition instance
 }
 
 /**
@@ -63,7 +63,9 @@ declare global {
 }
 
 // --- Helper Functions ---
-export const isSpeechRecognitionSupported = !!(window.SpeechRecognition || window.webkitSpeechRecognition);
+export const isSpeechRecognitionSupported = !!(
+  window.SpeechRecognition || window.webkitSpeechRecognition
+);
 export const isSpeechSynthesisSupported = 'speechSynthesis' in window;
 
 /**
@@ -107,13 +109,13 @@ export function createSpeechRecognition(language: string): Promise<SpeechRecogni
     }
 
     const recognition = new SpeechRecognitionAPI();
-    
+
     // Allow recognition to continue listening even after pauses
     recognition.continuous = true;
-    
+
     // Return partial results while the user is speaking (real-time text)
     recognition.interimResults = true;
-    
+
     // Set the language for recognition (e.g., "es-ES" for Spanish, "en-US" for English)
     recognition.lang = language;
 
@@ -128,7 +130,7 @@ export function createSpeechRecognition(language: string): Promise<SpeechRecogni
 export function loadVoices(): Promise<SpeechSynthesisVoice[]> {
   return new Promise((resolve) => {
     const voices = window.speechSynthesis.getVoices();
-    
+
     if (voices.length > 0) {
       resolve(voices);
       return;

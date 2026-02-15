@@ -1,5 +1,10 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES, type DehydratedExercise, type DehydratedInventoryItem } from '@/lib/db';
+import {
+  dbPromise,
+  DB_TABLES,
+  type DehydratedExercise,
+  type DehydratedInventoryItem,
+} from '@/lib/db';
 import { validateSchema, exerciseValidators } from '@/lib/validations';
 import type { Exercise, Tag, InventoryItem } from '@/types';
 
@@ -9,14 +14,18 @@ const fetchExercises = async (): Promise<Exercise[]> => {
     const [allExercises, allTags, allInventory] = await Promise.all([
       db.getAll(DB_TABLES.EXERCISES),
       db.getAll(DB_TABLES.TAGS),
-      db.getAll(DB_TABLES.INVENTORY)
+      db.getAll(DB_TABLES.INVENTORY),
     ]);
-    
+
     // Hydrate tags and equipment
     const hydratedExercises = allExercises.map((ex: DehydratedExercise) => ({
       ...ex,
-      tags: (ex.tagIds || []).map((id: number) => allTags.find((t: Tag) => t.id === id)).filter(Boolean) as Tag[],
-      primaryEquipment: (ex.primaryEquipmentIds || []).map((id: number) => allInventory.find((i: DehydratedInventoryItem) => i.id === id)).filter(Boolean) as InventoryItem[]
+      tags: (ex.tagIds || [])
+        .map((id: number) => allTags.find((t: Tag) => t.id === id))
+        .filter(Boolean) as Tag[],
+      primaryEquipment: (ex.primaryEquipmentIds || [])
+        .map((id: number) => allInventory.find((i: DehydratedInventoryItem) => i.id === id))
+        .filter(Boolean) as InventoryItem[],
     }));
 
     return hydratedExercises;
@@ -35,8 +44,8 @@ const addExercise = async (exercise: Omit<Exercise, 'id'>) => {
   const { tags, primaryEquipment, ...exWithoutRelations } = exercise;
   const exToSave = {
     ...exWithoutRelations,
-    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[],
-    primaryEquipmentIds: (primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
+    tagIds: (tags || []).map((t) => t.id).filter(Boolean) as number[],
+    primaryEquipmentIds: (primaryEquipment || []).map((i) => i.id).filter(Boolean) as number[],
   };
 
   const id = await db.add(DB_TABLES.EXERCISES, exToSave);
@@ -54,8 +63,8 @@ const updateExercise = async (exercise: Exercise) => {
   const { tags, primaryEquipment, ...exWithoutRelations } = exercise;
   const exToSave = {
     ...exWithoutRelations,
-    tagIds: (tags || []).map(t => t.id).filter(Boolean) as number[],
-    primaryEquipmentIds: (primaryEquipment || []).map(i => i.id).filter(Boolean) as number[]
+    tagIds: (tags || []).map((t) => t.id).filter(Boolean) as number[],
+    primaryEquipmentIds: (primaryEquipment || []).map((i) => i.id).filter(Boolean) as number[],
   };
 
   await db.put(DB_TABLES.EXERCISES, exToSave);
@@ -85,28 +94,37 @@ export function useExercises() {
     refresh();
   }, [refresh]);
 
-  const onAddExercise = useCallback(async (exercise: Omit<Exercise, 'id'>) => {
-    const id = await addExercise(exercise);
-    await refresh();
-    return id;
-  }, [refresh]);
+  const onAddExercise = useCallback(
+    async (exercise: Omit<Exercise, 'id'>) => {
+      const id = await addExercise(exercise);
+      await refresh();
+      return id;
+    },
+    [refresh]
+  );
 
-  const onUpdateExercise = useCallback(async (exercise: Exercise) => {
-    await updateExercise(exercise);
-    await refresh();
-  }, [refresh]);
+  const onUpdateExercise = useCallback(
+    async (exercise: Exercise) => {
+      await updateExercise(exercise);
+      await refresh();
+    },
+    [refresh]
+  );
 
-  const onDeleteExercise = useCallback(async (id: number) => {
-    await deleteExercise(id);
-    await refresh();
-  }, [refresh]);
+  const onDeleteExercise = useCallback(
+    async (id: number) => {
+      await deleteExercise(id);
+      await refresh();
+    },
+    [refresh]
+  );
 
-  return { 
-    exercises, 
-    loading, 
-    addExercise: onAddExercise, 
-    updateExercise: onUpdateExercise, 
-    deleteExercise: onDeleteExercise, 
-    refresh 
+  return {
+    exercises,
+    loading,
+    addExercise: onAddExercise,
+    updateExercise: onUpdateExercise,
+    deleteExercise: onDeleteExercise,
+    refresh,
   };
 }

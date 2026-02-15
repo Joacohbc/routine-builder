@@ -18,7 +18,6 @@ export const useMultiTimer = () => {
 
   // Internal function to start the interval
   const startInterval = useCallback((name: string) => {
-    
     // Clear any existing interval first to avoid duplicates
     if (intervalIds.current[name]) {
       clearInterval(intervalIds.current[name]);
@@ -41,14 +40,17 @@ export const useMultiTimer = () => {
   }, []);
 
   // 1. START: Start or resume a timer
-  const start = useCallback((name: string) => {
-    // Initialize the timer state if it doesn't exist
-    setTimers((prev) => ({
-      ...prev,
-      [name]: prev[name] || { elapsed: 0, isRunning: true },
-    }));
-    startInterval(name);
-  }, [startInterval]);
+  const start = useCallback(
+    (name: string) => {
+      // Initialize the timer state if it doesn't exist
+      setTimers((prev) => ({
+        ...prev,
+        [name]: prev[name] || { elapsed: 0, isRunning: true },
+      }));
+      startInterval(name);
+    },
+    [startInterval]
+  );
 
   // 2. PAUSE: Stop the interval but keep the time
   const pause = useCallback((name: string) => {
@@ -56,7 +58,7 @@ export const useMultiTimer = () => {
       clearInterval(intervalIds.current[name]);
       delete intervalIds.current[name];
     }
-    
+
     setTimers((prev) => ({
       ...prev,
       [name]: { ...prev[name], isRunning: false },

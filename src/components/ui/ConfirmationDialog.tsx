@@ -21,7 +21,7 @@ export function ConfirmationDialog({
   description,
   confirmText,
   cancelText,
-  variant = 'primary'
+  variant = 'primary',
 }: ConfirmationDialogProps) {
   const { t } = useTranslation();
 
@@ -41,10 +41,7 @@ export function ConfirmationDialog({
       </div>
 
       <div className="flex gap-3 justify-end">
-        <Button
-          variant="ghost"
-          onClick={onClose}
-        >
+        <Button variant="ghost" onClick={onClose}>
           {effectiveCancelText}
         </Button>
         <Button
@@ -53,7 +50,9 @@ export function ConfirmationDialog({
             onConfirm();
             onClose();
           }}
-          className={variant === 'danger' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30 text-white' : ''}
+          className={
+            variant === 'danger' ? 'bg-red-500 hover:bg-red-600 shadow-red-500/30 text-white' : ''
+          }
         >
           {effectiveConfirmText}
         </Button>
