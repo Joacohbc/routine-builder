@@ -9,19 +9,15 @@
     "saving": "Saving...",
     "delete": "Delete",
     "addItem": "Add Item",
-    "inventory": "Inventory",
     "upload": "Upload",
     "search": "Search...",
     "tags": "Tags",
     "settings": "Settings",
+    "inventory": "Inventory",
     "exercises": "Exercises",
+    "routines": "Routines",
     "enabled": "Enabled",
     "disabled": "Disabled"
-  },
-  "nav": {
-    "inventory": "Inventory",
-    "builder": "Builder",
-    "train": "Train"
   },
   "routineList": {
     "title": "Routine Builder",
@@ -296,5 +292,10 @@
       "noSpeech": "No speech detected: Please try again.",
       "default": "An unknown error occurred."
     }
+  },
+  "notFound": {
+    "title": "Page Not Found",
+    "description": "The page you are looking for does not exist or has been moved.",
+    "goHome": "Go to Home"
   }
 }

@@ -1,6 +1,7 @@
 import { useState, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { Layout } from '@/components/ui/Layout';
 import { Icon } from '@/components/ui/Icon';
 import { useTheme, type Theme } from '@/hooks/useTheme';
@@ -103,21 +104,7 @@ export default function SettingsPage() {
   };
 
   return (
-    <Layout
-      header={
-        <div className="flex items-center p-4 pb-2 justify-between border-b border-border">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-text-main flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-surface-highlight transition-colors"
-          >
-            <Icon name="arrow_back" size={24} />
-          </button>
-          <h2 className="text-text-main text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-            {t('common.settings', 'Settings')}
-          </h2>
-        </div>
-      }
-    >
+    <Layout title={t('common.settings', 'Settings')}>
       <div className="flex flex-col gap-6 pt-4">
         {/* Section: General */}
         <section>
@@ -141,7 +128,7 @@ export default function SettingsPage() {
             {/* ListItem: Manage Tags */}
             <div className="relative flex flex-col w-full border-t border-border">
               <button
-                onClick={() => navigate('/settings/tags')}
+                onClick={() => navigate(ROUTES.SETTINGS_TAGS)}
                 className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">
@@ -165,7 +152,7 @@ export default function SettingsPage() {
             {/* ListItem: Speech Test */}
             <div className="relative flex flex-col w-full border-t border-border">
               <button
-                onClick={() => navigate('/speech-test')}
+                onClick={() => navigate(ROUTES.SETTINGS_SPEECH_TEST)}
                 className="flex items-center gap-4 px-4 min-h-15 justify-between w-full hover:bg-surface-highlight transition-colors group"
               >
                 <div className="flex items-center gap-3">

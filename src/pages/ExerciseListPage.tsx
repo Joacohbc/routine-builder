@@ -1,10 +1,10 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { buildRoute, ROUTES } from '@/lib/routes';
 import { useExercises } from '@/hooks/useExercises';
 import { useTags } from '@/hooks/useTags';
 import { Layout } from '@/components/ui/Layout';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
@@ -27,21 +27,9 @@ export default function ExerciseListPage() {
 
   return (
     <Layout
-      header={
-        <div className="flex flex-col px-6 pb-4 pt-12 gap-4">
-          <div className="flex items-center justify-between">
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-              {t('exerciseList.title')}
-            </h1>
-          </div>
-          <Input
-            icon="search"
-            placeholder={t('common.search')}
-            defaultValue={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      }
+      title={t('exerciseList.title')}
+      searchValue={search}
+      onSearchChange={setSearch}
     >
       <div className="flex flex-col gap-4 mt-4">
         {loading ? (
@@ -57,7 +45,7 @@ export default function ExerciseListPage() {
               key={ex.id}
               hover
               className="group"
-              onClick={() => navigate(`/exercises/${ex.id}`)}
+              onClick={() => navigate(buildRoute.exerciseEdit(ex.id!))}
             >
               <div className="flex items-start justify-between w-full">
                 <div className="flex items-center gap-4 flex-1">
@@ -108,7 +96,7 @@ export default function ExerciseListPage() {
         )}
       </div>
 
-      <Button variant="floating" onClick={() => navigate('/exercises/new')}>
+      <Button variant="floating" onClick={() => navigate(ROUTES.EXERCISES_NEW)}>
         <Icon name="add" size={32} />
       </Button>
     </Layout>

@@ -1,5 +1,5 @@
 import { useMemo } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useRoutines } from '@/hooks/useRoutines';
 import { useSettings } from '@/hooks/useSettings';
 import ActiveWorkoutPage from '@/pages/ActiveWorkoutPage';
@@ -7,6 +7,7 @@ import { Layout } from '@/components/ui/Layout';
 import type { Routine } from '@/types';
 import type { TrackingType, SetType } from '@/types';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 
 /**
  * Type of rest during a workout
@@ -140,13 +141,22 @@ function generateWorkoutSteps(routine: Routine): WorkoutStep[] {
 export default function WorkoutPageContainer() {
   const { id } = useParams();
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const { routines } = useRoutines();
   const { settings } = useSettings();
 
   const routine = useMemo(() => {
     if (!id) return null;
-    return routines.find((r) => r.id === Number(id)) || null;
-  }, [id, routines]);
+
+    const found = routines.find((r) => r.id === Number(id));
+    
+    if(!found) {
+      navigate(ROUTES.NOT_FOUND);
+      return null;
+    }
+
+    return found;
+  }, [id, routines, navigate]);
 
   const steps = useMemo(() => {
     if (!routine) return [];
@@ -155,8 +165,8 @@ export default function WorkoutPageContainer() {
 
   if (!routine || steps.length === 0) {
     return (
-      <Layout>
-        <div className="p-6 text-center">{t('loading')}</div>
+      <Layout title={t('common.loading')}>
+        <div className="p-6 text-center">{t('common.loading')}</div>
       </Layout>
     );
   }

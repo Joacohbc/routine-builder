@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useTags, TAG_COLORS } from '@/hooks/useTags';
 import { Layout } from '@/components/ui/Layout';
@@ -17,7 +16,6 @@ import type { Tag } from '@/types';
 
 export default function ManageTagsPage() {
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { tags, addTag, updateTag, deleteTag } = useTags();
 
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -63,21 +61,7 @@ export default function ManageTagsPage() {
   };
 
   return (
-    <Layout
-      header={
-        <div className="flex items-center p-4 pb-2 justify-between border-b border-slate-200 dark:border-slate-800/50">
-          <button
-            onClick={() => navigate(-1)}
-            className="text-slate-900 dark:text-white flex size-10 shrink-0 items-center justify-center rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-          >
-            <Icon name="arrow_back" size={24} />
-          </button>
-          <h2 className="text-slate-900 dark:text-white text-lg font-bold leading-tight tracking-[-0.015em] flex-1 text-center pr-10">
-            {t('tags.title', 'Manage Tags')}
-          </h2>
-        </div>
-      }
-    >
+    <Layout title={t('tags.title', 'Manage Tags')} showBackButton>
       <div className="flex flex-col gap-4 p-4">
         <Button onClick={() => handleOpenForm()} className="w-full">
           <Icon name="add" className="mr-2" />

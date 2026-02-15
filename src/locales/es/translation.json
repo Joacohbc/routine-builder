@@ -9,19 +9,15 @@
     "saving": "Guardando...",
     "delete": "Eliminar",
     "addItem": "Añadir Item",
-    "inventory": "Inventario",
     "upload": "Subir",
     "search": "Buscar...",
     "tags": "Etiquetas",
     "settings": "Ajustes",
     "exercises": "Ejercicios",
+    "routines": "Rutinas",
+    "inventory": "Inventario",
     "enabled": "Activado",
     "disabled": "Desactivado"
-  },
-  "nav": {
-    "inventory": "Inventario",
-    "builder": "Constructor",
-    "train": "Entrenar"
   },
   "routineList": {
     "title": "Constructor de Rutinas",
@@ -296,5 +292,10 @@
       "noSpeech": "No se detectó voz: Por favor intenta de nuevo.",
       "default": "Ocurrió un error desconocido."
     }
+  },
+  "notFound": {
+    "title": "Página No Encontrada",
+    "description": "La página que buscas no existe o ha sido movida.",
+    "goHome": "Ir al Inicio"
   }
 }

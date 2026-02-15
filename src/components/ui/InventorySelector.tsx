@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { ROUTES } from '@/lib/routes';
 import { useInventory } from '@/hooks/useInventory';
 import { Icon } from '@/components/ui/Icon';
 import { cn } from '@/lib/utils';
@@ -35,7 +36,7 @@ export function InventorySelector({ selectedItems = [], onChange, label }: Inven
         </label>
         <button
           type="button"
-          onClick={() => navigate('/')}
+          onClick={() => navigate(ROUTES.HOME)}
           className="text-primary text-xs font-bold hover:text-primary-dark transition-colors"
         >
           {t('inventory.manage', 'Manage Inventory')}
@@ -86,7 +87,7 @@ export function InventorySelector({ selectedItems = [], onChange, label }: Inven
 
         <button
           type="button"
-          onClick={() => navigate('/')}
+          onClick={() => navigate(ROUTES.HOME)}
           className="flex items-center justify-center gap-2 p-3 rounded-xl border border-dashed border-gray-300 dark:border-gray-600 hover:bg-black/5 dark:hover:bg-white/5 text-gray-400 transition-colors"
         >
           <Icon name="add" />

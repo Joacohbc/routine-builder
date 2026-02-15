@@ -4,17 +4,18 @@ import { useInventory } from '@/hooks/useInventory';
 import { useTags } from '@/hooks/useTags';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { Layout } from '@/components/ui/Layout';
-import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { Icon } from '@/components/ui/Icon';
 import { TagBadge } from '@/components/ui/TagBadge';
-import { InventoryForm } from '@/components/InventoryForm';
+import { TagSelector } from '@/components/ui/TagSelector';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
+import { Form, useFormContext } from '@/components/ui/Form';
+import { inventoryValidators } from '@/lib/validations';
 import { cn } from '@/lib/utils';
 import { getInventoryConditionColors } from '@/lib/typeColors';
 import { fuzzySearch } from '@/lib/search';
-import type { InventoryItem, InventoryStatus } from '@/types';
+import type { InventoryItem, InventoryStatus, Tag } from '@/types';
 
 type FilterStatus = InventoryStatus | 'all';
 
@@ -76,52 +77,125 @@ export default function InventoryPage() {
   };
 
   if (isFormOpen) {
+    const handleFormSubmit = async (rawValues: unknown) => {
+      const values = rawValues as InventoryItem;
+      const itemToSave = {
+        name: values.name,
+        icon: values.icon,
+        status: values.status,
+        condition: values.condition,
+        quantity: Number(values.quantity),
+        tags: values.tags,
+      };
+
+      if (editingItem && editingItem.id) {
+        await updateItem({ ...itemToSave, id: editingItem.id });
+      } else {
+        await addItem(itemToSave);
+      }
+      setIsFormOpen(false);
+      setEditingItem(emptyItem);
+    };
+
+    const handleClose = () => {
+      setIsFormOpen(false);
+      setEditingItem(emptyItem);
+    };
+
     return (
-      <InventoryForm
-        item={editingItem}
-        onClose={() => {
-          setIsFormOpen(false);
-          setEditingItem(emptyItem);
+      <Form
+        onSubmit={handleFormSubmit}
+        defaultValues={{
+          name: editingItem?.name || '',
+          icon: editingItem?.icon || '',
+          status: editingItem?.status || 'available',
+          condition: editingItem?.condition || 'good',
+          quantity: editingItem?.quantity || 1,
+          tags: editingItem?.tags || [],
         }}
-        onSave={async (item) => {
-          if (editingItem && editingItem.id) {
-            await updateItem({ ...item, id: editingItem.id });
-          } else {
-            await addItem(item);
+        className="h-full"
+      >
+        <Layout
+          header={
+            <div className="flex items-center justify-between px-6 py-4 bg-background/95 backdrop-blur-md z-50">
+              <button
+                type="button"
+                onClick={handleClose}
+                className="p-2 -ml-2 rounded-full hover:bg-gray-100 dark:hover:bg-surface-highlight text-gray-900 dark:text-white transition-colors"
+              >
+                <Icon name="close" />
+              </button>
+              <h1 className="text-lg font-bold text-gray-900 dark:text-white">
+                {editingItem?.id ? t('inventory.titleEdit') : t('inventory.titleNew')}
+              </h1>
+              <FormSubmitButton />
+            </div>
           }
-          setIsFormOpen(false);
-          setEditingItem(emptyItem);
-        }}
-      />
+        >
+          <div className="flex flex-col gap-8 mt-4">
+            <Form.Input
+              name="name"
+              label={t('inventory.name')}
+              validator={inventoryValidators.name}
+              required
+              className="font-bold text-lg"
+            />
+            <div className="grid grid-cols-2 gap-4">
+              <Form.IconPicker
+                name="icon"
+                label={t('inventory.icon')}
+                validator={inventoryValidators.icon}
+              />
+              <Form.Input
+                name="quantity"
+                label={t('inventory.quantity')}
+                type="number"
+                validator={inventoryValidators.quantity}
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <Form.Select
+                name="condition"
+                label={t('inventory.condition')}
+                options={[
+                  { label: t('inventory.conditions.new'), value: 'new' },
+                  { label: t('inventory.conditions.good'), value: 'good' },
+                  { label: t('inventory.conditions.worn'), value: 'worn' },
+                  { label: t('inventory.conditions.poor'), value: 'poor' },
+                ]}
+              />
+              <Form.Select
+                name="status"
+                label={t('inventory.status')}
+                options={[
+                  { label: t('inventory.statuses.available'), value: 'available' },
+                  { label: t('inventory.statuses.checked_out'), value: 'checked_out' },
+                  { label: t('inventory.statuses.maintenance'), value: 'maintenance' },
+                ]}
+              />
+            </div>
+
+            <Form.Field name="tags">
+              {({ value, setValue }) => (
+                <TagSelector
+                  label={t('common.tags')}
+                  activeTags={value as Tag[]}
+                  onChange={setValue}
+                  type={'inventory'}
+                />
+              )}
+            </Form.Field>
+          </div>
+        </Layout>
+      </Form>
     );
   }
 
   return (
     <Layout
-      header={
-        <div className="flex flex-col px-6 pb-4 pt-12 gap-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <button className="p-2 -ml-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-highlight transition-colors">
-                <Icon name="menu" className="text-gray-600 dark:text-gray-300" />
-              </button>
-              <h1 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                {t('inventoryPage.title')}
-              </h1>
-            </div>
-            <button className="relative p-2 rounded-full hover:bg-gray-200 dark:hover:bg-surface-highlight transition-colors">
-              <Icon name="notifications" className="text-gray-600 dark:text-gray-300" />
-              <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-primary border border-background-light dark:border-background-dark"></span>
-            </button>
-          </div>
-          <Input
-            icon="search"
-            placeholder={t('common.search')}
-            defaultValue={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
-      }
+      title={t('inventoryPage.title')}
+      searchValue={search}
+      onSearchChange={setSearch}
     >
       <div className="flex gap-3 mb-2 overflow-x-auto no-scrollbar pb-2">
         <Button
@@ -275,5 +349,22 @@ export default function InventoryPage() {
         variant="danger"
       />
     </Layout>
+  );
+}
+
+function FormSubmitButton() {
+  const { t } = useTranslation();
+  const { errors, isSubmitting } = useFormContext();
+  const hasErrors = Object.keys(errors).some((key) => !!errors[key]);
+
+  return (
+    <Button
+      type="submit"
+      size="sm"
+      className="bg-primary text-white rounded-full px-6"
+      disabled={hasErrors || isSubmitting}
+    >
+      {isSubmitting ? t('common.saving') : t('common.save')}
+    </Button>
   );
 }

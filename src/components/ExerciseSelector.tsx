@@ -29,7 +29,7 @@ export function ExerciseSelector({ onSelect, onClose }: ExerciseSelectorProps) {
       className="max-w-md h-[80vh] sm:h-auto sm:max-h-[80vh] p-6"
     >
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Add Exercise</h2>
+        <h2 className="text-xl font-bold">{t('routineBuilder.addExercise', 'Add Exercise')}</h2>
         <button onClick={onClose}>
           <Icon name="close" />
         </button>
