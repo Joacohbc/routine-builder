@@ -180,6 +180,8 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // Handle countdown voice announcements (only for exercise time steps)
   useEffect(() => {
+    if(!settings.voiceCountdownEnabled) return;
+
     // Only announce for exercise steps with time tracking
     if (!isExerciseStep(currentStep) || currentStep.trackingType !== 'time') {
       return;
@@ -225,7 +227,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         }
       }
     }
-  }, [currentStep, timers, speak, t]);
+  }, [currentStep, timers, speak, t, settings.voiceCountdownEnabled ]);
 
   const handleNext = useCallback(() => {
     if (currentStepIndex < steps.length - 1) {
