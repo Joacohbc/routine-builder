@@ -1,5 +1,5 @@
 import type { ReactNode, ComponentProps } from 'react';
-import React, { createContext, useContext, useState, useCallback, useEffect, useRef } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Input } from '@/components/ui/Input';
 import { Select } from '@/components/ui/Select';
@@ -187,15 +187,16 @@ function FormField({ name, validator, children }: FormFieldProps) {
     unregisterField,
   } = useFormContext();
   const { t } = useTranslation();
-  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const value = values[name] !== undefined ? values[name] : undefined;
 
+  // Register field on mount and unregister on unmount to manage dynamic fields
   useEffect(() => {
     registerField(name);
     return () => unregisterField(name);
   }, [name, registerField, unregisterField]);
 
+  // Run validation whenever value changes
   useEffect(() => {
     if (validator) {
       const res = validator(value);
@@ -208,28 +209,31 @@ function FormField({ name, validator, children }: FormFieldProps) {
     }
   }, [name, value, validator, setFieldError, t]);
 
+  // Mark field as touched 500ms after first change to avoid showing errors immediately
+  useEffect(() => {
+    if(!touched[name]) return; 
+
+    const timer = setTimeout(() => {
+      setFieldTouched(name, true);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [ touched, name, setFieldTouched]);
+
   const setValue = useCallback(
     (newValue: unknown) => {
-      // Debounce touched update
-      if (timerRef.current) clearTimeout(timerRef.current);
-      timerRef.current = setTimeout(() => {
-        setFieldTouched(name, true);
-      }, 500);
-
       setFieldValue(name, newValue);
     },
-    [name, setFieldValue, setFieldTouched]
+    [name, setFieldValue]
   );
 
   const handleBlur = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current);
     setFieldTouched(name, true);
   }, [name, setFieldTouched]);
 
   // Only show error if touched
   const visibleError = touched[name] ? errors[name] : undefined;
 
-  // eslint-disable-next-line react-hooks/refs
   return (
     <>
       {children({ value, setValue, onChange: setValue, error: visibleError, onBlur: handleBlur })}
