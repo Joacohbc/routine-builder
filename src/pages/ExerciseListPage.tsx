@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { useDebounce } from '@/hooks/useDebounce';
 import { buildRoute, ROUTES } from '@/lib/routes';
 import { useExercises } from '@/hooks/useExercises';
 import { useTags } from '@/hooks/useTags';
@@ -16,14 +17,15 @@ export default function ExerciseListPage() {
   const { exercises, loading, deleteExercise } = useExercises();
   const { formatTagName } = useTags();
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const navigate = useNavigate();
 
   const filteredExercises = useMemo(() => {
-    return fuzzySearch(exercises, search, (ex) => [
+    return fuzzySearch(exercises, debouncedSearch, (ex) => [
       ex.title,
       ...(ex.tags || []).map((tag) => tag.name),
     ]);
-  }, [exercises, search]);
+  }, [exercises, debouncedSearch]);
 
   return (
     <Layout
