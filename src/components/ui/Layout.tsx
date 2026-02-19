@@ -47,7 +47,7 @@ export function Layout({
   const hasSearch = searchValue !== undefined && onSearchChange !== undefined;
 
   return (
-    <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-background animate-fade-in-up">
+    <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-background animate-soft-appear">
       {header ? (
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md pt-safe-top">
           {header}
