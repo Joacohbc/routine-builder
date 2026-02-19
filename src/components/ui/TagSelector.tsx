@@ -5,6 +5,7 @@ import { ROUTES } from '@/lib/routes';
 import { useTags } from '@/hooks/useTags';
 import { useInventory } from '@/hooks/useInventory';
 import { useExercises } from '@/hooks/useExercises';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
 import { TagItem } from '@/components/ui/TagItem';
@@ -34,6 +35,7 @@ export function TagSelector({
   const [search] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalSearch, setModalSearch] = useState('');
+  const debouncedModalSearch = useDebounce(modalSearch, 300);
 
   // Ensure activeTags with Translation already applied (from useTags)
   const selectedTags = useMemo(() => {
@@ -75,8 +77,8 @@ export function TagSelector({
   };
 
   const modalFilteredTags = useMemo(() => {
-    return fuzzySearch(tags, modalSearch, (tag) => [tag.name]);
-  }, [tags, modalSearch]);
+    return fuzzySearch(tags, debouncedModalSearch, (tag) => [tag.name]);
+  }, [tags, debouncedModalSearch]);
 
   return (
     <>

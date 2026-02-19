@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useExercises } from '@/hooks/useExercises';
+import { useDebounce } from '@/hooks/useDebounce';
 import { Input } from '@/components/ui/Input';
 import { Icon } from '@/components/ui/Icon';
 import { Modal } from '@/components/ui/Modal';
@@ -16,10 +17,11 @@ export function ExerciseSelector({ onSelect, onClose }: ExerciseSelectorProps) {
   const { t } = useTranslation();
   const { exercises } = useExercises();
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
 
   const filtered = useMemo(() => {
-    return fuzzySearch(exercises, search, (e) => [e.title]);
-  }, [exercises, search]);
+    return fuzzySearch(exercises, debouncedSearch, (e) => [e.title]);
+  }, [exercises, debouncedSearch]);
 
   return (
     <Modal

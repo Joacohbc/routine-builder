@@ -1,6 +1,7 @@
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useInventory } from '@/hooks/useInventory';
+import { useDebounce } from '@/hooks/useDebounce';
 import { useTags } from '@/hooks/useTags';
 import { useHorizontalScroll } from '@/hooks/useHorizontalScroll';
 import { Layout } from '@/components/ui/Layout';
@@ -33,6 +34,7 @@ export default function InventoryPage() {
   const { items, loading, addItem, updateItem, deleteItem } = useInventory();
   const { tags, formatTagName } = useTags();
   const [search, setSearch] = useState('');
+  const debouncedSearch = useDebounce(search, 300);
   const [filterStatus, setFilterStatus] = useState<FilterStatus>('all');
   const [activeTagId, setActiveTagId] = useState<number | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -50,7 +52,7 @@ export default function InventoryPage() {
 
   const filteredItems = useMemo(() => {
     // 1. Fuzzy Search first (returns subset)
-    const searchMatches = fuzzySearch(items, search, (item) => [item.name]);
+    const searchMatches = fuzzySearch(items, debouncedSearch, (item) => [item.name]);
 
     // 2. Apply other filters
     return searchMatches.filter((item) => {
@@ -65,7 +67,7 @@ export default function InventoryPage() {
 
       return matchesStatus && matchesTag;
     });
-  }, [items, search, filterStatus, activeTagId]);
+  }, [items, debouncedSearch, filterStatus, activeTagId]);
 
   const handleEdit = (item: InventoryItem) => {
     setEditingItem(item);
