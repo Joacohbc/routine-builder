@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { HashRouter, Routes, Route, useLocation } from 'react-router-dom';
 import InventoryPage from '@/pages/InventoryPage';
 import ExerciseListPage from '@/pages/ExerciseListPage';
 import ExerciseFormPage from '@/pages/ExerciseFormPage';
@@ -10,11 +10,15 @@ import ManageTagsPage from '@/pages/ManageTagsPage';
 import SpeechTestPage from '@/pages/SpeechTestPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
+import { BottomNav } from '@/components/ui/BottomNav';
 import { ROUTES, ROUTE_PATTERNS } from '@/lib/routes';
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const isWorkoutPlay = location.pathname.startsWith('/play/');
+
   return (
-    <HashRouter>
+    <>
       <MobileExperienceWarning />
       <Routes>
         <Route path={ROUTES.HOME} element={<InventoryPage />} />
@@ -40,6 +44,15 @@ function App() {
         <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
+      {!isWorkoutPlay && <BottomNav />}
+    </>
+  );
+}
+
+function App() {
+  return (
+    <HashRouter>
+      <AppContent />
     </HashRouter>
   );
 }
