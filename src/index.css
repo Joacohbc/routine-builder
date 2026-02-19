@@ -96,7 +96,7 @@
 @keyframes soft-appear {
   from {
     opacity: 0;
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
@@ -105,7 +105,7 @@
 }
 
 .animate-soft-appear {
-  animation: soft-appear 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: soft-appear 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   transform-origin: center center;
 }
 
