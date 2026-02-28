@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { BottomNav } from '@/components/ui/BottomNav';
 import { Input } from '@/components/ui/Input';
 import { Icon } from '@/components/ui/Icon';
 
@@ -48,7 +47,7 @@ export function Layout({
   const hasSearch = searchValue !== undefined && onSearchChange !== undefined;
 
   return (
-    <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-background">
+    <div className="relative flex h-full min-h-screen w-full flex-col overflow-hidden bg-background animate-soft-appear">
       {header ? (
         <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-md pt-safe-top">
           {header}
@@ -81,7 +80,6 @@ export function Layout({
         </header>
       )}
       <main className="flex-1 overflow-y-auto px-6 pb-24">{children}</main>
-      <BottomNav />
     </div>
   );
 }
