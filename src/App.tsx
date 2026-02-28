@@ -11,12 +11,14 @@ import SpeechTestPage from '@/pages/SpeechTestPage';
 import NotFoundPage from '@/pages/NotFoundPage';
 import { MobileExperienceWarning } from '@/components/MobileExperienceWarning';
 import { ROUTES, ROUTE_PATTERNS } from '@/lib/routes';
+import { ExerciseProvider } from '@/contexts/ExerciseContext';
 
 function App() {
   return (
-    <HashRouter>
-      <MobileExperienceWarning />
-      <Routes>
+    <ExerciseProvider>
+      <HashRouter>
+        <MobileExperienceWarning />
+        <Routes>
         <Route path={ROUTES.HOME} element={<InventoryPage />} />
 
         {/* Exercise Library Routes */}
@@ -41,6 +43,7 @@ function App() {
         <Route path="*" element={<NotFoundPage />} />
       </Routes>
     </HashRouter>
+    </ExerciseProvider>
   );
 }
 
