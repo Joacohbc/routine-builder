@@ -51,6 +51,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [extraRestTime, setExtraRestTime] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
 
   // Local auto-next state (initialized from settings, can be toggled during workout)
@@ -231,6 +232,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   }, [currentStep, timers, speak, t, settings.voiceCountdownEnabled ]);
 
   const handleNext = useCallback(() => {
+    setExtraRestTime(0);
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
@@ -239,6 +241,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   }, [currentStepIndex, steps.length, navigate]);
 
   const handlePrevious = () => {
+    setExtraRestTime(0);
     if (currentStepIndex > 0) {
       setCurrentStepIndex((prev) => prev - 1);
     }
@@ -270,7 +273,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     // Check if target time is reached for rest steps
     if (isRestStep(currentStep)) {
       const restTime = timers['rest']?.elapsed || 0;
-      targetTime = currentStep.restTime;
+      targetTime = currentStep.restTime + extraRestTime;
       if (restTime >= targetTime) {
         targetReached = true;
       }
@@ -310,6 +313,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     settings.customTimerSound,
     playTimerSound,
     handleNext,
+    extraRestTime,
   ]);
 
   const isLastStep = currentStepIndex === steps.length - 1;
@@ -391,7 +395,16 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
           {isRestStep(currentStep) ? (
             <RestingStep
               restTimer={timers['rest']?.elapsed || 0}
-              targetRestTime={currentStep.restTime}
+              targetRestTime={currentStep.restTime + extraRestTime}
+              onAddExtraTime={(sec) => setExtraRestTime((prev) => prev + sec)}
+              isPaused={!timers['rest']?.isRunning}
+              onTogglePause={() => {
+                if (timers['rest']?.isRunning) {
+                  pause('rest');
+                } else {
+                  start('rest');
+                }
+              }}
               restType={currentStep.type}
             />
           ) : isExerciseStep(currentStep) ? (
