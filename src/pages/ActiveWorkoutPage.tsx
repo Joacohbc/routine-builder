@@ -64,6 +64,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   // whether the target was already triggered. Prevents duplicate triggers
   // within a step AND skips stale timer values on step transitions.
   const autoNextGuardRef = useRef({ stepIndex: -1, triggered: false });
+  const autoNextTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Ref to track which countdown announcements have been made for the current step
   const countdownAnnouncedRef = useRef(new Set<number>());
@@ -261,11 +262,12 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     // The next timer tick will re-trigger with fresh values.
     if (guard.stepIndex !== currentStepIndex) {
       autoNextGuardRef.current = { stepIndex: currentStepIndex, triggered: false };
+      if (autoNextTimeoutRef.current) {
+        clearTimeout(autoNextTimeoutRef.current);
+        autoNextTimeoutRef.current = null;
+      }
       return;
     }
-
-    // Don't trigger if already done for this step
-    if (guard.triggered) return;
 
     let targetReached = false;
     let targetTime: number | undefined;
@@ -276,6 +278,15 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       targetTime = currentStep.restTime + extraRestTime;
       if (restTime >= targetTime) {
         targetReached = true;
+      } else {
+        // If extra time is added after target was reached, untrigger and cancel any pending timeout
+        if (guard.triggered) {
+          autoNextGuardRef.current.triggered = false;
+          if (autoNextTimeoutRef.current) {
+            clearTimeout(autoNextTimeoutRef.current);
+            autoNextTimeoutRef.current = null;
+          }
+        }
       }
     }
     // Check if target time is reached for exercise time steps
@@ -286,6 +297,9 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         targetReached = true;
       }
     }
+
+    // Don't trigger if already done for this step
+    if (autoNextGuardRef.current.triggered) return;
 
     if (targetReached && targetTime) {
       autoNextGuardRef.current.triggered = true;
@@ -298,7 +312,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       // Auto-next if enabled (using local state)
       if (localAutoNext) {
         // Small delay to let sound play
-        setTimeout(() => {
+        autoNextTimeoutRef.current = setTimeout(() => {
           handleNext();
         }, 500);
       }
