@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  dbPromise,
+  getDB,
   DB_TABLES,
   buildSystemTags,
   type DehydratedInventoryItem,
@@ -66,7 +66,7 @@ export const TAG_COLORS = [
 
 const fetchTags = async (): Promise<Tag[]> => {
   try {
-    const db = await dbPromise;
+    const db = await getDB();
     const allTags = await db.getAll(DB_TABLES.TAGS);
     return allTags;
   } catch (error) {
@@ -95,7 +95,7 @@ const addTag = async (tags: Tag[], tag: TagCreation) => {
     userTag.color = TAG_COLORS[Math.floor(Math.random() * TAG_COLORS.length)];
   }
 
-  const db = await dbPromise;
+  const db = await getDB();
   const id = await db.add(DB_TABLES.TAGS, userTag as Tag);
   return id;
 };
@@ -121,7 +121,7 @@ const updateTag = async (tags: Tag[], tag: TagUpdate) => {
     throw errors;
   }
 
-  const db = await dbPromise;
+  const db = await getDB();
   await db.put(DB_TABLES.TAGS, { ...existing, name: tag.name, color: tag.color } as Tag);
 };
 
@@ -132,7 +132,7 @@ const deleteTag = async (tags: Tag[], id: number) => {
     throw { key: 'validations.systemTagProtected' };
   }
 
-  const db = await dbPromise;
+  const db = await getDB();
   const tx = db.transaction(
     [DB_TABLES.TAGS, DB_TABLES.INVENTORY, DB_TABLES.EXERCISES],
     'readwrite'
@@ -173,7 +173,7 @@ const deleteTag = async (tags: Tag[], id: number) => {
  * This will delete existing system tags and recreate them from scratch.
  */
 const restoreSystemTags = async () => {
-  const db = await dbPromise;
+  const db = await getDB();
   const tx = db.transaction([DB_TABLES.TAGS], 'readwrite');
   const store = tx.objectStore(DB_TABLES.TAGS);
 
@@ -199,7 +199,7 @@ const restoreSystemTags = async () => {
  * Warning: This will remove all default muscle, purpose, and difficulty tags.
  */
 const deleteAllSystemTags = async () => {
-  const db = await dbPromise;
+  const db = await getDB();
   const tx = db.transaction(
     [DB_TABLES.TAGS, DB_TABLES.INVENTORY, DB_TABLES.EXERCISES],
     'readwrite'

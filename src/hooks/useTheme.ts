@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { getStorageItem, setStorageItem } from '@/lib/storage';
 
 export type Theme = 'light' | 'dark' | 'system';
 
@@ -15,7 +16,7 @@ const getEffectiveTheme = (theme: Theme): 'light' | 'dark' => {
 export const useTheme = () => {
   const [theme, setTheme] = useState<Theme>(() => {
     // Leer el tema guardado en localStorage
-    const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+    const savedTheme = getStorageItem(THEME_STORAGE_KEY) as Theme | null;
     if (savedTheme && ['light', 'dark', 'system'].includes(savedTheme)) {
       return savedTheme;
     }
@@ -36,7 +37,7 @@ export const useTheme = () => {
     }
 
     // Guardar en localStorage
-    localStorage.setItem(THEME_STORAGE_KEY, theme);
+    setStorageItem(THEME_STORAGE_KEY, theme);
   }, [theme]);
 
   // Listener para cambios en la preferencia del sistema
@@ -79,7 +80,7 @@ export const useTheme = () => {
 
 // Función para inicializar el tema antes de que React renderice
 export const initializeTheme = () => {
-  const savedTheme = localStorage.getItem(THEME_STORAGE_KEY) as Theme | null;
+  const savedTheme = getStorageItem(THEME_STORAGE_KEY) as Theme | null;
   const theme =
     savedTheme && ['light', 'dark', 'system'].includes(savedTheme) ? savedTheme : 'system';
   const effectiveTheme = getEffectiveTheme(theme);

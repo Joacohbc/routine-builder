@@ -1,4 +1,4 @@
-import { dbPromise, DB_TABLES } from '@/lib/db';
+import { getDB, DB_TABLES } from '@/lib/db';
 import type { Routine, Tag } from '@/types';
 import type { DehydratedInventoryItem, DehydratedExercise } from '@/lib/db';
 
@@ -22,7 +22,7 @@ const BACKUP_VERSION = 1;
  * Exports all data from the database as a JSON file download.
  */
 export async function exportData(): Promise<void> {
-  const db = await dbPromise;
+  const db = await getDB();
 
   // Fetch all data from stores
   const [inventory, exercises, routines, tags] = await Promise.all([
@@ -73,7 +73,7 @@ export async function importData(file: File): Promise<void> {
           throw new Error('Invalid backup file format');
         }
 
-        const db = await dbPromise;
+        const db = await getDB();
         const tx = db.transaction(
           [DB_TABLES.INVENTORY, DB_TABLES.EXERCISES, DB_TABLES.ROUTINES, DB_TABLES.TAGS],
           'readwrite'

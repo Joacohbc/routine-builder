@@ -14,6 +14,7 @@ import { ListItemSelect } from '@/components/ui/ListItemSelect';
 import { AudioUploadInput } from '@/components/ui/AudioUploadInput';
 import { ConfirmationDialog } from '@/components/ui/ConfirmationDialog';
 import { exportData, importData } from '@/lib/dataManagement';
+import { TestModePanel } from '@/components/ui/TestModePanel';
 
 export default function SettingsPage() {
   const navigate = useNavigate();
@@ -497,6 +498,14 @@ export default function SettingsPage() {
               </button>
             </div>
           </div>
+        </section>
+
+        {/* Section: Developer */}
+        <section>
+          <h3 className="text-primary text-sm font-bold uppercase tracking-wider px-2 pb-3">
+            {t('settings.developer', 'Developer')}
+          </h3>
+          <TestModePanel />
         </section>
 
         {/* Footer Info */}
