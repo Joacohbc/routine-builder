@@ -51,6 +51,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
 
   // State for logical step tracking and UI
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [extraRestTime, setExtraRestTime] = useState(0);
   const [showMedia, setShowMedia] = useState(false);
 
   // Local auto-next state (initialized from settings, can be toggled during workout)
@@ -63,6 +64,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   // whether the target was already triggered. Prevents duplicate triggers
   // within a step AND skips stale timer values on step transitions.
   const autoNextGuardRef = useRef({ stepIndex: -1, triggered: false });
+  const autoNextTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   // Ref to track which countdown announcements have been made for the current step
   const countdownAnnouncedRef = useRef(new Set<number>());
@@ -231,6 +233,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   }, [currentStep, timers, speak, t, settings.voiceCountdownEnabled ]);
 
   const handleNext = useCallback(() => {
+    setExtraRestTime(0);
     if (currentStepIndex < steps.length - 1) {
       setCurrentStepIndex((prev) => prev + 1);
     } else {
@@ -239,6 +242,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
   }, [currentStepIndex, steps.length, navigate]);
 
   const handlePrevious = () => {
+    setExtraRestTime(0);
     if (currentStepIndex > 0) {
       setCurrentStepIndex((prev) => prev - 1);
     }
@@ -258,11 +262,12 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     // The next timer tick will re-trigger with fresh values.
     if (guard.stepIndex !== currentStepIndex) {
       autoNextGuardRef.current = { stepIndex: currentStepIndex, triggered: false };
+      if (autoNextTimeoutRef.current) {
+        clearTimeout(autoNextTimeoutRef.current);
+        autoNextTimeoutRef.current = null;
+      }
       return;
     }
-
-    // Don't trigger if already done for this step
-    if (guard.triggered) return;
 
     let targetReached = false;
     let targetTime: number | undefined;
@@ -270,9 +275,18 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     // Check if target time is reached for rest steps
     if (isRestStep(currentStep)) {
       const restTime = timers['rest']?.elapsed || 0;
-      targetTime = currentStep.restTime;
+      targetTime = currentStep.restTime + extraRestTime;
       if (restTime >= targetTime) {
         targetReached = true;
+      } else {
+        // If extra time is added after target was reached, untrigger and cancel any pending timeout
+        if (guard.triggered) {
+          autoNextGuardRef.current.triggered = false;
+          if (autoNextTimeoutRef.current) {
+            clearTimeout(autoNextTimeoutRef.current);
+            autoNextTimeoutRef.current = null;
+          }
+        }
       }
     }
     // Check if target time is reached for exercise time steps
@@ -283,6 +297,9 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
         targetReached = true;
       }
     }
+
+    // Don't trigger if already done for this step
+    if (autoNextGuardRef.current.triggered) return;
 
     if (targetReached && targetTime) {
       autoNextGuardRef.current.triggered = true;
@@ -295,7 +312,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
       // Auto-next if enabled (using local state)
       if (localAutoNext) {
         // Small delay to let sound play
-        setTimeout(() => {
+        autoNextTimeoutRef.current = setTimeout(() => {
           handleNext();
         }, 500);
       }
@@ -310,6 +327,7 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
     settings.customTimerSound,
     playTimerSound,
     handleNext,
+    extraRestTime,
   ]);
 
   const isLastStep = currentStepIndex === steps.length - 1;
@@ -391,7 +409,16 @@ export default function ActiveWorkoutPage({ routine, steps, settings }: ActiveWo
           {isRestStep(currentStep) ? (
             <RestingStep
               restTimer={timers['rest']?.elapsed || 0}
-              targetRestTime={currentStep.restTime}
+              targetRestTime={currentStep.restTime + extraRestTime}
+              onAddExtraTime={(sec) => setExtraRestTime((prev) => prev + sec)}
+              isPaused={!timers['rest']?.isRunning}
+              onTogglePause={() => {
+                if (timers['rest']?.isRunning) {
+                  pause('rest');
+                } else {
+                  start('rest');
+                }
+              }}
               restType={currentStep.type}
             />
           ) : isExerciseStep(currentStep) ? (
