@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { getStorageItem, setStorageItem } from '@/lib/storage';
 
 export interface Settings {
   autoNext: boolean;
@@ -25,7 +26,7 @@ const STORAGE_KEY = 'app-settings';
 export const useSettings = () => {
   const [settings, setSettings] = useState<Settings>(() => {
     try {
-      const stored = localStorage.getItem(STORAGE_KEY);
+      const stored = getStorageItem(STORAGE_KEY);
       if (stored) {
         const parsed = JSON.parse(stored);
         return { ...DEFAULT_SETTINGS, ...parsed };
@@ -39,7 +40,7 @@ export const useSettings = () => {
   // Persist settings to localStorage whenever they change
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings));
+      setStorageItem(STORAGE_KEY, JSON.stringify(settings));
     } catch (error) {
       console.error('Failed to save settings:', error);
     }

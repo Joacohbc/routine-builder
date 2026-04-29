@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import {
-  dbPromise,
+  getDB,
   DB_TABLES,
   type DehydratedExercise,
   type DehydratedInventoryItem,
@@ -10,7 +10,7 @@ import type { Exercise, Tag, InventoryItem } from '@/types';
 
 const fetchExercises = async (): Promise<Exercise[]> => {
   try {
-    const db = await dbPromise;
+    const db = await getDB();
     const [allExercises, allTags, allInventory] = await Promise.all([
       db.getAll(DB_TABLES.EXERCISES),
       db.getAll(DB_TABLES.TAGS),
@@ -39,7 +39,7 @@ const addExercise = async (exercise: Omit<Exercise, 'id'>) => {
   const errors = validateSchema(exercise, exerciseValidators);
   if (Object.keys(errors).length > 0) throw errors;
 
-  const db = await dbPromise;
+  const db = await getDB();
   // Dehydrate for storage
   const { tags, primaryEquipment, ...exWithoutRelations } = exercise;
   const exToSave = {
@@ -58,7 +58,7 @@ const updateExercise = async (exercise: Exercise) => {
   const errors = validateSchema(exercise, exerciseValidators);
   if (Object.keys(errors).length > 0) throw errors;
 
-  const db = await dbPromise;
+  const db = await getDB();
   // Dehydrate for storage
   const { tags, primaryEquipment, ...exWithoutRelations } = exercise;
   const exToSave = {
@@ -71,7 +71,7 @@ const updateExercise = async (exercise: Exercise) => {
 };
 
 const deleteExercise = async (id: number) => {
-  const db = await dbPromise;
+  const db = await getDB();
   await db.delete(DB_TABLES.EXERCISES, id);
 };
 

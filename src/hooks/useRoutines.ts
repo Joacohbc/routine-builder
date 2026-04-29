@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES } from '@/lib/db';
+import { getDB, DB_TABLES } from '@/lib/db';
 import { validateSchema, routineValidators } from '@/lib/validations';
 import type { Routine } from '@/types';
 
 const fetchRoutines = async (): Promise<Routine[]> => {
   try {
-    const db = await dbPromise;
+    const db = await getDB();
     const allRoutines = await db.getAll(DB_TABLES.ROUTINES);
     return allRoutines;
   } catch (error) {
@@ -18,7 +18,7 @@ const addRoutine = async (routine: Omit<Routine, 'id'>) => {
   const errors = validateSchema(routine, routineValidators);
   if (Object.keys(errors).length > 0) throw errors;
 
-  const db = await dbPromise;
+  const db = await getDB();
   const id = await db.add(DB_TABLES.ROUTINES, routine as Routine);
   return id;
 };
@@ -29,12 +29,12 @@ const updateRoutine = async (routine: Routine) => {
   const errors = validateSchema(routine, routineValidators);
   if (Object.keys(errors).length > 0) throw errors;
 
-  const db = await dbPromise;
+  const db = await getDB();
   await db.put(DB_TABLES.ROUTINES, routine);
 };
 
 const deleteRoutine = async (id: number) => {
-  const db = await dbPromise;
+  const db = await getDB();
   await db.delete(DB_TABLES.ROUTINES, id);
 };
 

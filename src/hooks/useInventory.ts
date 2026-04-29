@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react';
-import { dbPromise, DB_TABLES, type DehydratedInventoryItem } from '@/lib/db';
+import { getDB, DB_TABLES, type DehydratedInventoryItem } from '@/lib/db';
 import { validateSchema, inventoryValidators } from '@/lib/validations';
 import type { InventoryItem, Tag } from '@/types';
 
 const fetchItems = async (): Promise<InventoryItem[]> => {
   try {
-    const db = await dbPromise;
+    const db = await getDB();
     const [allItems, allTags] = await Promise.all([
       db.getAll(DB_TABLES.INVENTORY),
       db.getAll(DB_TABLES.TAGS),
@@ -30,7 +30,7 @@ const addItem = async (item: Omit<InventoryItem, 'id'>) => {
   const errors = validateSchema(item, inventoryValidators);
   if (Object.keys(errors).length > 0) throw errors;
 
-  const db = await dbPromise;
+  const db = await getDB();
   // Dehydrate for storage to keep DB normalized
   const { tags, ...itemWithoutTags } = item;
   const itemToSave = {
@@ -48,7 +48,7 @@ const updateItem = async (item: InventoryItem) => {
   const errors = validateSchema(item, inventoryValidators);
   if (Object.keys(errors).length > 0) throw errors;
 
-  const db = await dbPromise;
+  const db = await getDB();
   // Dehydrate for storage
   const { tags, ...itemWithoutTags } = item;
   const itemToSave = {
@@ -60,7 +60,7 @@ const updateItem = async (item: InventoryItem) => {
 };
 
 const deleteItem = async (id: number) => {
-  const db = await dbPromise;
+  const db = await getDB();
   await db.delete(DB_TABLES.INVENTORY, id);
 };
 
