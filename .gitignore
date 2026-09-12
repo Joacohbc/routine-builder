@@ -24,3 +24,7 @@ TODO.md
 *.njsproj
 *.sln
 *.sw?
+
+# devcontainer-cli
+.dc_*/
+devcontainer.config.json
